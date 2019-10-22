@@ -19,5 +19,6 @@ cd HTTutilities/Jet2TauFakes
 git checkout v0.2.2
 scram b
 mkdir data
+#the following might create problems as the github and the gitlab account are separate
 git clone -b 2017 ssh://git@gitlab.cern.ch:7999/cms-htt/Jet2TauFakesFiles.git data
 ```
