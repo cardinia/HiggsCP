@@ -176,33 +176,30 @@ const map<TString, double> xsec_map_2018 = {
 };
 // 2017 (checked ! - reference is https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2017 )
 
-//Merijn: List below is cross checked.
-//2019 5 6: There is one DY sample that we have that currently does not appear, plus the susy sample. Rest cross checked, all seems consistent.
 const map<TString, double> xsec_map_2017 = {
-  { "DYJetsToLL_M-50"  , 5765.4*1.079 }, // 5765.4 is the old NNLO xsec - it has been updated to 6225.42 - has been decided to keep the old value for consistency
-  //=> keep
-  { "DY1JetsToLL_M-50" , 877.8*1.079 }, //keep
-  { "DY2JetsToLL_M-50" , 304.4*1.079 }, //keep
-  { "DY3JetsToLL_M-50" , 111.5*1.079 }, //keep
-  { "DY4JetsToLL_M-50" , 44.03*1.079 }, //keep
-  { "WJetsToLNu"  , 52940.0*1.162 }, //keep
-  { "W1JetsToLNu" , 8104.0*1.162 }, //keep
-  { "W2JetsToLNu" , 2793.0*1.162 }, //keep
-  { "W3JetsToLNu" , 992.5*1.162 },//keep
-  { "W4JetsToLNu" , 544.3*1.162 },//keep
-  { "TTTo2L2Nu"        , 88.29 }, //keep
-  { "TTToHadronic"     , 377.96 },//keep
-  { "TTToSemiLeptonic" , 365.35 }, //keep
-  { "ST_t-channel_antitop_4f" , 80.95 },//keep
-  { "ST_t-channel_top_4f"     , 136.02 },//keep
-  { "ST_tW_antitop_5f"                  , 35.85 },//keep
-  { "ST_tW_top_5f"                      , 35.85 },//keep
-  { "WW" , 75.88 },//keep
-  { "WZ" , 27.57 },//keep
-  { "ZZ" , 12.14 }, //keep
-  { "GluGluHToTauTau_M125" , 48.58*0.0627 },//keep
-  { "SUSYGluGluToHToTauTau" , 48.58*0.0627 },//keep
-  { "VBFHToTauTau_M125"    , 3.782*0.0627 },//keep. Below are things that seem not needed for mt analysis
+  { "DYJetsToLL_M-50"  , 6077.22 }, 
+  { "DY1JetsToLL_M-50" , 877.8*1.079 }, 
+  { "DY2JetsToLL_M-50" , 304.4*1.079 }, 
+  { "DY3JetsToLL_M-50" , 111.5*1.079 }, 
+  { "DY4JetsToLL_M-50" , 44.03*1.079 }, 
+  { "WJetsToLNu"  , 52940.0*1.162 }, 
+  { "W1JetsToLNu" , 8104.0*1.162 }, 
+  { "W2JetsToLNu" , 2793.0*1.162 }, 
+  { "W3JetsToLNu" , 992.5*1.162 },
+  { "W4JetsToLNu" , 544.3*1.162 },
+  { "TTTo2L2Nu"        , 88.29 }, 
+  { "TTToHadronic"     , 377.96 },
+  { "TTToSemiLeptonic" , 365.35 }, 
+  { "ST_t-channel_antitop_4f" , 80.95 },
+  { "ST_t-channel_top_4f"     , 136.02 },
+  { "ST_tW_antitop_5f"                  , 35.85 },
+  { "ST_tW_top_5f"                      , 35.85 },
+  { "WW" , 75.88 },
+  { "WZ" , 27.57 },
+  { "ZZ" , 12.14 }, 
+  { "GluGluHToTauTau_M125" , 48.58*0.0627 },
+  { "SUSYGluGluToHToTauTau" , 48.58*0.0627 },
+  { "VBFHToTauTau_M125"    , 3.782*0.0627 },
   { "EWKWMinus2Jets_WToLNu_M-50" , 23.24 },
   { "EWKWPlus2Jets_WToLNu_M-50" , 29.59 },
   { "WGToLNuG"    , 464.4 },
@@ -331,13 +328,13 @@ const map<TString, int> n_events_per_sample = {
   {"DY2JetsToLL_M-50"    , 9790490},
   {"DY3JetsToLL_M-50"    , 6897933},
   {"DY4JetsToLL_M-50"    , 4346952},
-  {"TTTo2L2Nu"        , 50669657999},//960752},
+  {"TTTo2L2Nu"        , 960752},
   {"TTToHadronic"     , 41729120},
   {"TTToSemiLeptonic" , 41221873},
-  {"ST_t-channel_top_4f"     , 5982064},
-  {"ST_t-channel_antitop_4f" , 3675910},
-  {"ST_tW_top_5f"            , 7794186},
-  {"ST_tW_antitop_5f"        , 7977430},
+  {"ST_t-channel_top_4f"     , 3675910},
+  {"ST_t-channel_antitop_4f" , 5982064},
+  {"ST_tW_top_5f"            , 7977430},
+  {"ST_tW_antitop_5f"        , 7794186},
   {"WToTauNu_M-200"         , 2000000},
   {"WToTauNu_M-200_jesUp"   , 2000000},
   {"WToTauNu_M-200_jesDown" , 2000000},
@@ -356,7 +353,7 @@ const map<TString, int> n_events_per_sample = {
   {"WToMuNu_M-200_muDown"   , 1953601},
   {"WToMuNu_M-200_uesUp"    , 1953601},
   {"WToMuNu_M-200_uesDown"  , 1953601},
-  {"GluGluHToTauTau_M125", 121801800},
+  {"GluGluHToTauTau_M125", 12180180},
   {"VBFHToTauTau_M125", 2977152},
 };
 
