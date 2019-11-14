@@ -142,7 +142,7 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
   TString output_dir = "test/NTuples_"+channel+"_" + era;
   gSystem -> Exec("mkdir " + output_dir);
 
-  TFile* ff_file = TFile::Open("/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_9_4_9/src/HTTutilities/Jet2TauFakes/data/SM2017/tight/vloose/mt/fakeFactors.root");
+  TFile* ff_file = TFile::Open("/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_10_2_16/src/HTTutilities/Jet2TauFakes/data/Jet2TauFakesFiles-"+era+"-SM"+era+"/SM"+era+"/tight/vloose/mt/fakeFactors.root");
   FakeFactor* ff = (FakeFactor*)ff_file->Get("ff_comb");
   ff_file->Close();
   TFile* fake_frac_file = TFile::Open("/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_10_2_15_patch2/src/DesyTauAnalyses/NTupleMaker/data/FakeFractions_mvis-njetsbinned.root");
