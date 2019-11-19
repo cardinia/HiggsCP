@@ -8,10 +8,13 @@
 #include "TH2.h"
 #include "TList.h"
 #include "TSystem.h"
+#include "RooWorkspace.h"
+#include "RooFunctor.h"
 #include "settings_for_eras_newNTuples.h"
 #include "HTTutilities/Jet2TauFakes/interface/FakeFactor.h"
 
 bool applyPreselection = true;
+bool FFfromIC = true;
 
 void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
   if(channel!="mt"&&channel!="et"){
@@ -83,7 +86,7 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
     //samples_map[channel + "-NOMINAL_ntuple_VBFHWW"   ] = VBFHToWW_2017; 
     //samples_map[channel + "-NOMINAL_ntuple_ttH"      ] = ttH_2017; 
       
-    input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_9_4_9/src/DesyTauAnalyses/NTupleMaker/test/mutau/Oleg";
+    input_dir="/nfs/dust/cms/user/filatovo/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/SynchNTuples_v2/";
   }  
   else if(era == "2016"){
     xsec_map    = &xsec_map_2016;
@@ -142,17 +145,35 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
   TString output_dir = "test/NTuples_"+channel+"_" + era;
   gSystem -> Exec("mkdir " + output_dir);
 
-  TFile* ff_file = TFile::Open("/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_10_2_16/src/HTTutilities/Jet2TauFakes/data/Jet2TauFakesFiles-"+era+"-SM"+era+"/SM"+era+"/tight/vloose/mt/fakeFactors.root");
+   TH2D* h_ff_QCD=NULL; 
+  TH2D* h_ff_W=NULL;   
+  TH2D* h_ff_tt=NULL;  
+  if(!FFfromIC){
+    TFile* fake_frac_file = TFile::Open("/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_10_2_15_patch2/src/DesyTauAnalyses/NTupleMaker/data/FakeFractions_mvis-njetsbinned.root");
+    h_ff_QCD = (TH2D*)fake_frac_file->Get("ff_QCD");
+    h_ff_W   = (TH2D*)fake_frac_file->Get("ff_W");
+    h_ff_tt  = (TH2D*)fake_frac_file->Get("ff_tt");
+    h_ff_QCD->SetDirectory(0);
+    h_ff_W->SetDirectory(0);
+    h_ff_tt->SetDirectory(0);
+    fake_frac_file->Close();
+
+  }
+  TFile* ff_file;
+  if(!FFfromIC)ff_file = TFile::Open("/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_10_2_16/src/HTTutilities/Jet2TauFakes/data/Jet2TauFakesFiles-"+era+"-SM"+era+"/SM"+era+"/tight/vloose/mt/fakeFactors.root");
+  else ff_file = TFile::Open("/afs/cern.ch/work/d/dwinterb/public/fake_factors_cpdecay/fakefactors_ws_"+era+".root");
   FakeFactor* ff = (FakeFactor*)ff_file->Get("ff_comb");
-  ff_file->Close();
-  TFile* fake_frac_file = TFile::Open("/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_10_2_15_patch2/src/DesyTauAnalyses/NTupleMaker/data/FakeFractions_mvis-njetsbinned.root");
-  TH2D* h_ff_QCD = (TH2D*)fake_frac_file->Get("ff_QCD");
-  TH2D* h_ff_W   = (TH2D*)fake_frac_file->Get("ff_W");
-  TH2D* h_ff_tt  = (TH2D*)fake_frac_file->Get("ff_tt");
-  h_ff_QCD->SetDirectory(0);
-  h_ff_W->SetDirectory(0);
-  h_ff_tt->SetDirectory(0);
-  fake_frac_file->Close();
+  
+  std::shared_ptr<RooWorkspace> ff_ws_;
+  std::map<std::string, std::shared_ptr<RooFunctor>> fns_;
+
+  if(FFfromIC){
+    ff_ws_ = std::shared_ptr<RooWorkspace>((RooWorkspace*)gDirectory->Get("w"));
+  cout << "HI" <<endl;
+
+    fns_["ff_mt_medium_dmbins"] = std::shared_ptr<RooFunctor>(ff_ws_->function("ff_mt_medium_dmbins")->functor(ff_ws_->argSet("pt,dm,njets,m_pt,os,met,mt,m_iso,pass_single,mvis")));
+  }
+  cout << "HI" <<endl;
 
   ///////////////////////////
   ///  Loop over all samples  
@@ -212,6 +233,8 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
       Float_t ff_nom;
       Float_t ff_sys;
       Float_t byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2;
+      Float_t met;
+      Int_t os;
 
       //branches for preselection
       inTree->SetBranchAddress("iso_1",&iso_1); 
@@ -247,6 +270,8 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
       inTree->SetBranchAddress("m_vis",&m_vis);      
       inTree->SetBranchAddress("tau_decay_mode_2",&tau_decay_mode_2); 
       inTree->SetBranchAddress("byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2",&byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2);      
+      inTree->SetBranchAddress("met",&met);      
+      inTree->SetBranchAddress("os",&os);      
 
       outFile->cd();
       TTree *currentTree = new TTree(subsample,"temporary tree");
@@ -326,24 +351,38 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
 
 	if(mva17_2<0.5){
 	  //FF method: the input variables are stored in an array, the order MUST be (tau pt, tau decay mode, njets, visible mass, muon isolation, ff_QCD, ff_W, ff_tt)
-	  int bin=h_ff_QCD->FindBin(m_vis,njets);
-	  std::vector<string> inputNames( ff->inputs());
-	  std::vector<double> inputs={pt_2,                                  
-				      static_cast<double>(tau_decay_mode_2), 
-				      static_cast<double>(njets),            
-				      m_vis,                                 
-				      mt_1,                                  
-				      iso_1,                                 
-				      h_ff_QCD -> GetBinContent(bin),
-				      h_ff_W   -> GetBinContent(bin),
-				      h_ff_tt  -> GetBinContent(bin)};
-
+	  if(!FFfromIC){
+	    int bin=h_ff_QCD->FindBin(m_vis,njets);
+	    std::vector<string> inputNames( ff->inputs());
+	    std::vector<double> inputs={pt_2,                                  
+					static_cast<double>(tau_decay_mode_2), 
+					static_cast<double>(njets),            
+					m_vis,                                 
+					mt_1,                                  
+					iso_1,                                 
+					h_ff_QCD -> GetBinContent(bin),
+					h_ff_W   -> GetBinContent(bin),
+					h_ff_tt  -> GetBinContent(bin)};
+	    
 	    if(abs(1-(inputs[6]+inputs[7]+inputs[8]))>1e-5){
-	    cout << "ERROR: " << inputs[6]+inputs[7]+inputs[8] << "!=1 : ";
-	    for(auto input: inputs) cout<< input << " ";
-	    cout << endl;
+	      cout << "ERROR: " << inputs[6]+inputs[7]+inputs[8] << "!=1 : ";
+	      for(auto input: inputs) cout<< input << " ";
+	      cout << endl;
+	    }
+	    ff_nom = ff->value(inputs);
+	  }else{
+	    auto args = std::vector<double>{pt_2,
+					    static_cast<double>(tau_decay_mode_2),
+					    static_cast<double>(njets),
+					    pt_1,
+					    static_cast<double>(os),
+					    met,
+					    mt_1,
+					    iso_1,
+					    static_cast<double>(singleLepTrigger),
+					    m_vis};
+	    double ff_nom = fns_["ff_mt_medium_dmbins"]->eval(args.data());
 	  }
-	  ff_nom = ff->value(inputs);
 	}
 	ff_sys = ff_nom; // TO DO: fix systematics
 
