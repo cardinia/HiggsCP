@@ -14,7 +14,7 @@
 #include "HTTutilities/Jet2TauFakes/interface/FakeFactor.h"
 
 bool applyPreselection = true;
-bool FFfromIC = true;
+bool DeepTau = true;
 
 void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
   if(channel!="mt"&&channel!="et"){
@@ -77,8 +77,8 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
     samples_map[channel + "-NOMINAL_ntuple_TT"       ] = TTbar_2017;  		
     samples_map[channel + "-NOMINAL_ntuple_SingleTop"] = SingleTop_2017;  	
     samples_map[channel + "-NOMINAL_ntuple_VV"       ] = Diboson_2017;  		
-    samples_map[channel + "-NOMINAL_ntuple_ggH"      ] = GluGluHToTauTau_2017; 	
-    samples_map[channel + "-NOMINAL_ntuple_VBF"      ] = VBFHToTauTau_2017;
+    samples_map[channel + "-NOMINAL_ntuple_ggH"      ] = GluGluHToUncorrTauTau_2017; 	
+    samples_map[channel + "-NOMINAL_ntuple_VBF"      ] = VBFHToUncorrTauTau_2017;
     //samples_map[channel + "-NOMINAL_ntuple_CPodd"    ] = SUSYGluGluToHToTauTau_2017;
     //samples_map[channel + "-NOMINAL_ntuple_ZH"       ] = ZHToTauTau_2017; 
     //samples_map[channel + "-NOMINAL_ntuple_WH"       ] = WHToTauTau_2017; 
@@ -86,7 +86,7 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
     //samples_map[channel + "-NOMINAL_ntuple_VBFHWW"   ] = VBFHToWW_2017; 
     //samples_map[channel + "-NOMINAL_ntuple_ttH"      ] = ttH_2017; 
       
-    input_dir="/nfs/dust/cms/user/filatovo/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/SynchNTuples_v2/";
+    input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/";
   }  
   else if(era == "2016"){
     xsec_map    = &xsec_map_2016;
@@ -142,13 +142,13 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
   double neventsDY3Jets = getNEventsProcessed(input_dir,process_map->at("DY3Jets"));
   double neventsDY4Jets = getNEventsProcessed(input_dir,process_map->at("DY4Jets"));
 
-  TString output_dir = "test/NTuples_"+channel+"_" + era;
+  TString output_dir = "test_v2/NTuples_"+channel+"_" + era;
   gSystem -> Exec("mkdir " + output_dir);
 
    TH2D* h_ff_QCD=NULL; 
   TH2D* h_ff_W=NULL;   
   TH2D* h_ff_tt=NULL;  
-  if(!FFfromIC){
+  if(!DeepTau){
     TFile* fake_frac_file = TFile::Open("/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_10_2_15_patch2/src/DesyTauAnalyses/NTupleMaker/data/FakeFractions_mvis-njetsbinned.root");
     h_ff_QCD = (TH2D*)fake_frac_file->Get("ff_QCD");
     h_ff_W   = (TH2D*)fake_frac_file->Get("ff_W");
@@ -160,20 +160,17 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
 
   }
   TFile* ff_file;
-  if(!FFfromIC)ff_file = TFile::Open("/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_10_2_16/src/HTTutilities/Jet2TauFakes/data/Jet2TauFakesFiles-"+era+"-SM"+era+"/SM"+era+"/tight/vloose/mt/fakeFactors.root");
-  else ff_file = TFile::Open("/afs/cern.ch/work/d/dwinterb/public/fake_factors_cpdecay/fakefactors_ws_"+era+".root");
+  if(!DeepTau)ff_file = TFile::Open("/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_10_2_16/src/HTTutilities/Jet2TauFakes/data/Jet2TauFakesFiles-"+era+"-SM"+era+"/SM"+era+"/tight/vloose/mt/fakeFactors.root");
+  else ff_file = TFile::Open("/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/data/fake_factors_cpdecay/fakefactors_ws_"+era+".root");
   FakeFactor* ff = (FakeFactor*)ff_file->Get("ff_comb");
   
   std::shared_ptr<RooWorkspace> ff_ws_;
   std::map<std::string, std::shared_ptr<RooFunctor>> fns_;
 
-  if(FFfromIC){
+  if(DeepTau){
     ff_ws_ = std::shared_ptr<RooWorkspace>((RooWorkspace*)gDirectory->Get("w"));
-  cout << "HI" <<endl;
-
     fns_["ff_mt_medium_dmbins"] = std::shared_ptr<RooFunctor>(ff_ws_->function("ff_mt_medium_dmbins")->functor(ff_ws_->argSet("pt,dm,njets,m_pt,os,met,mt,m_iso,pass_single,mvis")));
   }
-  cout << "HI" <<endl;
 
   ///////////////////////////
   ///  Loop over all samples  
@@ -211,6 +208,8 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
       float againstElectronTightMVA6_2;
       bool singleLepTrigger;
       bool xTrigger;
+      bool trg_singlemuon;
+      bool trg_mutaucross;
       //end declaration preselection variables
 
       int gen_noutgoing;
@@ -236,6 +235,14 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
       Float_t met;
       Int_t os;
 
+      //DeepTau variables
+      Float_t byTightDeepTau2017v2p1VSmu_2;
+      Float_t byVLooseDeepTau2017v2p1VSe_2;
+      Float_t byVLooseDeepTau2017v2p1VSmu_2;
+      Float_t byTightDeepTau2017v2p1VSe_2;
+      Float_t byVVVLooseDeepTau2017v2p1VSjet_2;
+      Float_t byMediumDeepTau2017v2p1VSjet_2;
+
       //branches for preselection
       inTree->SetBranchAddress("iso_1",&iso_1); 
       inTree->SetBranchAddress("extraelec_veto",&extraelec_veto);
@@ -252,6 +259,8 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
       inTree->SetBranchAddress("againstElectronTightMVA6_2",&againstElectronTightMVA6_2);
       inTree->SetBranchAddress("singleLepTrigger",&singleLepTrigger);
       inTree->SetBranchAddress("xTrigger",&xTrigger);
+      inTree->SetBranchAddress("trg_singlemuon",&trg_singlemuon);
+      inTree->SetBranchAddress("trg_mutaucross",&trg_mutaucross);
 
       //branches for stichting
       inTree->SetBranchAddress("gen_noutgoing",&gen_noutgoing);
@@ -272,6 +281,14 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
       inTree->SetBranchAddress("byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2",&byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2);      
       inTree->SetBranchAddress("met",&met);      
       inTree->SetBranchAddress("os",&os);      
+
+      //DeepTua branches
+      inTree->SetBranchAddress("byTightDeepTau2017v2p1VSmu_2",&byTightDeepTau2017v2p1VSmu_2);      
+      inTree->SetBranchAddress("byVLooseDeepTau2017v2p1VSe_2",&byVLooseDeepTau2017v2p1VSe_2);      
+      inTree->SetBranchAddress("byVLooseDeepTau2017v2p1VSmu_2",&byVLooseDeepTau2017v2p1VSmu_2);      
+      inTree->SetBranchAddress("byTightDeepTau2017v2p1VSe_2",&byTightDeepTau2017v2p1VSe_2);      
+      inTree->SetBranchAddress("byVVVLooseDeepTau2017v2p1VSjet_2",&byVVVLooseDeepTau2017v2p1VSjet_2);      
+      inTree->SetBranchAddress("byMediumDeepTau2017v2p1VSjet_2",&byMediumDeepTau2017v2p1VSjet_2);      
 
       outFile->cd();
       TTree *currentTree = new TTree(subsample,"temporary tree");
@@ -329,29 +346,31 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
 	    if( iso_1 > 0.15 )               continue;
 	    else if( pt_1 < 20 )                  continue; 
 	    else if( pt_2 < 30 )                  continue; 
-	    //else if( mt_1>50 )                    continue;// kept for W+jets reweighting
-	    else if( againstMuonTight3_2 < 0.5 )  continue;
-	    else if( againstElectronVLooseMVA6_2<0.5) continue;
+	    else if( againstMuonTight3_2 < 0.5 && !DeepTau)  continue;
+	    else if( againstElectronVLooseMVA6_2<0.5 && !DeepTau) continue;
+	    else if( byTightDeepTau2017v2p1VSmu_2 < 0.5 && DeepTau)  continue;
+	    else if( byVLooseDeepTau2017v2p1VSe_2 <0.5 && DeepTau) continue;
 	  }else{
 	    if( iso_1 > 0.15 )               continue;
 	    else if( pt_1 < 20 )                  continue; 
 	    else if( pt_2 < 30 )                  continue; 
-	    //else if( mt_1>50 )                    continue;// kept for W+jets reweighting
-	    else if( againstMuonLoose3_2 < 0.5 )  continue;
-	    else if( againstElectronTightMVA6_2<0.5) continue;
+	    else if( againstMuonLoose3_2 < 0.5 && !DeepTau)  continue;
+	    else if( againstElectronTightMVA6_2<0.5 && !DeepTau) continue;
+	    else if( byVLooseDeepTau2017v2p1VSmu_2 < 0.5 && DeepTau)  continue;
+	    else if( byTightDeepTau2017v2p1VSe_2 <0.5 && DeepTau) continue;
 	  }
 	  if( extraelec_veto > 0.5 )       continue;
 	  else if( extramuon_veto > 0.5 )       continue;
 	  else if( dilepton_veto  > 0.5 )       continue;
-	  else if( byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 < 0.5) continue;
-	  else if( singleLepTrigger < 0.5&&xTrigger<0.5 ) continue;
+	  //else if( mt_1>50 )                    continue;// kept for W+jets reweighting
+	  else if( byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 < 0.5 && !DeepTau) continue;
+	  else if( byVVVLooseDeepTau2017v2p1VSjet_2 < 0.5 && DeepTau) continue;
+	  else if( trg_singlemuon < 0.5 && trg_mutaucross < 0.5 ) continue;
 	  
 	}
-	ff_nom=1.;
-
-	if(mva17_2<0.5){
+	
+	if(mva17_2<0.5&&!DeepTau){
 	  //FF method: the input variables are stored in an array, the order MUST be (tau pt, tau decay mode, njets, visible mass, muon isolation, ff_QCD, ff_W, ff_tt)
-	  if(!FFfromIC){
 	    int bin=h_ff_QCD->FindBin(m_vis,njets);
 	    std::vector<string> inputNames( ff->inputs());
 	    std::vector<double> inputs={pt_2,                                  
@@ -370,7 +389,8 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
 	      cout << endl;
 	    }
 	    ff_nom = ff->value(inputs);
-	  }else{
+	}
+	else if (byMediumDeepTau2017v2p1VSjet_2<0.5&&DeepTau){
 	    auto args = std::vector<double>{pt_2,
 					    static_cast<double>(tau_decay_mode_2),
 					    static_cast<double>(njets),
@@ -381,9 +401,9 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
 					    iso_1,
 					    static_cast<double>(singleLepTrigger),
 					    m_vis};
-	    double ff_nom = fns_["ff_mt_medium_dmbins"]->eval(args.data());
-	  }
-	}
+	    ff_nom = fns_["ff_mt_medium_dmbins"]->eval(args.data());
+	}else ff_nom=1.;
+	
 	ff_sys = ff_nom; // TO DO: fix systematics
 
 	xsec_lumi_weight = xsec*luminosity/nevents;

@@ -95,6 +95,8 @@ const vector<TString> VBFHToTauTau_2017    = { "VBFHToTauTau_M125"
 					       /* "ZHToTauTau_M125_13TeV_powheg_pythia8",
 					       "WplusHToTauTau_M125_13TeV_powheg_pythia8",
 					       "WminusHToTauTau_M125_13TeV_powheg_pythia8"*/}; 
+const vector<TString> GluGluHToUncorrTauTau_2017 = { "GluGluHToTauTauUncorrDecays_M125" };
+const vector<TString> VBFHToUncorrTauTau_2017 = { "VBFHToTauTauUncorrDecays_M125" };
 
 //the 2017 samples below seem not needed for mu-tau
 const vector<TString> ZHToTauTau_2017      = { "ZHToTauTau_M125" };//seems absent for mutau
@@ -200,6 +202,8 @@ const map<TString, double> xsec_map_2017 = {
   { "GluGluHToTauTau_M125" , 48.58*0.0627 },
   { "SUSYGluGluToHToTauTau" , 48.58*0.0627 },
   { "VBFHToTauTau_M125"    , 3.782*0.0627 },
+  { "GluGluHToTauTauUncorrDecays_M125" , 48.58*0.0627 },
+  { "VBFHToTauTauUncorrDecays_M125"    , 3.782*0.0627 },
   { "EWKWMinus2Jets_WToLNu_M-50" , 23.24 },
   { "EWKWPlus2Jets_WToLNu_M-50" , 29.59 },
   { "WGToLNuG"    , 464.4 },
