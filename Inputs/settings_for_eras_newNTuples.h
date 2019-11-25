@@ -21,26 +21,28 @@ const vector<TString> EmbeddedElTau_2018        = { "EmbeddingElTau_Run2018A",
 						    "EmbeddingElTau_Run2018B",
 						    "EmbeddingElTau_Run2018C",
 						    "EmbeddingElTau_Run2018D"};
-const vector<TString> DYJets_2018          = { "DY1JetsToLL_M-50_TuneCP5_13TeV_madgraphMLM_pythia8" ,
-                                               "DY2JetsToLL_M-50_TuneCP5_13TeV_madgraphMLM_pythia8" ,
-                                               "DY3JetsToLL_M-50_TuneCP5_13TeV_madgraphMLM_pythia8" ,
-                                               "DY4JetsToLL_M-50_TuneCP5_13TeV_madgraphMLM_pythia8" ,
-                                               "DYJetsToLL_M-50_TuneCP5_13TeV_madgraphMLM_pythia8"};
-const vector<TString> WJets_2018           = { "W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8" ,
-                                               "W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8" ,
-                                               "W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8" ,
-                                               "W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8" ,
-                                               "WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8" };
-const vector<TString> TTbar_2018           = { "TTTo2L2Nu_TuneCP5_13TeV_powheg_pythia8" ,
-                                               "TTToHadronic_TuneCP5_13TeV_powheg_pythia8" ,
-                                               "TTToSemiLeptonic_TuneCP5_13TeV_powheg_pythia8" };
-const vector<TString> SingleTop_2018       = { "ST_t-channel_antitop_4f_inclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8" ,
-                                               "ST_t-channel_top_4f_inclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8" ,
-                                               "ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8" ,
-                                               "ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8" };
-const vector<TString> Diboson_2018         = { "WW_TuneCP5_13TeV-pythia8" ,
-                                               "WZ_TuneCP5_13TeV-pythia8" ,
-                                               "ZZ_TuneCP5_13TeV-pythia8" };
+const vector<TString> DYJets_2018          = { "DY1JetsToLL_M-50" ,
+                                               "DY2JetsToLL_M-50" ,
+                                               "DY3JetsToLL_M-50" ,
+                                               "DY4JetsToLL_M-50" ,
+                                               "DYJetsToLL_M-50"};
+const vector<TString> WJets_2018           = { "W1JetsToLNu" ,
+                                               "W2JetsToLNu" ,
+                                               "W3JetsToLNu" ,
+                                               "W4JetsToLNu" ,
+                                               "WJetsToLNu" };
+const vector<TString> TTbar_2018           = { "TTTo2L2Nu" ,
+                                               "TTToHadronic" ,
+                                               "TTToSemiLeptonic" };
+const vector<TString> SingleTop_2018       = { "ST_t-channel_antitop_4f" ,
+                                               "ST_t-channel_top_4f" ,
+                                               "ST_tW_antitop_5f" ,
+                                               "ST_tW_top_5f" };
+const vector<TString> Diboson_2018         = { "WW" ,
+                                               "WZ" ,
+                                               "ZZ" };
+const vector<TString> GluGluHToTauTau_2018 = { "GluGluHToTauTau_M125" };
+const vector<TString> VBFHToTauTau_2018    = { "VBFHToTauTau_M125"}; 
 
 // 2017
 const vector<TString> SingleMuon_Run2017       = {"SingleMuon_Run2017B",
@@ -155,26 +157,28 @@ const vector<TString> ttH_2016             = { "ttHJetToTT_M125" };
 // Cross-section map
 // 2018 (taken from 2018, have to be checked!)
 const map<TString, double> xsec_map_2018 = {
-   { "DYJetsToLL_M-50_TuneCP5_13TeV_madgraphMLM_pythia8"  , 5765.4*1.079 }, // 5765.4 is the old NNLO xsec - it has been updated to 6225.42 - has been decided to keep the old value for consistency
-   { "DY1JetsToLL_M-50_TuneCP5_13TeV_madgraphMLM_pythia8" , 877.8*1.079 },
-   { "DY2JetsToLL_M-50_TuneCP5_13TeV_madgraphMLM_pythia8" , 304.4*1.079 },
-   { "DY3JetsToLL_M-50_TuneCP5_13TeV_madgraphMLM_pythia8" , 111.5*1.079 },
-   { "DY4JetsToLL_M-50_TuneCP5_13TeV_madgraphMLM_pythia8" , 44.03*1.079 },
-   { "WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8"  , 52940.0*1.162 },
-   { "W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8" , 8104.0*1.162 },
-   { "W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8" , 2793.0*1.162 },
-   { "W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8" , 992.5*1.162 },
-   { "W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8" , 544.3*1.162 },
-   { "TTTo2L2Nu_TuneCP5_13TeV_powheg_pythia8"        , 88.29 },
-   { "TTToHadronic_TuneCP5_13TeV_powheg_pythia8"     , 377.96 },
-   { "TTToSemiLeptonic_TuneCP5_13TeV_powheg_pythia8" , 365.35 },
-   { "ST_t-channel_antitop_4f_inclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8" , 80.95 },
-   { "ST_t-channel_top_4f_inclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8"     , 136.02 },
-   { "ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8"                  , 35.85 },
-   { "ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8"                      , 35.85 },
-   { "WW_TuneCP5_13TeV-pythia8" , 75.88 },
-   { "WZ_TuneCP5_13TeV-pythia8" , 27.57 },
-   { "ZZ_TuneCP5_13TeV-pythia8" , 12.14 }
+   { "DYJetsToLL_M-50"  , 6077.22 },
+   { "DY1JetsToLL_M-50" , 877.8*1.079 },
+   { "DY2JetsToLL_M-50" , 304.4*1.079 },
+   { "DY3JetsToLL_M-50" , 111.5*1.079 },
+   { "DY4JetsToLL_M-50" , 44.03*1.079 },
+   { "WJetsToLNu"  , 52940.0*1.162 },
+   { "W1JetsToLNu" , 8104.0*1.162 },
+   { "W2JetsToLNu" , 2793.0*1.162 },
+   { "W3JetsToLNu" , 992.5*1.162 },
+   { "W4JetsToLNu" , 544.3*1.162 },
+   { "TTTo2L2Nu"        , 88.29 },
+   { "TTToHadronic"     , 377.96 },
+   { "TTToSemiLeptonic" , 365.35 },
+   { "ST_t-channel_antitop_4f" , 80.95 },
+   { "ST_t-channel_top_4f"     , 136.02 },
+   { "ST_tW_antitop_5f"        , 35.85 },
+   { "ST_tW_top_5f"            , 35.85 },
+   { "WW" , 75.88 },
+   { "WZ" , 27.57 },
+   { "ZZ" , 12.14 },
+   { "GluGluHToTauTau_M125" , 48.58*0.0627 },
+   { "VBFHToTauTau_M125"    , 3.782*0.0627 }
 };
 // 2017 (checked ! - reference is https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2017 )
 
@@ -263,16 +267,16 @@ const map<TString, double> xsec_map_2016 = {
 // **************************************************************************************************
 // maps short name to filenames - needed for stitching
 const map<TString , TString> process_map_2018 = {
-  { "WJets"   , "WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8"},
-  { "W1Jets"  , "W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8"},
-  { "W2Jets"  , "W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8"},
-  { "W3Jets"  , "W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8"},
-  { "W4Jets"  , "W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8"},
-  { "DYJets"  , "DYJetsToLL_M-50_TuneCP5_13TeV_madgraphMLM_pythia8"},
-  { "DY1Jets" , "DY1JetsToLL_M-50_TuneCP5_13TeV_madgraphMLM_pythia8"},
-  { "DY2Jets" , "DY2JetsToLL_M-50_TuneCP5_13TeV_madgraphMLM_pythia8"},
-  { "DY3Jets" , "DY3JetsToLL_M-50_TuneCP5_13TeV_madgraphMLM_pythia8"},
-  { "DY4Jets" , "DY4JetsToLL_M-50_TuneCP5_13TeV_madgraphMLM_pythia8"},
+  { "WJets"   , "WJetsToLNu"},
+  { "W1Jets"  , "W1JetsToLNu"},
+  { "W2Jets"  , "W2JetsToLNu"},
+  { "W3Jets"  , "W3JetsToLNu"},
+  { "W4Jets"  , "W4JetsToLNu"},
+  { "DYJets"  , "DYJetsToLL_M-50"},
+  { "DY1Jets" , "DY1JetsToLL_M-50"},
+  { "DY2Jets" , "DY2JetsToLL_M-50"},
+  { "DY3Jets" , "DY3JetsToLL_M-50"},
+  { "DY4Jets" , "DY4JetsToLL_M-50"},
 };
 
 
@@ -302,7 +306,7 @@ const map<TString , TString> process_map_2016 = {
   { "DY4Jets" , "DY4JetsToLL_M-50"},
 };
 
-const map<TString, int> n_events_per_sample = {
+const map<TString, int> n_events_per_sample_2017 = {
   {"WJetsToLNu"  , 74635450},
   {"W1JetsToLNu" , 54988117},
   {"W2JetsToLNu" , 32368249},
@@ -360,6 +364,62 @@ const map<TString, int> n_events_per_sample = {
 //  {"GluGluHToTauTau_M125", 12180180},
 //  {"VBFHToTauTau_M125", 2977152},
 };
+const map<TString, int> n_events_per_sample_2016 = {
+{"WJetsToLNu"  , 86916455},
+{"W1JetsToLNu" , 45283121},
+{"W2JetsToLNu" , 30374504},
+{"W3JetsToLNu" , 39501912},
+{"W4JetsToLNu" , 20824737},
+{"WJetsToLNu_HT-70To100"    , 10020533},
+{"WJetsToLNu_HT-100To200"   , 78043017},
+{"WJetsToLNu_HT-200To400"   , 38984322},
+{"WJetsToLNu_HT-400To600"   , 7759701},
+{"WJetsToLNu_HT-600To800"   , 18687480},
+{"WJetsToLNu_HT-800To1200"  , 7830536},
+{"WJetsToLNu_HT-1200To2500" , 6872441},
+{"WJetsToLNu_HT-2500ToInf"  , 2637821},
+{"ZJetsToNuNu_HT-100To200"   , 24272858},
+{"ZJetsToNuNu_HT-200To400"   , 24761211},
+{"ZJetsToNuNu_HT-400To600"   , 9862869},
+{"ZJetsToNuNu_HT-600To800"   , 5766322},
+{"ZJetsToNuNu_HT-800To1200"  , 2170137},
+{"ZJetsToNuNu_HT-1200To2500" , 513471},
+{"ZJetsToNuNu_HT-2500ToInf"  , 405030},
+{"ZZ" , 1988098},
+{"WW" , 7982180},
+{"WZ" , 3997571},
+{"DYJetsToLL_M-10to50" , 35114961},
+{"DYJetsToLL_M-50"     , 146280395},
+{"DY1JetsToLL_M-50"    , 63730337},
+{"DY2JetsToLL_M-50"    , 19879279},
+{"DY3JetsToLL_M-50"    , 5857441},
+{"DY4JetsToLL_M-50"    , 4197868},
+{"TT" , 76915549},
+{"ST_t-channel_top_4f_inclusiveDecays"     , 67105876},
+{"ST_t-channel_antitop_4f_inclusiveDecays" , 38811017},
+{"ST_tW_top_5f_inclusiveDecays"            , 6952830},
+{"ST_tW_antitop_5f_inclusiveDecays"        , 6933094},
+{"WToTauNu_M-200"         , 999130},
+{"WToTauNu_M-200_jesUp"   , 999130},
+{"WToTauNu_M-200_jesDown" , 999130},
+{"WToTauNu_M-200_uesUp"   , 999130},
+{"WToTauNu_M-200_uesDown" , 999130},
+{"WToTauNu_M-200_taues_1prong0pizerosUp"       , 999130},
+{"WToTauNu_M-200_taues_1prong0pizerosDown"     , 999130},
+{"WToTauNu_M-200_taues_1prongUpTo4pizerosUp"   , 999130},
+{"WToTauNu_M-200_taues_1prongUpTo4pizerosDown" , 999130},
+{"WToTauNu_M-200_taues_3prong0pizerosUp"       , 999130},
+{"WToTauNu_M-200_taues_3prong0pizerosDown"     , 999130},
+{"WToMuNu_M-200"          , 996128},
+{"WToMuNu_M-200_jesUp"    , 996128},
+{"WToMuNu_M-200_jesDown"  , 996128},
+{"WToMuNu_M-200_muUp"     , 996128},
+{"WToMuNu_M-200_muDown"   , 996128},
+{"WToMuNu_M-200_uesUp"    , 996128},
+{"WToMuNu_M-200_uesDown"  , 996128},
+//  {"GluGluHToTauTau_M125", 12180180},
+//  {"VBFHToTauTau_M125", 2977152},
+};
 
 template<typename KeyTemp, typename ValTemp>
 std::vector<KeyTemp> extract_keys(std::map<KeyTemp, ValTemp> const& input_map) {
@@ -370,12 +430,15 @@ std::vector<KeyTemp> extract_keys(std::map<KeyTemp, ValTemp> const& input_map) {
   return keys;
 }
 
-double getNEventsProcessed(TString input_dir, TString sample)
+double getNEventsProcessed(TString input_dir, TString sample, TString Year="2017")
 {
   double nevents;
-  vector<TString> keys_list = extract_keys(n_events_per_sample);
-  if(std::find(keys_list.begin(), keys_list.end(), sample) != keys_list.end()){
-    nevents = n_events_per_sample.at(sample);
+  vector<TString> keys_list;
+  if(Year=="2017") keys_list = extract_keys(n_events_per_sample_2017);
+  else keys_list = extract_keys(n_events_per_sample_2016);
+  if((std::find(keys_list.begin(), keys_list.end(), sample) != keys_list.end())&&Year!="2018"){
+    if(Year=="2017") nevents = n_events_per_sample_2017.at(sample);
+    else nevents = n_events_per_sample_2016.at(sample);
   }else if(!sample.Contains("Run")){
     TFile * file = new TFile(input_dir+"/"+sample+".root");
     TH1D * histWeightsH = (TH1D*)file->Get("nWeightedEvents");
@@ -384,7 +447,7 @@ double getNEventsProcessed(TString input_dir, TString sample)
       exit(-1);
     }
     nevents = histWeightsH->GetSumOfWeights();
-      cout << "WARNING: normalization taken from nWeightedEvents, please check! ";
+    if(Year!="2018") cout << "WARNING: normalization taken from nWeightedEvents, please check! ";
     file -> Close();
     delete file;
   }else nevents=0;
