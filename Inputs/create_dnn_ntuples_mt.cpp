@@ -88,8 +88,8 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
     //samples_map[channel + "-NOMINAL_ntuple_ggHWW"    ] = ggHToWW_2017;   
     //samples_map[channel + "-NOMINAL_ntuple_VBFHWW"   ] = VBFHToWW_2017; 
     //samples_map[channel + "-NOMINAL_ntuple_ttH"      ] = ttH_2017; 
-    input_dir="/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2017/SynchNTuples_v3";
-    //input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2017/";
+    //input_dir="/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2017/SynchNTuples_v3";
+    input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2017/";
   }  
   else if(era == "2016"){
     xsec_map    = &xsec_map_2016;
@@ -107,19 +107,19 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
       //samples_map[channel + "-NOMINAL_ntuple_Data"   ] = SingleElectron_Run2016;
       //samples_map[channel + "-NOMINAL_ntuple_Embedded" ] = EmbeddedElTau_2016;
     }
-    samples_map[channel + "-NOMINAL_ntuple_DYJets"   ] = DYJets_2016;
+    //samples_map[channel + "-NOMINAL_ntuple_DY"       ] = DYJets_2016;
     samples_map[channel + "-NOMINAL_ntuple_WJets"    ] = WJets_2016;
-    samples_map[channel + "-NOMINAL_ntuple_TTbar"    ] = TTbar_2016;
+    samples_map[channel + "-NOMINAL_ntuple_TT"       ] = TTbar_2016;
     samples_map[channel + "-NOMINAL_ntuple_SingleTop"] = SingleTop_2016;
-    samples_map[channel + "-NOMINAL_ntuple_Diboson"  ] = Diboson_2016;
+    //samples_map[channel + "-NOMINAL_ntuple_VV"  ] = Diboson_2016;
     samples_map[channel + "-NOMINAL_ntuple_ggH"      ] = GluGluHToTauTau_2016;
-    samples_map[channel + "-NOMINAL_ntuple_VBFH"     ] = VBFHToTauTau_2016;
-    samples_map[channel + "-NOMINAL_ntuple_ZH"       ] = ZHToTauTau_2016;
-    samples_map[channel + "-NOMINAL_ntuple_WH"       ] = WHToTauTau_2016;
-    samples_map[channel + "-NOMINAL_ntuple_ggHWW"    ] = ggHToWW_2016;
-    samples_map[channel + "-NOMINAL_ntuple_VBFHWW"   ] = VBFHToWW_2016;
-    samples_map[channel + "-NOMINAL_ntuple_ttH"      ] = ttH_2016;
-    input_dir="/nfs/dust/cms/user/tlenz/13TeV/2017/CMSSW/2016_legacy/CMSSW_8_0_29/src/DesyTauAnalyses/NTupleMaker/test/HTauTau_EMu_2016/NTuples/ntuples_v5/";
+    samples_map[channel + "-NOMINAL_ntuple_VBF"      ] = VBFHToTauTau_2016;
+    //samples_map[channel + "-NOMINAL_ntuple_ZH"       ] = ZHToTauTau_2016;
+    //samples_map[channel + "-NOMINAL_ntuple_WH"       ] = WHToTauTau_2016;
+    //samples_map[channel + "-NOMINAL_ntuple_ggHWW"    ] = ggHToWW_2016;
+    //samples_map[channel + "-NOMINAL_ntuple_VBFHWW"   ] = VBFHToWW_2016;
+    //samples_map[channel + "-NOMINAL_ntuple_ttH"      ] = ttH_2016;
+    input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2016/";
   
   }
 
@@ -145,7 +145,7 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
   double neventsDY3Jets = getNEventsProcessed(input_dir,process_map->at("DY3Jets"),era);
   double neventsDY4Jets = getNEventsProcessed(input_dir,process_map->at("DY4Jets"),era);
 
-  TString output_dir = "test/NTuples_"+channel+"_" + era;
+  TString output_dir = "nobveto/NTuples_"+channel+"_" + era;
   gSystem -> Exec("mkdir " + output_dir);
 
    TH2D* h_ff_QCD=NULL; 
@@ -204,7 +204,7 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
       float pt_2;
       
       float mva17_2;
-      float mt_1;
+      float puppimt_1;
       float againstMuonTight3_2;
       float againstElectronVLooseMVA6_2;
       float againstMuonLoose3_2;
@@ -235,8 +235,9 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
       Float_t ff_nom;
       Float_t ff_sys;
       Float_t byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2;
-      Float_t met;
+      Float_t puppimet;
       Int_t os;
+      Int_t nbtag;
 
       //DeepTau variables
       Float_t byTightDeepTau2017v2p1VSmu_2;
@@ -255,7 +256,7 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
       inTree->SetBranchAddress("pt_2",&pt_2);
 
       inTree->SetBranchAddress("mva17_2",&mva17_2);
-      inTree->SetBranchAddress("mt_1",&mt_1);
+      inTree->SetBranchAddress("puppimt_1",&puppimt_1);
       inTree->SetBranchAddress("againstMuonTight3_2",&againstMuonTight3_2);
       inTree->SetBranchAddress("againstElectronVLooseMVA6_2",&againstElectronVLooseMVA6_2);
       inTree->SetBranchAddress("againstMuonLoose3_2",&againstMuonLoose3_2);
@@ -282,8 +283,9 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
       inTree->SetBranchAddress("m_vis",&m_vis);      
       inTree->SetBranchAddress("tau_decay_mode_2",&tau_decay_mode_2); 
       inTree->SetBranchAddress("byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2",&byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2);      
-      inTree->SetBranchAddress("met",&met);      
+      inTree->SetBranchAddress("puppimet",&puppimet);      
       inTree->SetBranchAddress("os",&os);      
+      inTree->SetBranchAddress("nbtag",&nbtag);      
 
       //DeepTua branches
       inTree->SetBranchAddress("byTightDeepTau2017v2p1VSmu_2",&byTightDeepTau2017v2p1VSmu_2);      
@@ -364,9 +366,10 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
 	    else if( byTightDeepTau2017v2p1VSe_2 <0.5 && DeepTau) continue;
 	  }
 	  if( extraelec_veto > 0.5 )       continue;
+	  //else if( nbtag!=0 ) continue;
 	  else if( extramuon_veto > 0.5 )       continue;
 	  else if( dilepton_veto  > 0.5 )       continue;
-	  //else if( mt_1>50 )                    continue;// kept for W+jets reweighting
+	  //else if( puppimt_1>50 )                    continue;// kept for W+jets reweighting
 	  else if( byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 < 0.5 && !DeepTau) continue;
 	  else if( byVVVLooseDeepTau2017v2p1VSjet_2 < 0.5 && DeepTau) continue;
 	  else if( trg_singlemuon < 0.5 && trg_mutaucross < 0.5 ) continue;
@@ -381,7 +384,7 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
 					static_cast<double>(tau_decay_mode_2), 
 					static_cast<double>(njets),            
 					m_vis,                                 
-					mt_1,                                  
+					puppimt_1,                                  
 					iso_1,                                 
 					h_ff_QCD -> GetBinContent(bin),
 					h_ff_W   -> GetBinContent(bin),
@@ -400,8 +403,8 @@ void create_dnn_ntuples_mt( TString era = "2017" , TString channel="mt"){
 					    static_cast<double>(njets),
 					    pt_1,
 					    static_cast<double>(os),
-					    met,
-					    mt_1,
+					    puppimet,
+					    puppimt_1,
 					    iso_1,
 					    static_cast<double>(singleLepTrigger),
 					    m_vis};

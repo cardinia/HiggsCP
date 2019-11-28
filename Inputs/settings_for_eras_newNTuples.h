@@ -139,13 +139,29 @@ const vector<TString> EmbeddedMuTau_2016       = { "EmbeddedMuTau_Run2016B" ,
 						   "EmbeddedMuTau_Run2016G" ,
 						   "EmbeddedMuTau_Run2016H" };
 const vector<TString> Embedded_2016        = { "Embedding_Run2016" };
-const vector<TString> DYJets_2016          = { "DY1JetsToLL_M-50" , "DY2JetsToLL_M-50" , "DY3JetsToLL_M-50" , "DY4JetsToLL_M-50" , "DYJetsToLL_M-50" , "DYJetsToLL_M-10to50" , "EWKZ2Jets" };
-const vector<TString> WJets_2016           = { "W1JetsToLNu" , "W2JetsToLNu" , "W3JetsToLNu" , "W4JetsToLNu" , "WJetsToLNu" , "WGToLNuG" , "WGstarToLNuEE" , "WGstarToLNuMuMu" , "EWKWPlus2Jets" , "EWKWMinus2Jet" };
-const vector<TString> TTbar_2016           = { "TTbar" };
-const vector<TString> SingleTop_2016       = { "ST_t-channel_antitop" , "ST_t-channel_top" , "ST_tW_antitop" , "ST_tW_top" };
-const vector<TString> Diboson_2016         = { "VVTo2L2Nu" , "WZJToLLLNu" , "WZTo1L1Nu2Q" , "WZTo1L3Nu" , "WZTo2L2Q" , "ZZTo2L2Q" , "ZZTo4L" , "WWToLNuQQ" };
+const vector<TString> DYJets_2016          = { "DY1JetsToLL_M-50",
+					       "DY2JetsToLL_M-50",
+					       "DY3JetsToLL_M-50",
+					       "DY4JetsToLL_M-50",
+					       "DYJetsToLL_M-50",
+					       "DYJetsToLL_M-10to50"};
+const vector<TString> WJets_2016           = { "W1JetsToLNu",
+					       "W2JetsToLNu", 
+					       "W3JetsToLNu", 
+					       "W4JetsToLNu", 
+					       "WJetsToLNu"};
+const vector<TString> TTbar_2016           = { "TT" };
+const vector<TString> SingleTop_2016       = { "ST_t-channel_antitop_4f", 
+					       "ST_t-channel_top_4f", 
+					       "ST_tW_antitop_5f", 
+					       "ST_tW_top_5f" };
+//const vector<TString> Diboson_2016         = { "VVTo2L2Nu" , "WZJToLLLNu" , "WZTo1L1Nu2Q" , "WZTo1L3Nu" , "WZTo2L2Q" , "ZZTo2L2Q" , "ZZTo4L" , "WWToLNuQQ" };
+const vector<TString> Diboson_2016         = { "WW",
+					       "WZ",
+					       "ZZ"};
 const vector<TString> GluGluHToTauTau_2016 = { "GluGluHToTauTau_M125" };
-const vector<TString> VBFHToTauTau_2016    = { "VBFHToTauTau_M125" , "ZHToTauTau_M125" , "WplusHToTauTau_M125" , "WminusHToTauTau_M125" };
+//const vector<TString> VBFHToTauTau_2016    = { "VBFHToTauTau_M125" , "ZHToTauTau_M125" , "WplusHToTauTau_M125" , "WminusHToTauTau_M125" };
+const vector<TString> VBFHToTauTau_2016    = { "VBFHToTauTau_M125"};
 const vector<TString> ZHToTauTau_2016      = { "ZHToTauTau_M125" };
 const vector<TString> WHToTauTau_2016      = { "WplusHToTauTau_M125" , "WminusHToTauTau_M125" };
 const vector<TString> ggHToWW_2016         = { "GluGluHToWWTo2L2Nu_M125" };
@@ -235,11 +251,11 @@ const map<TString, double> xsec_map_2016 = {
     { "W2JetsToLNu"              , 1.221*3144.5 },
     { "W3JetsToLNu"              , 1.221*954.8 },
     { "W4JetsToLNu"              , 1.221*485.6 },
-    { "TTbar"                    , 831.76 },
-    { "ST_t-channel_antitop"     , 80.95 },
-    { "ST_t-channel_top"         , 136.02 },
-    { "ST_tW_antitop"            , 35.6 },
-    { "ST_tW_top"                , 35.6 },
+    { "TT"                    , 831.76 },
+    { "ST_t-channel_antitop_4f"     , 80.95 },
+    { "ST_t-channel_top_4f"         , 136.02 },
+    { "ST_tW_antitop_5f"            , 35.6 },
+    { "ST_tW_top_5f"                , 35.6 },
     { "VVTo2L2Nu"                , 11.95 },
     { "WWToLNuQQ"                , 49.997 },
     { "WZTo2L2Q"                 , 5.595 },
@@ -248,6 +264,9 @@ const map<TString, double> xsec_map_2016 = {
     { "WZJToLLLNu"               , 5.26 },
     { "ZZTo4L"                   , 1.212 },
     { "ZZTo2L2Q"                 , 3.22 },
+    {"ZZ" , 12.14},
+    {"WW" , 12.14},
+    {"WZ" , 27.6},
     { "WGToLNuG"                 , 178.4 }, // xsdb
     { "WGstarToLNuMuMu"          , 2.793 },
     { "WGstarToLNuEE"            , 3.526 },
@@ -395,10 +414,10 @@ const map<TString, int> n_events_per_sample_2016 = {
 {"DY3JetsToLL_M-50"    , 5857441},
 {"DY4JetsToLL_M-50"    , 4197868},
 {"TT" , 76915549},
-{"ST_t-channel_top_4f_inclusiveDecays"     , 67105876},
-{"ST_t-channel_antitop_4f_inclusiveDecays" , 38811017},
-{"ST_tW_top_5f_inclusiveDecays"            , 6952830},
-{"ST_tW_antitop_5f_inclusiveDecays"        , 6933094},
+{"ST_t-channel_top_4f"     , 67105876},
+{"ST_t-channel_antitop_4f" , 38811017},
+{"ST_tW_top_5f"            , 6952830},
+{"ST_tW_antitop_5f"        , 6933094},
 {"WToTauNu_M-200"         , 999130},
 {"WToTauNu_M-200_jesUp"   , 999130},
 {"WToTauNu_M-200_jesDown" , 999130},
@@ -417,8 +436,8 @@ const map<TString, int> n_events_per_sample_2016 = {
 {"WToMuNu_M-200_muDown"   , 996128},
 {"WToMuNu_M-200_uesUp"    , 996128},
 {"WToMuNu_M-200_uesDown"  , 996128},
-//  {"GluGluHToTauTau_M125", 12180180},
-//  {"VBFHToTauTau_M125", 2977152},
+{"GluGluHToTauTau_M125", 11171000},
+{"VBFHToTauTau_M125", 1499400},
 };
 
 template<typename KeyTemp, typename ValTemp>
