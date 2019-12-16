@@ -43,6 +43,8 @@ const vector<TString> Diboson_2018         = { "WW" ,
                                                "ZZ" };
 const vector<TString> GluGluHToTauTau_2018 = { "GluGluHToTauTau_M125" };
 const vector<TString> VBFHToTauTau_2018    = { "VBFHToTauTau_M125"}; 
+const vector<TString> GluGluHToUncorrTauTau_2018 = { "GluGluHToTauTauUncorrDecays_M125" };
+const vector<TString> VBFHToUncorrTauTau_2018 = { "VBFHToTauTauUncorrDecays_M125" };
 
 // 2017
 const vector<TString> SingleMuon_Run2017       = {"SingleMuon_Run2017B",
@@ -55,11 +57,11 @@ const vector<TString> SingleElectron_Run2017       = {"SingleElectron_Run2017B",
 						      "SingleElectron_Run2017D",
 						      "SingleElectron_Run2017E",
 						      "SingleElectron_Run2017F"};
-const vector<TString> EmbeddedMuTau_2017        = { "EmbeddingMuTau_Run2017B",
-						    "EmbeddingMuTau_Run2017C",
-						    "EmbeddingMuTau_Run2017D",
-						    "EmbeddingMuTau_Run2017E",
-						    "EmbeddingMuTau_Run2017F"};
+const vector<TString> EmbeddedMuTau_2017        = { "EmbeddedMuTau_Run2017B",
+						    "EmbeddedMuTau_Run2017C",
+						    "EmbeddedMuTau_Run2017D",
+						    "EmbeddedMuTau_Run2017E",
+						    "EmbeddedMuTau_Run2017F"};
 const vector<TString> EmbeddedElTau_2017        = { "EmbeddingElTau_Run2017B",
 						    "EmbeddingElTau_Run2017C",
 						    "EmbeddingElTau_Run2017D",
@@ -194,7 +196,9 @@ const map<TString, double> xsec_map_2018 = {
    { "WZ" , 27.57 },
    { "ZZ" , 12.14 },
    { "GluGluHToTauTau_M125" , 48.58*0.0627 },
-   { "VBFHToTauTau_M125"    , 3.782*0.0627 }
+   { "VBFHToTauTau_M125"    , 3.782*0.0627 },
+   { "GluGluHToTauTauUncorrDecays_M125" , 48.58*0.0627*0.2446 },
+   { "VBFHToTauTauUncorrDecays_M125"    , 3.782*0.0627*0.2695 }
 };
 // 2017 (checked ! - reference is https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2017 )
 
@@ -437,7 +441,7 @@ const map<TString, int> n_events_per_sample_2016 = {
 {"WToMuNu_M-200_uesUp"    , 996128},
 {"WToMuNu_M-200_uesDown"  , 996128},
 {"GluGluHToTauTau_M125", 11171000},
-{"VBFHToTauTau_M125", 1499400},
+//{"VBFHToTauTau_M125", 1499400},
 };
 
 template<typename KeyTemp, typename ValTemp>
@@ -466,7 +470,7 @@ double getNEventsProcessed(TString input_dir, TString sample, TString Year="2017
       exit(-1);
     }
     nevents = histWeightsH->GetSumOfWeights();
-    if(Year!="2018") cout << "WARNING: normalization taken from nWeightedEvents, please check! ";
+    if(Year!="2018")cout << "WARNING: normalization taken from nWeightedEvents, please check! ";
     file -> Close();
     delete file;
   }else nevents=0;
