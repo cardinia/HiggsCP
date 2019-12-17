@@ -4,6 +4,19 @@
 // **************************************************************************************************
 // Define the subsamples that belong to a certain process
 // 2018
+
+const TString BaseTreeName = "TauCheck"; 
+vector<TString> SystematicsNames = {"",  // for nominal tree
+                                    // "CMS_shape_t_13TeVUp", "CMS_shape_t_13TeVDown",
+ 																		// "CMS_shape_dyShape_13TeVUp", "CMS_shape_dyShape_13TeVDown", 
+                                    // "topPtWeightUp", "topPtWeightDown", 
+																		// "CMS_met_JetEn_13TeVUp", "CMS_met_JetEn_13TeVDown",      
+                                     "CMS_scale_j_JES13TeVUp",  "CMS_scale_j_JES13TeVDown",               
+                                    // "CMS_met_UnclusteredEn_13TeV", "CMS_met_JetRes_13TeV",
+																						// "CMS_scale_j_Eta0To513TeV", "CMS_scale_j_Eta0To313TeV", "CMS_scale_j_Eta3To513TeV", "CMS_scale_j_RelativeBal13TeV"
+																					};
+
+
 const vector<TString> SingleMuon_Run2018       = { "SingleMuon_Run2018A",
 						   "SingleMuon_Run2018B", 
 						   "SingleMuon_Run2018C",
