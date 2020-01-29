@@ -1,7 +1,5 @@
 #include "HttStylesNew.cc"
 #include "CMS_lumi.C"
-#include "Plotting.h"
-#include "Plotting_Style.h"
 #include "settings.h"
 void Plot( bool embedded = true) {
 
@@ -12,18 +10,18 @@ void Plot( bool embedded = true) {
   double qcd_scale = 1.2;
 
   TString DataFile = "SingleMuon_Run2018";
-  TString Variable = "IP_signif_PV_with_BS_2";
-  TString xtitle = "pion IP_{sig}";
+  TString Variable = "dijetpt";
+  TString xtitle = "dijet p_{T} [GeV]";
   TString ytitle = "Events";
-  int nBins  =                50;
-  float xmin =                 0;
-  float xmax =                10;
+  int nBins  =                 20;
+  float xmin =                  0;
+  float xmax =                400;
   float yLower =       0;
   float scaleYUpper = 10;
 
   TString Weight("puweight*mcweight*effweight*");
   TString WeightEmb("mcweight*embweight*effweight*");
-  TString Cuts("((trg_singlemuon>0.5&&pt_1>25)||(trg_mutaucross&&pt_1>21&&pt_2>32))&&iso_1<0.15&&pt_1>21&&pt_2>20&&byTightDeepTau2017v2p1VSmu_2>0.5&&byVLooseDeepTau2017v2p1VSe_2&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50");
+  TString Cuts("((trg_singlemuon>0.5&&pt_1>25)||(trg_mutaucross&&pt_1>21&&pt_2>32&&abs(eta_1)<2.1&&abs(eta_2)<2.1))&&iso_1<0.15&&pt_1>21&&pt_2>20&&byTightDeepTau2017v2p1VSmu_2>0.5&&byVVVLooseDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.4&&abs(eta_2)<2.3&&njets>=2");
 
   TString CutsOS = Cuts + TString("&&os>0.5");
   TString CutsSS = Cuts + TString("&&os<0.5");
@@ -78,6 +76,10 @@ void Plot( bool embedded = true) {
     if (embedded) {
       cuts[i] = Weight+"("+CutsZLL_OS+")";
       cutsSS[i] = Weight+"("+CutsZLL_SS+")";
+      if (i>=1&&i<=3) {
+	cuts[i] = Weight+"topptweight*("+CutsZLL_OS+")";
+	cutsSS[i] = Weight+"topptweight*("+CutsZLL_SS+")";
+      }
       if (i==11) {
 	cuts[i] = Weight+"("+CutsZLL_OS+"&&gen_noutgoing==0)";
 	cutsSS[i] = Weight+"("+CutsZLL_SS+"&&gen_noutgoing==0)";
@@ -86,6 +88,10 @@ void Plot( bool embedded = true) {
     else {
       cuts[i] = Weight+"("+CutsOS+")";
       cutsSS[i] = Weight+"("+CutsSS+")";
+      if (i>=1&&i<=3) {
+	cuts[i] = Weight+"topptweight*("+CutsOS+")";
+	cutsSS[i] = Weight+"topptweight*("+CutsSS+")";
+      }
       if (i==11) {
 	cuts[i] = Weight+"("+CutsOS+"&&gen_noutgoing==0)";
 	cutsSS[i] = Weight+"("+CutsSS+"&&gen_noutgoing==0)";
@@ -97,19 +103,19 @@ void Plot( bool embedded = true) {
 
   int nSamples = 26;
   for (int i=16; i<=20; ++i) {
-    cuts[i] = Weight+"("+CutsZLL_OS+")";
-    cutsSS[i] = Weight+"("+CutsZLL_SS+")";
+    cuts[i] = Weight+"zptweight*("+CutsZLL_OS+")";
+    cutsSS[i] = Weight+"zptweight*("+CutsZLL_SS+")";
     if (i==16) {
-      cuts[i] = Weight+"("+CutsZLL_OS+"&&gen_noutgoing==0)";
-      cutsSS[i] = Weight+"("+CutsZLL_SS+"&&gen_noutgoing==0)";
+      cuts[i] = Weight+"zptweight*("+CutsZLL_OS+"&&gen_noutgoing==0)";
+      cutsSS[i] = Weight+"zptweight*("+CutsZLL_SS+"&&gen_noutgoing==0)";
     }
   }
   for (int i=21; i<=25; ++i) {
-    cuts[i] = Weight+"("+CutsZTT_OS+")";
-    cutsSS[i] = Weight+"("+CutsZTT_SS+")";
+    cuts[i] = Weight+"zptweight*("+CutsZTT_OS+")";
+    cutsSS[i] = Weight+"zptweight*("+CutsZTT_SS+")";
     if (i==21) {
-      cuts[i] = Weight+"("+CutsZTT_OS+"&&gen_noutgoing==0)";
-      cutsSS[i] = Weight+"("+CutsZTT_SS+"&&gen_noutgoing==0)";
+      cuts[i] = Weight+"zptweight*("+CutsZTT_OS+"&&gen_noutgoing==0)";
+      cutsSS[i] = Weight+"zptweight*("+CutsZTT_SS+"&&gen_noutgoing==0)";
     }
   }
 

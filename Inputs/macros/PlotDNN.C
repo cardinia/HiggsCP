@@ -14,16 +14,16 @@ void PlotDNN( bool embedded = true,
   double qcd_scale = 1.2;
 
   TString DataFile = "SingleMuon";
-  TString Variable = "m_vis";
-  TString xtitle = "m_{vis} [GeV]";
+  TString Variable = "dijetpt";
+  TString xtitle = "dijet p_{T} [GeV]";
   TString ytitle = "Events";
-  int nBins  =                30;
-  float xmin =                 0;
-  float xmax =               150;
-  float yLower =               0;
-  float scaleYUpper =         10;
+  int nBins  =                  20;
+  float xmin =                   0;
+  float xmax =                 400;
+  float yLower =                 0;
+  float scaleYUpper =           10;
 
-  TString Cuts("pt_1>20&&os>0.5");
+  TString Cuts("pt_1>21&&os>0.5&&puppimt_1<50&&njets>=2");
 
   TString Cuts_Sig    = Cuts + TString("&&byMediumDeepTau2017v2p1VSjet_2>0.5");
   TString Cuts_FF     = Cuts + TString("&&byMediumDeepTau2017v2p1VSjet_2<0.5&&byVVVLooseDeepTau2017v2p1VSjet_2>0.5");
@@ -91,6 +91,7 @@ void PlotDNN( bool embedded = true,
 
   // filling histograms
   for (int i=0; i<nSamples; ++i) {
+    cout << sampleNames[i] << endl;
     TFile * file = new TFile(dir+"/mt-NOMINAL_ntuple_"+sampleNames[i]+"_"+era+".root");
     TTree * tree = (TTree*)file->Get("TauCheck");
     TString histNameSig = sampleNames[i] + "_sig";
