@@ -68,7 +68,7 @@ int main(int argc, char * argv[]) {
   const map<TString, double>  *xsec_map    = 0;
   const map<TString, TString> *process_map = 0;
   
-  TString output_dir = "";
+  //TString output_dir = "";
   samples_map[channel + "-NOMINAL_ntuple_"+Sample     ] = map_sample.at(Sample);
 
   if (era == "2018"){
@@ -81,7 +81,6 @@ int main(int argc, char * argv[]) {
     embedded_tracking_weight = 1.00;
     input_dir="/nfs/dust/cms/user/rasp/HiggsCP/2018";
     //     input_dir = "/nfs/dust/cms/user/rasp/Run/Run2018/CP/sys";
-    output_dir="/nfs/dust/cms/user/rasp/HiggsCP/2018/DNN_MVADM";
   }
   else if(era == "2017"){
     xsec_map    = &xsec_map_2017; 
@@ -92,7 +91,7 @@ int main(int argc, char * argv[]) {
     embedded_trigger_weight  = 1.00;
     embedded_tracking_weight = 0.99;
     input_dir="/nfs/dust/cms/user/rasp/HiggsCP/2017";
-    output_dir="/nfs/dust/cms/user/rasp/HiggsCP/2017/DNN";
+    //output_dir="/nfs/dust/cms/user/rasp/HiggsCP/2017/DNN";
   }  
   else if(era == "2016"){
     xsec_map    = &xsec_map_2016;
@@ -103,9 +102,10 @@ int main(int argc, char * argv[]) {
     embedded_trigger_weight  = 1.03;
     embedded_tracking_weight = 0.98;
     input_dir="/nfs/dust/cms/user/rasp/HiggsCP/2016";
-    output_dir="/nfs/dust/cms/user/rasp/HiggsCP/2016/DNN";
+    //output_dir="/nfs/dust/cms/user/rasp/HiggsCP/2016/DNN";
   }
-
+  TString output_dir = "./test/NTuples_"+channel+"_" + era;
+  gSystem -> Exec("mkdir " + output_dir);
   // Needed for stitching
   double xsecWIncl      = xsec_map->at(process_map->at("WJets"));
   double xsecW1Jets     = xsec_map->at(process_map->at("W1Jets"));
@@ -723,7 +723,7 @@ int main(int argc, char * argv[]) {
 	if (outTree==NULL) continue; 
 	cout<< " entries in out tree : " << outTree->GetEntries() << endl;
 	if (outTree->GetEntries()>0)
-	  outFile->Write(TreeName);
+	  outFile->Write(TreeName,TObject::kOverwrite);
 	cout << endl; 
     }
     cout << outFile << endl;
