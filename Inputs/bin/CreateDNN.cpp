@@ -81,7 +81,7 @@ int main(int argc, char * argv[]) {
     embedded_tracking_weight = 1.00;
     input_dir="/nfs/dust/cms/user/rasp/HiggsCP/2018";
     //     input_dir = "/nfs/dust/cms/user/rasp/Run/Run2018/CP/sys";
-    output_dir="/nfs/dust/cms/user/rasp/HiggsCP/2018/DNN";
+    output_dir="/nfs/dust/cms/user/rasp/HiggsCP/2018/DNN_MVADM";
   }
   else if(era == "2017"){
     xsec_map    = &xsec_map_2017; 
@@ -154,6 +154,8 @@ int main(int argc, char * argv[]) {
   std::map<std::string, std::shared_ptr<RooFunctor>> fns_;
   ff_ws_ = std::shared_ptr<RooWorkspace>((RooWorkspace*)gDirectory->Get("w"));
   fns_["ff_mt_medium_dmbins"] = std::shared_ptr<RooFunctor>(ff_ws_->function("ff_mt_medium_dmbins")->functor(ff_ws_->argSet("pt,dm,njets,m_pt,os,met,mt,m_iso,pass_single,mvis")));
+  fns_["ff_mt_medium_mvadmbins"] = std::shared_ptr<RooFunctor>(ff_ws_->function("ff_mt_medium_mvadmbins")->functor(ff_ws_->argSet("pt,mvadm,njets,m_pt,os,met,mt,m_iso,pass_single,mvis")));
+  
 
   if (!PropagateSystematics)
     SystematicsNames = {""};
@@ -253,7 +255,8 @@ int main(int argc, char * argv[]) {
 	
 	float ff_nom;
 	float ff_sys;
-	
+	float ff_mva;
+
 	float puppimet;
 	int os;
 	int nbtag;
@@ -387,6 +390,7 @@ int main(int argc, char * argv[]) {
 	outTree->Branch("htxs_reco_flag_ggh", &htxs_reco_flag_ggh, "htxs_reco_flag_ggh/I");
 	outTree->Branch("htxs_reco_flag_qqh", &htxs_reco_flag_qqh, "htxs_reco_flag_qqh/I");
 	outTree->Branch("ff_nom", &ff_nom, "ff_nom/F");
+	outTree->Branch("ff_mva", &ff_mva, "ff_mva/F");
 	outTree->Branch("ff_sys", &ff_sys, "ff_sys/F");
 	
 	outTree->Branch("gen_sm_htt125", &TauSpinnerWeightsEven,"gen_sm_htt125/D");
@@ -553,12 +557,12 @@ int main(int argc, char * argv[]) {
 		  if (abs(eta_2)>2.3)             continue;
 		}
 		if( extraelec_veto > 0.5 )       continue;
-		if( nbtag!=0 )                   continue;
+		//		if( nbtag!=0 )                   continue;
 		if( extramuon_veto > 0.5 )       continue;
 		if( dilepton_veto  > 0.5 )       continue;
-		if( puppimt_1>60 )               continue;
+		//		if( puppimt_1>60 )               continue;
 	      }
-	      if (byMediumDeepTau2017v2p1VSjet_2<0.5){
+	      if (byMediumDeepTau2017v2p1VSjet_2<0.5&&SystematicsName==""){
 	       
 		auto args = std::vector<double>{pt_2,
 						static_cast<double>(tau_decay_mode_2),
@@ -571,8 +575,25 @@ int main(int argc, char * argv[]) {
 						static_cast<double>(trg_singlemuon),
 						m_vis};
 		ff_nom = fns_["ff_mt_medium_dmbins"]->eval(args.data());
-	       
-	      }else ff_nom=1.;
+
+		auto args_mva = std::vector<double>{pt_2,
+						    dmMVA_2,
+						    static_cast<double>(njets),
+						    pt_1,
+						    static_cast<double>(os),
+						    puppimet,
+						    puppimt_1,
+						    iso_1,
+						    static_cast<double>(trg_singlemuon),
+						    m_vis};
+		ff_mva = fns_["ff_mt_medium_mvadmbins"]->eval(args_mva.data());
+
+		//		cout << "ff_nom : " << ff_nom << "   ff_mva : " << ff_mva << endl;
+
+	      }else { 
+		ff_nom = 1.;
+		ff_mva = 1.;
+	      }
 	      
 	      ff_sys = ff_nom; // TO DO: fix systematics
 
@@ -692,6 +713,7 @@ int main(int argc, char * argv[]) {
 	  //          cout<<currentTree->GetEntries()<<endl;
 	  //          treeList->Add(currentTree);
           inFile->Close();
+	  delete inFile;
           // //fill xsec_lumi_weight in a histogram for reference, and write to the tree
           // TH1F* xsec_lumi_weightH=new TH1F("xsec_lumi_weightH","xsec_lumi_weightH",1,0,1);
           // xsec_lumi_weightH->Fill(0.5,xsec_lumi_weight);
