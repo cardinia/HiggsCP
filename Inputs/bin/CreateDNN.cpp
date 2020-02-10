@@ -71,6 +71,7 @@ int main(int argc, char * argv[]) {
   //TString output_dir = "";
   samples_map[channel + "-NOMINAL_ntuple_"+Sample     ] = map_sample.at(Sample);
 
+  TString output_dir="";
   if (era == "2018"){
     xsec_map    = &xsec_map_2018;
     process_map = &process_map_2018;
@@ -81,6 +82,8 @@ int main(int argc, char * argv[]) {
     embedded_tracking_weight = 1.00;
     input_dir="/nfs/dust/cms/user/rasp/HiggsCP/2018";
     //     input_dir = "/nfs/dust/cms/user/rasp/Run/Run2018/CP/sys";
+    //    output_dir="/nfs/dust/cms/user/rasp/HiggsCP/2018/DNN_MVADM/";
+    output_dir="./";
   }
   else if(era == "2017"){
     xsec_map    = &xsec_map_2017; 
@@ -90,8 +93,8 @@ int main(int argc, char * argv[]) {
     qcd_ss_os_iso_relaxed_ratio = 1.; 
     embedded_trigger_weight  = 1.00;
     embedded_tracking_weight = 0.99;
-    input_dir="/nfs/dust/cms/user/rasp/HiggsCP/2017";
-    //output_dir="/nfs/dust/cms/user/rasp/HiggsCP/2017/DNN";
+    input_dir="/nfs/dust/cms/user/rasp/Run/Run2017/CP";
+    output_dir="/nfs/dust/cms/user/rasp/HiggsCP/2017/DNN_MVADM";
   }  
   else if(era == "2016"){
     xsec_map    = &xsec_map_2016;
@@ -104,8 +107,8 @@ int main(int argc, char * argv[]) {
     input_dir="/nfs/dust/cms/user/rasp/HiggsCP/2016";
     //output_dir="/nfs/dust/cms/user/rasp/HiggsCP/2016/DNN";
   }
-  TString output_dir = "./test/NTuples_"+channel+"_" + era;
-  gSystem -> Exec("mkdir " + output_dir);
+  //  TString output_dir = "./test/NTuples_"+channel+"_" + era;
+  //  gSystem -> Exec("mkdir " + output_dir);
   // Needed for stitching
   double xsecWIncl      = xsec_map->at(process_map->at("WJets"));
   double xsecW1Jets     = xsec_map->at(process_map->at("W1Jets"));
@@ -188,8 +191,10 @@ int main(int argc, char * argv[]) {
 	cout << "Tree name : " << TreeName << endl;        
 	outFile->cd("");
         TTree *outTree = new TTree(TreeName, "tree created as DNN input");
+	outTree->SetAutoSave(100000000); // auto save after 100.000.000 of events
 	
 	uint run; 
+	ULong64_t      evt;
 	int extraelec_veto; 
 	int extramuon_veto; 
 	int dilepton_veto;  
@@ -233,7 +238,6 @@ int main(int argc, char * argv[]) {
 	double zptweight;
 	double trkeffweight;
 	float weight;	  
-	  
 	// Merijn: vars below used for stxs. 
 	// prefiring_weight is set for different stxs bins.. 
 	// this will need special attention
@@ -299,6 +303,7 @@ int main(int argc, char * argv[]) {
 	double TauSpinnerWeightsMix0p375;
 	
 	outTree->Branch("run",&run,"run/i");
+	outTree->Branch("evt",&evt,"evt/l");
 	//	outTree->Branch("extraelec_veto",&extraelec_veto,"extraelec_veto/O");
 	//	outTree->Branch("extramuon_veto",&extramuon_veto,"extramuon_veto/O");
 	//	outTree->Branch("dilepton_veto",&dilepton_veto,"dilepton_veto/O");
@@ -413,13 +418,14 @@ int main(int argc, char * argv[]) {
 	    cout << "Tree with name " << TreeName << " is not present in subsample " << subsample << endl;
 	    continue;
 	  }
-	  
+
 	  double nevents = getNEventsProcessed( input_dir, subsample,era); 
 	  // SetBranchAddress for variables that need are needed for preselection or stitching
 	  //variables below are for preselection
 	  
 	  //branches for variables to be saved in DNN ntuple
 	  inTree->SetBranchAddress("run",&run);
+	  inTree->SetBranchAddress("evt",&evt);
 	  inTree->SetBranchAddress("extraelec_veto",&extraelec_veto);
 	  inTree->SetBranchAddress("extramuon_veto",&extramuon_veto);
 	  inTree->SetBranchAddress("dilepton_veto",&dilepton_veto);
@@ -519,6 +525,8 @@ int main(int argc, char * argv[]) {
 	  if(!isData && !isEmbedded) xsec = xsec_map->at(subsample);
 	  int counter=0;
 	  
+	  cout << "Cross section : " << xsec << endl;
+
 	  cout << "    entries in tree = " << inTree->GetEntries() << endl;
 	  for (int i=0; i<inTree->GetEntries(); i++) {
 	    // for (int i=0; i<10000; i++) {
@@ -557,11 +565,12 @@ int main(int argc, char * argv[]) {
 		  if (abs(eta_2)>2.3)             continue;
 		}
 		if( extraelec_veto > 0.5 )       continue;
-		//		if( nbtag!=0 )                   continue;
+		if( nbtag!=0 )                   continue;
 		if( extramuon_veto > 0.5 )       continue;
 		if( dilepton_veto  > 0.5 )       continue;
-		//		if( puppimt_1>60 )               continue;
+		if( puppimt_1>50 )               continue;
 	      }
+	     
 	      if (byMediumDeepTau2017v2p1VSjet_2<0.5&&SystematicsName==""){
 	       
 		auto args = std::vector<double>{pt_2,
@@ -601,6 +610,11 @@ int main(int argc, char * argv[]) {
 	      qcd_correction = qcd_ss_os_iso_relaxed_ratio;
 	      trigger_filter_weight = trigger_filter_efficiency;
 	      
+	      cout << "lumi = " << luminosity << endl;
+	      cout << "xsec = " << xsec << endl;
+	      cout << "nevents = " << nevents << endl;
+	      cout << "XSecLumi = " << xsec_lumi_weight << endl;
+
 	      // Initialize variables for jet observables to -10 for NN
 	      if(njets < 2){
 		jdeta   = -10;
@@ -722,8 +736,10 @@ int main(int argc, char * argv[]) {
         }
 	if (outTree==NULL) continue; 
 	cout<< " entries in out tree : " << outTree->GetEntries() << endl;
-	if (outTree->GetEntries()>0)
-	  outFile->Write(TreeName,TObject::kOverwrite);
+	if (outTree->GetEntries()>0) {
+	  outFile->cd("");
+	  outTree->Write(TreeName,TObject::kOverwrite);
+	}
 	cout << endl; 
     }
     cout << outFile << endl;
