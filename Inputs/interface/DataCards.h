@@ -11,6 +11,25 @@
 
 using namespace std;
 
+
+template<class T1, class T2>
+vector<T1> extract_first(const vector<pair<T1, T2> >& v) {
+    vector<T1> vFirst;
+    for (size_t i = 0; i < v.size(); i++) {
+        vFirst.push_back(v[i].first);
+    }
+    return vFirst;
+};
+
+template<class T1, class T2>
+vector<T2> extract_second(const vector<pair<T1, T2> >& v) {
+    vector<T2> vSecond;
+    for (size_t i = 0; i < v.size(); i++) {
+        vSecond.push_back(v[i].second);
+    }
+    return vSecond;
+};
+
 struct params {
   TString cuts;
   bool hist2D;
@@ -40,7 +59,7 @@ class DataCards {
   void SetOutputDirectory(TString output_dir);
   void SetOutputFileName(TString output_filename);
 
-  bool Run();
+  bool Run(int classIndex, TString channel);
 
   ~DataCards();
 
@@ -207,7 +226,7 @@ class DataCards {
 
   map<TString, TFile*> mapSampleFile;
 
-  vector<TString> categories = {
+  vector<TString> categories;/* = {
     "mt_mupi_sig",
     "mt_mupi_ztt",
     "mt_mupi_fakes",
@@ -221,10 +240,18 @@ class DataCards {
     "mt_mua1_fakes",
     //    "mt_ztt",
     //    "mt_fakes"
+    };*/
+
+  vector<pair<int,TString>> classNames = {
+    {0,"sig"},
+    {1,"ztt"},
+    {2,"fakes"},
   };
+  vector<TString> channelNames = {"mupi","murho","mua1"};
 
   map<TString,TString> mapCategoryCut;
 
+  void createCategoryList(int classIndex, TString channel);
   void setCategoryCuts();
 
 

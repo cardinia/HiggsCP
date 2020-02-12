@@ -86,12 +86,32 @@ void DataCards::closeOutputFile() {
 
 }
 
+void DataCards::createCategoryList(int classIndex=-1, TString channel="") {
+
+  TString catNamePrefix = "mt";
+  vector<int> classIndices;
+  vector<TString> channels;
+  if (channel=="") channels = channelNames;
+  else channels.push_back(channel);
+  if (classIndex==-1) classIndices = extract_first(classNames);
+  else classIndices.push_back(classIndex);
+  for (auto ch : channels){
+    for (auto cl : classIndices){
+      categories.push_back(catNamePrefix+"_"+ch+"_"+classNames[cl].second);
+    }
+  }
+}
+
+
 
 void DataCards::setCategoryCuts() {
     
   for (auto category : categories) {
-    TString catString = "";
+    TString catString = "predicted_class==";
     TString dmString = ""; 
+    for (auto className : classNames){
+      if(category.Contains(className.second)) catString += TString::Itoa(className.first,10);
+    }/*
     if (category.Contains("_sig"))
       catString = "predicted_class==0";
     else if (category.Contains("_ztt"))
@@ -100,7 +120,7 @@ void DataCards::setCategoryCuts() {
       catString = "predicted_class==2";
     //    else 
     //      catString = "DNN==3";
-
+    */
     TString DM("tau_decay_mode_2");
     if (mvaDM_) 
       DM = "dmMVA_2";
@@ -117,18 +137,21 @@ void DataCards::setCategoryCuts() {
 
 }
 
+
 vector<TH1D*> DataCards::CreateCardsSample(TString sampleName, params param, bool runSystematics) {
 
   TFile * fileSample = mapSampleFile[sampleName];
 
   vector<TH1D*> histos;
 
-  cout << "   Running on sample " << sampleName << " : " << fileSample << endl;
+  cout << "   Running on sample " << sampleName << " : " << fileSample->GetName() << endl;
 
   for (auto systematicName : SystematicsNames ) {
-    cout << "     Running on systematics " << systematicName << std::endl;
 
     if (!runSystematics && systematicName!="") continue;
+
+    if (systematicName!="") cout << "     Running on systematics " << systematicName << std::endl;
+    
     TString TreeName = "TauCheck";
     TString HistName = sampleName;
     if (systematicName!="") {
@@ -175,14 +198,14 @@ vector<TH1D*> DataCards::CreateCardsSample(TString sampleName, params param, boo
 
 }
 
-TH1D * DataCards::CreateCardsFakesOrQCD(TString sample, params parameters, TString weightFForQCD) {
+TH1D * DataCards::CreateCardsFakesOrQCD(TString FakeOrQCD, params parameters, TString weightFForQCD) {
   
   TString weight = "weight*"+weightFForQCD;
   TString cuts = parameters.cuts;
   parameters.cuts = weight + "(" + cuts + ")";
   bool runSystematics = false;
 
-  vector<TH1D*> histFF = CreateCardsSample(sample,parameters,runSystematics);
+  vector<TH1D*> histFF = CreateCardsSample(FakeOrQCD,parameters,runSystematics);
   for (auto sample : samplesToSubtract) {
     if (sample=="ZTT"&&embedded_) continue;
     if (sample=="EMB"&&!embedded_) continue;
@@ -201,6 +224,7 @@ TH1D * DataCards::CreateCardsFakesOrQCD(TString sample, params parameters, TStri
 
     parametersSample.cuts = weight + "(" + cutsSample + ")";
 
+    cout << "  Subtracting " << sample << " for data-driven estimation" << endl;
     vector<TH1D*> histos = CreateCardsSample(sample,parametersSample,runSystematics);
     histFF[0]->Add(histFF[0],histos[0],1,-1);
 
@@ -311,14 +335,14 @@ void DataCards::RunOnCategory(TString category) {
   
 } 
 
-bool DataCards::Run() {
+bool DataCards::Run(int classIndex=-1, TString channel="") {
 
   bool isOK = loadFiles();
   if (!isOK) return isOK;
 
-  createOutputFile();
-
+  createCategoryList(classIndex,channel);
   setCategoryCuts();
+  createOutputFile();
 
   for (auto category : categories) 
     RunOnCategory(category);
