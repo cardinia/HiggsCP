@@ -1,62 +1,46 @@
 #include "HttStylesNew.cc"
-// CMS_htt_boson_reso_met_13TeV
-// CMS_htt_boson_scale_met_13TeV
-// CMS_scale_mu_13TeV
-// CMS_scale_t_1prong_13TeV
-// CMS_scale_t_1prong1pizero_13TeV
-// CMS_scale_t_3prong_13TeV
-// CMS_scale_j_FlavorQCD_13TeV
-// CMS_scale_j_RelativeBal_13TeV
-// CMS_scale_j_HF_13TeV
-// CMS_scale_j_BBEC1_13TeV
-// CMS_scale_j_EC2_13TeV
-// CMS_scale_j_Absolute_13TeV
-// CMS_scale_j_Absolute_2018_13TeV
-// CMS_scale_j_HF_2018_13TeV
-// CMS_scale_j_EC2_2018_13TeV
-// CMS_scale_j_RelativeSample_2018_13TeV
-// CMS_scale_j_BBEC1_2018_13TeV
-// CMS_res_j_13TeV
+// CMS_htt_boson_reso_met
+// CMS_htt_boson_scale_met
+// CMS_ZLShape_et_1prong1pizero_Run2017
 
-void PlotSys() {
+void PlotSys(TString fileName = "output",
+	     TString histName = "EMB",
+	     TString sysName  = "CMS_shape_t_1prong1pi0_13TeV",
+	     TString category = "mt_mupi_sig",
+	     float xmax = 100,
+	     float upRange = -100) {
 
-  TString dirName = "/nfs/dust/cms/user/rasp/Run/Run2018/CP/debug/";
-  TString fileName = "GluGluHToTauTauUncorrDecays_M125";
-  TString varName = "puppimet";
-  TString sysName  = "CMS_scale_mu_13TeV";
-  TString header = sysName;
-  TString cuts = "os>0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5";
-
-  TString ytitle("Events");
-  TString xtitle("Puppi E_{T}^{mis} [GeV]");
-
-  int nBins =      20;
-  float xmin =      0;
-  float xmax =    200;
+  TString header = category+":"+histName;
+  TString SysLeg = sysName;
+  TString ytitle("Events / bin");
+  TString xtitle("NN score bin"); 
 
   SetStyle();
   gStyle->SetErrorX(0);
-  TFile * file = new TFile(dirName+"/"+fileName+".root");
+  TFile * file = new TFile(fileName+".root");
+  TH1D * histNominal = (TH1D*)file->Get(category+"/"+histName);
+  TH1D * histUp = (TH1D*)file->Get(category+"/"+histName+"_"+sysName+"Up");
+  TH1D * histDown = (TH1D*)file->Get(category+"/"+histName+"_"+sysName+"Down");
+  std::cout << histNominal << " " <<  histUp << " " << histDown << std::endl;
 
-  TTree * treeNominal = (TTree*)file->Get("TauCheck");
-  TTree * treeUp = (TTree*)file->Get("TauCheck_"+sysName+"Up");
-  TTree * treeDown = (TTree*)file->Get("TauCheck_"+sysName+"Down");
+  int nBins = histNominal->GetNbinsX(); 
+  xmax = histNominal->GetBinLowEdge(nBins+1)-0.01;
 
-  TH1D * histNominal = new TH1D("histNominal","",nBins,xmin,xmax);
-  TH1D * histUp = new TH1D("histUp","",nBins, xmin,xmax);
-  TH1D * histDown = new TH1D("histDown","",nBins, xmin,xmax);
+  InitData(histNominal);
+  for (int iB=1; iB<=nBins; ++iB) {
+    double x = histNominal->GetBinContent(iB);
+    double ex = TMath::Sqrt(x);
+    histNominal->SetBinError(iB,ex);
+  }
 
-  TCanvas * dummy = new TCanvas("dummy","",600,600);
-  treeNominal->Draw(varName+">>histNominal",cuts);
-  treeUp->Draw(varName+">>histUp",cuts);
-  treeDown->Draw(varName+">>histDown",cuts);
-  float yMax = histUp->GetMaximum();
-  if (histNominal->GetMaximum()>yMax)
-    yMax = histNominal->GetMaximum();
-  if (histDown->GetMaximum()>yMax)
-    yMax = histDown->GetMaximum();
+  histNominal->GetXaxis()->SetTitleSize(0.0);
+  histNominal->GetXaxis()->SetTitleOffset(1.2);
 
-  histUp->GetYaxis()->SetRangeUser(0.01,1.1*yMax);
+  histNominal->GetYaxis()->SetTitleSize(0.07);
+  histNominal->GetYaxis()->SetTitleOffset(1.0);
+  histNominal->GetYaxis()->SetLabelSize(0.045);
+
+  histNominal->GetYaxis()->SetRangeUser(0.01,1.5*histUp->GetMaximum());
   histNominal->SetLineColor(1);
   histUp->SetLineColor(2);
   histDown->SetLineColor(4);
@@ -71,6 +55,8 @@ void PlotSys() {
   histUp->GetXaxis()->SetTitle(xtitle);
   histDown->GetYaxis()->SetTitle(ytitle);
   histDown->GetXaxis()->SetTitle(xtitle);
+  histUp->SetLineWidth(2);
+  histDown->SetLineWidth(2);
   TH1D * ratioUp = (TH1D*)histUp->Clone("ratioUp");
   TH1D * ratioDown = (TH1D*)histDown->Clone("ratioDown");
   TH1D * ratioCentral = (TH1D*)histNominal->Clone("ratioCentral");
@@ -102,9 +88,14 @@ void PlotSys() {
       ratioCentral->SetBinError(iB,histNominal->GetBinError(iB)/histNominal->GetBinContent(iB));
   }
 
+
+
+  if (upRange>0) 
+    histUp->GetYaxis()->SetRangeUser(0.1,upRange);
+
   histUp->GetYaxis()->SetTitleOffset(1.4);
 
-  TCanvas * canv1 = MakeCanvas("canv1", "", 700, 800);
+  TCanvas * canv1 = MakeCanvas("canv1", "", 600, 700);
   TPad *upper = new TPad("upper", "pad",0,0.31,1,1);
   upper->Draw();
   upper->cd();
@@ -127,28 +118,29 @@ void PlotSys() {
   upper->SetFrameBorderMode(0);
   upper->SetFrameBorderSize(10);
 
-  histUp->Draw("h");
-  histNominal->Draw("pesame");
+  histNominal->Draw("pe");
+  histUp->Draw("hsame");
   histDown->Draw("hsame");
-  TLegend * leg = new TLegend(0.55,0.65,0.92,0.9);
+  TLegend * leg = new TLegend(0.3,0.68,0.92,0.9);
   leg->SetHeader(header);
   leg->SetFillColor(0);
   leg->SetTextSize(0.04);
-  leg->AddEntry(histNominal,"Central","l");
-  leg->AddEntry(histUp,"Up","l");
-  leg->AddEntry(histDown,"Down","l");
-  //  leg->Draw();
+  leg->AddEntry(histNominal,"  Central","ep");
+  leg->AddEntry(histUp,SysLeg+" Up","l");
+  leg->AddEntry(histDown,SysLeg+" Down","l");
+  leg->Draw();
   upper->Draw("SAME");
   upper->RedrawAxis();
   upper->Modified();
   upper->Update();
   canv1->cd();
 
-  ratioUp->GetYaxis()->SetRangeUser(0.9,1.1);
+  ratioUp->SetTitle("");
+  ratioUp->GetYaxis()->SetRangeUser(0.5001,1.4999);
   ratioUp->GetYaxis()->SetNdivisions(505);
   ratioUp->GetXaxis()->SetLabelFont(42);
   ratioUp->GetXaxis()->SetLabelOffset(0.04);
-  ratioUp->GetXaxis()->SetLabelSize(0.1);
+  ratioUp->GetXaxis()->SetLabelSize(0.10);
   ratioUp->GetXaxis()->SetTitleSize(0.13);
   ratioUp->GetXaxis()->SetTitleOffset(1.2);
   ratioUp->GetYaxis()->SetTitle("ratio");
@@ -195,8 +187,6 @@ void PlotSys() {
   canv1->cd();
   canv1->Modified();
   canv1->cd();
-
-
-  canv1->Print("figures/"+varName+"_"+sysName+".png");
+  canv1->Print(sysName+".png");
 
 } 

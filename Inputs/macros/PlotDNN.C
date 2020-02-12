@@ -2,28 +2,34 @@
 #include "CMS_lumi.C"
 
 void PlotDNN( bool embedded = true,
-	      TString era = "2018",
-	      bool method = true) {
+	      TString era = "2018") {
 
-
+  SetStyle();
 
   TString suffix = "";
   if (embedded) suffix = "_embedded";
 
-  TString dir = "/nfs/dust/cms/user/rasp/HiggsCP/2018/DNN/";
-  double qcd_scale = 1.2;
+  bool plotLegend = true;
+  TString dir = "/nfs/dust/cms/user/rasp/HiggsCP/2017/DNN_MVADM";
+  if (era=="2018")
+    dir = "/nfs/dust/cms/user/rasp/HiggsCP/2018/DNN_MVADM_Old/";
+
+  lumi_13TeV = "2018, 59.7 fb^{-1}";
+  if (era=="2017")
+    lumi_13TeV = "2017, 41.0 fb^{-1}";
+
 
   TString DataFile = "SingleMuon";
-  TString Variable = "dijetpt";
-  TString xtitle = "dijet p_{T} [GeV]";
+  TString Variable = "";
+  TString xtitle = "p_{T,#tau#tau} [GeV]";
   TString ytitle = "Events";
-  int nBins  =                  20;
+  int nBins  =                  40;
   float xmin =                   0;
   float xmax =                 400;
-  float yLower =                 0;
+  float yLower =                10;
   float scaleYUpper =           10;
 
-  TString Cuts("pt_1>21&&os>0.5&&puppimt_1<50&&njets>=2");
+  TString Cuts("pt_1>21&&os>0.5&&puppimt_1<50");
 
   TString Cuts_Sig    = Cuts + TString("&&byMediumDeepTau2017v2p1VSjet_2>0.5");
   TString Cuts_FF     = Cuts + TString("&&byMediumDeepTau2017v2p1VSjet_2<0.5&&byVVVLooseDeepTau2017v2p1VSjet_2>0.5");
@@ -34,9 +40,7 @@ void PlotDNN( bool embedded = true,
   TString CutsZLL_Sig = Cuts_Sig + TString("&&!(gen_match_1==4&&gen_match_2==5)");
   TString CutsZLL_FF  = Cuts_FF  + TString("&&!(gen_match_1==4&&gen_match_2==5)");
 
-  SetStyle();
-
-  bool logY = false;
+  bool logY = true;
   bool logX = false;
 
   TH1::SetDefaultSumw2();
@@ -60,11 +64,11 @@ void PlotDNN( bool embedded = true,
   TString cuts_FF[10];
   for (int i=0; i<10; ++i) {
     if (embedded) {
-      cuts_Sig[i] = "weight*("+CutsZLL_Sig+")";
+      cuts_Sig[i] = "weight*("+CutsZLL_Sig+"&&gen_match_2!=6)";
       cuts_FF[i]  = "weight*ff_nom*("+CutsZLL_FF+"&&gen_match_2!=6)";
     }
     else {
-      cuts_Sig[i] = "weight*("+Cuts_Sig+")";
+      cuts_Sig[i] = "weight*("+Cuts_Sig+"&&gen_match_2!=6)";
       cuts_FF[i]  = "weight*ff_nom*("+Cuts_FF+"&&gen_match_2!=6)";
     }
   }
@@ -72,13 +76,13 @@ void PlotDNN( bool embedded = true,
   cuts_FF[0] = "ff_nom*("+Cuts_FF+")";
 
   if (embedded) {
-    cuts_Sig[6] = "weight*("+Cuts_Sig+")";
-    cuts_FF[6]  = "weight*ff_nom*("+Cuts_FF+"&&gen_match_2!=6)";
+    cuts_Sig[6] = "weight*("+Cuts_Sig+"&&gen_match_2!=6)";
+    cuts_FF[6]  = "weight*ff_mva*("+Cuts_FF+"&&gen_match_2!=6)";
   }
   else {
-    cuts_Sig[5] = "weight*("+CutsZLL_Sig+")";
+    cuts_Sig[5] = "weight*("+CutsZLL_Sig+"&&gen_match_2!=6)";
     cuts_FF[5]  = "weight*ff_nom*("+CutsZLL_FF+"&&gen_match_2!=6)";
-    cuts_Sig[6] = "weight*("+CutsZTT_Sig+")";
+    cuts_Sig[6] = "weight*("+CutsZTT_Sig+"&&gen_match_2!=6)";
     cuts_FF[6]  = "weight*ff_nom*("+CutsZTT_FF+"&&gen_match_2!=6)";
   }
 
@@ -126,6 +130,46 @@ void PlotDNN( bool embedded = true,
   std::cout << "ZLL : " << ZLL->GetSumOfWeights() << std::endl;
   std::cout << "ZTT : " << ZTT->GetSumOfWeights() << std::endl;
 
+  //  adding normalization systematics
+  double ZTT_norm = 0.04; //  normalization ZTT :  4% (EMBEDDED)
+  double EWK_norm = 0.07; //  normalization EWK :  7%
+  double QCD_norm = 0.15; //  normalization Fakes : 15%
+  double ZLL_mtau = 0.10; //  mu->tau fake rate ZLL : 10%
+  double TT_norm  = 0.07; //  normalization TT  :  7%
+  double mu_ID    = 0.02; //  muon trigger ID   :  2%
+  double tau_ID   = 0.05; //  tau ID            :  5%
+
+
+  for (int iB=1; iB<=nBins; ++iB) {
+
+    float ztt  = ZTT->GetBinContent(iB);
+    float ztte = ZTT->GetBinError(iB);
+    ztte = TMath::Sqrt(ztte*ztte+ztt*ztt*(ZTT_norm*ZTT_norm+mu_ID*mu_ID+tau_ID*tau_ID));
+    ZTT->SetBinError(iB,ztte);
+
+    float ewk  = EWK->GetBinContent(iB);
+    float ewke = EWK->GetBinError(iB);
+    ewke = TMath::Sqrt(ewke*ewke+ewk*ewk*EWK_norm*EWK_norm);
+    EWK->SetBinError(iB,ewke);
+
+    float qcd  = QCD->GetBinContent(iB);
+    float qcde = QCD->GetBinError(iB);
+    qcde = TMath::Sqrt(qcde*qcde+qcd*qcd*QCD_norm*QCD_norm);
+    QCD->SetBinError(iB,qcde);
+
+    float tt  = TT->GetBinContent(iB);
+    float tte = TT->GetBinError(iB);
+    tte = TMath::Sqrt(tte*tte+tt*tt*TT_norm*TT_norm);
+    TT->SetBinError(iB,tte);
+
+    float zll  = ZLL->GetBinContent(iB);
+    float zlle = ZLL->GetBinError(iB);
+    zlle = TMath::Sqrt(zlle*zlle+zll*zll*(mu_ID*mu_ID+ZLL_mtau*ZLL_mtau));
+    ZLL->SetBinError(iB,zlle);
+
+  }
+
+
   EWK->Add(EWK,TT);
   QCD->Add(QCD,EWK);
   ZLL->Add(ZLL,QCD);
@@ -150,15 +194,15 @@ void PlotDNN( bool embedded = true,
   }
   InitData(histData);
 
-  InitHist(QCD,TColor::GetColor("#FFCCFF"));
-  InitHist(TT,TColor::GetColor("#9999CC"));
-  InitHist(EWK,TColor::GetColor("#DE5A6A"));
-  InitHist(ZLL,TColor::GetColor("#4496C8"));
-  InitHist(ZTT,TColor::GetColor("#FFCC66"));
+  InitHist(QCD,"","",TColor::GetColor(192,232,100),1001);
+  InitHist(TT,"","",TColor::GetColor("#9999CC"),1001);
+  InitHist(EWK,"","",TColor::GetColor("#DE5A6A"),1001);
+  InitHist(ZLL,"","",TColor::GetColor("#4496C8"),1001);
+  InitHist(ZTT,"","",TColor::GetColor("#FFCC66"),1001);
 
   histData->GetXaxis()->SetTitle(xtitle);
   histData->GetYaxis()->SetTitle(ytitle);
-  histData->GetYaxis()->SetTitleOffset(1.3);
+  histData->GetYaxis()->SetTitleOffset(1.6);
   histData->GetYaxis()->SetTitleSize(0.06);
   float yUpper = histData->GetMaximum();
   if (ZTT->GetMaximum()>yUpper)
@@ -167,11 +211,17 @@ void PlotDNN( bool embedded = true,
   ZTT->GetYaxis()->SetRangeUser(0,1.2*ZTT->GetMaximum());
   if (logY) {
     histData->GetYaxis()->SetRangeUser(yLower,scaleYUpper*yUpper);
+    ZTT->GetYaxis()->SetRangeUser(yLower,scaleYUpper*yUpper);
   }
 
   histData->SetMarkerSize(1.4);
   histData->GetXaxis()->SetLabelSize(0);
   histData->GetYaxis()->SetLabelSize(0.06);
+
+  TH1D * ratioH = (TH1D*)histData->Clone("ratioH");
+  TH1D * ratioErrH = (TH1D*)bkgdErr->Clone("ratioErrH");
+  
+  histData->GetXaxis()->SetLabelSize(0);
 
   TCanvas * canv1 = MakeCanvas("canv1", "", 700, 800);
   TPad * upper = new TPad("upper", "pad",0,0.31,1,1);
@@ -182,7 +232,7 @@ void PlotDNN( bool embedded = true,
   upper->SetBorderSize(10);
   upper->SetTickx(1);
   upper->SetTicky(1);
-  upper->SetLeftMargin(0.17);
+  upper->SetLeftMargin(0.2);
   upper->SetRightMargin(0.05);
   upper->SetBottomMargin(0.02);
   upper->SetFrameFillStyle(0);
@@ -197,7 +247,7 @@ void PlotDNN( bool embedded = true,
   upper->SetFrameBorderSize(10);
 
   histData->Draw("e1");
-  ZTT->Draw("h");
+  ZTT->Draw("sameh");
   ZLL->Draw("sameh");
   QCD->Draw("sameh");
   EWK->Draw("sameh");
@@ -218,16 +268,16 @@ void PlotDNN( bool embedded = true,
   std::cout << "Chi2 = " << chi2 << std::endl;
   std::cout << std::endl;
 
-  TLegend * leg = new TLegend(0.55,0.48,0.8,0.78);
+  TLegend * leg = new TLegend(0.61,0.47,0.85,0.77);
   SetLegendStyle(leg);
   leg->SetTextSize(0.044);
   leg->AddEntry(histData,"Data","lp");
   leg->AddEntry(ZTT,"embedded Z#rightarrow#tau#tau","f");
   leg->AddEntry(ZLL,"Z#rightarrow#mu#mu","f");
-  leg->AddEntry(QCD,"fakes","f");
+  leg->AddEntry(QCD,"misidentified j#rightarrow#tau","f");
   leg->AddEntry(EWK,"electroweak","f");
   leg->AddEntry(TT,"t#bar{t}","f");
-  leg->Draw();
+  if (plotLegend) leg->Draw();
   writeExtraText = true;
   extraText = "Preliminary";
   CMS_lumi(upper,4,33); 
@@ -241,8 +291,6 @@ void PlotDNN( bool embedded = true,
   upper->Update();
   canv1->cd();
 
-  TH1D * ratioH = (TH1D*)histData->Clone("ratioH");
-  TH1D * ratioErrH = (TH1D*)bkgdErr->Clone("ratioErrH");
   ratioH->SetMarkerColor(1);
   ratioH->SetMarkerStyle(20);
   ratioH->SetMarkerSize(1.2);
@@ -259,7 +307,7 @@ void PlotDNN( bool embedded = true,
   ratioH->GetYaxis()->SetLabelOffset(0.015);
   ratioH->GetYaxis()->SetLabelSize(0.13);
   ratioH->GetYaxis()->SetTitleSize(0.14);
-  ratioH->GetYaxis()->SetTitleOffset(0.5);
+  ratioH->GetYaxis()->SetTitleOffset(0.7);
   ratioH->GetXaxis()->SetTickLength(0.07);
   ratioH->GetYaxis()->SetTickLength(0.04);
   ratioH->GetYaxis()->SetLabelOffset(0.01);
@@ -289,7 +337,7 @@ void PlotDNN( bool embedded = true,
   }
 
   // ------------>Primitives in pad: lower
-  TPad * lower = new TPad("lower", "pad",0,0,1,0.30);
+  TPad * lower = new TPad("lower", "pad",0,0,1,0.32);
   lower->Draw();
   lower->cd();
   lower->SetFillColor(0);
@@ -298,7 +346,7 @@ void PlotDNN( bool embedded = true,
   lower->SetGridy();
   lower->SetTickx(1);
   lower->SetTicky(1);
-  lower->SetLeftMargin(0.17);
+  lower->SetLeftMargin(0.2);
   lower->SetRightMargin(0.05);
   lower->SetTopMargin(0.026);
   lower->SetBottomMargin(0.35);
@@ -325,6 +373,6 @@ void PlotDNN( bool embedded = true,
   canv1->cd();
   canv1->SetSelected(canv1);
   canv1->Update();
-  canv1->Print("figures/plot_"+Variable+suffix+".png");
+  canv1->Print("figures/plot_"+Variable+suffix+"_"+era+".png");
 
 }

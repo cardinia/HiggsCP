@@ -1,27 +1,37 @@
 #include "HttStylesNew.cc"
 #include "CMS_lumi.C"
 #include "settings.h"
-void Plot( bool embedded = true) {
+void Plot( bool embedded = true,
+	   TString era = "2018") {
 
   TString suffix = "";
   if (embedded) suffix = "_embedded";
 
-  TString dir = "/nfs/dust/cms/user/rasp/HiggsCP/2018/";
+  bool plotLegend = false;
+
+  TString dir = "/nfs/dust/cms/user/rasp/Run/Run2017/CP";
+  if (era=="2018")
+    dir = "/nfs/dust/cms/user/rasp/HiggsCP/2018";
+
   double qcd_scale = 1.2;
 
-  TString DataFile = "SingleMuon_Run2018";
-  TString Variable = "dijetpt";
-  TString xtitle = "dijet p_{T} [GeV]";
-  TString ytitle = "Events";
+  lumi_13TeV = "2018, 59.7 fb^{-1}";
+  if (era=="2017")
+    lumi_13TeV = "2017, 41.0 fb^{-1}";
+
+  TString DataFile = "SingleMuon_Run"+era;
+  TString Variable = "acotautau_refitbs_00";
+  TString xtitle = "#phi_{CP} (IP-IP)";
+  TString ytitle = "Events / 0.314";
   int nBins  =                 20;
   float xmin =                  0;
-  float xmax =                400;
-  float yLower =       0;
-  float scaleYUpper = 10;
+  float xmax =      2*TMath::Pi();
+  float yLower =                0;
+  float scaleYUpper =          10;
 
   TString Weight("puweight*mcweight*effweight*");
   TString WeightEmb("mcweight*embweight*effweight*");
-  TString Cuts("((trg_singlemuon>0.5&&pt_1>25)||(trg_mutaucross&&pt_1>21&&pt_2>32&&abs(eta_1)<2.1&&abs(eta_2)<2.1))&&iso_1<0.15&&pt_1>21&&pt_2>20&&byTightDeepTau2017v2p1VSmu_2>0.5&&byVVVLooseDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.4&&abs(eta_2)<2.3&&njets>=2");
+  TString Cuts("((trg_singlemuon>0.5&&pt_1>25)||(trg_mutaucross&&pt_1>21&&pt_2>32&&abs(eta_1)<2.1&&abs(eta_2)<2.1))&&iso_1<0.15&&pt_1>21&&pt_2>20&&byTightDeepTau2017v2p1VSmu_2>0.5&&byVVVLooseDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.4&&abs(eta_2)<2.3&&IP_signif_PV_with_BS_1>1.0&&IP_signif_PV_with_BS_2>1.0");
 
   TString CutsOS = Cuts + TString("&&os>0.5");
   TString CutsSS = Cuts + TString("&&os<0.5");
@@ -35,7 +45,10 @@ void Plot( bool embedded = true) {
   bool logY = false;
   bool logX = false;
 
-  double lumi = 59740;
+  double lumi = 41900;
+  if (era=="2018")
+    lumi = 59740;
+
 
   TH1::SetDefaultSumw2();
   TH2::SetDefaultSumw2();
@@ -68,7 +81,7 @@ void Plot( bool embedded = true) {
     "DY4JetsToLL_M-50"  // DY4JetsToLL     (25)
   };
   if (embedded)
-    sampleNames[21] = TString("Embedded_Run2018");
+    sampleNames[21] = TString("Embedded_Run"+era);
 
   TString cuts[30];
   TString cutsSS[30];
@@ -137,12 +150,14 @@ void Plot( bool embedded = true) {
     TH1D * histWeightsH = (TH1D*)file->Get("nWeightedEvents");
     double norm = 1; 
     double nevents = 1;
-    if (i==21&&embedded) { 
+    if ((i==21&&embedded)||i==0) { 
       norm = 1.0;
     }
     else {
       double xsec = xsecs[sampleNames[i]];
-      nevents = histWeightsH->GetSumOfWeights();;
+      nevents = histWeightsH->GetSumOfWeights();
+      if (era=="2017")
+	nevents = n_events_per_sample[sampleNames[i]];
       norm = xsec*lumi/nevents;
     }
     TString histName = sampleNames[i];
@@ -227,6 +242,50 @@ void Plot( bool embedded = true) {
   std::cout << "ZLL : " << ZLL->GetSumOfWeights() << std::endl;
   std::cout << "ZTT : " << ZTT->GetSumOfWeights() << std::endl;
 
+  //  adding normalization systematics
+  double ZTT_norm = 0.04; //  normalization ZTT :  4% (EMBEDDED)
+  double EWK_norm = 0.07; //  normalization EWK :  7%
+  double QCD_norm = 0.15; //  normalization Fakes : 15%
+  double ZLL_mtau = 0.10; //  mu->tau fake rate ZLL : 10%
+  double TT_norm  = 0.07; //  normalization TT  :  7%
+  double mu_ID    = 0.02; //  muon trigger ID   :  2%
+  double tau_ID   = 0.05; //  tau ID            :  5%
+  double W_norm   = 0.15; //  normalization W   : 15%
+
+  for (int iB=1; iB<=nBins; ++iB) {
+
+    float ztt  = ZTT->GetBinContent(iB);
+    float ztte = ZTT->GetBinError(iB);
+    ztte = TMath::Sqrt(ztte*ztte+ztt*ztt*(ZTT_norm*ZTT_norm+mu_ID*mu_ID+tau_ID*tau_ID));
+    ZTT->SetBinError(iB,ztte);
+
+    float ewk  = EWK->GetBinContent(iB);
+    float ewke = EWK->GetBinError(iB);
+    ewke = TMath::Sqrt(ewke*ewke+ewk*ewk*EWK_norm*EWK_norm);
+    EWK->SetBinError(iB,ewke);
+
+    float qcd  = QCD->GetBinContent(iB);
+    float qcde = QCD->GetBinError(iB);
+    qcde = TMath::Sqrt(qcde*qcde+qcd*qcd*QCD_norm*QCD_norm);
+    QCD->SetBinError(iB,qcde);
+
+    float w = W->GetBinContent(iB);
+    float we = W->GetBinError(iB);
+    we = TMath::Sqrt(we*we+w*w*(W_norm*W_norm+mu_ID*mu_ID));
+    W->SetBinError(iB,we);
+
+    float tt  = TT->GetBinContent(iB);
+    float tte = TT->GetBinError(iB);
+    tte = TMath::Sqrt(tte*tte+tt*tt*TT_norm*TT_norm);
+    TT->SetBinError(iB,tte);
+
+    float zll  = ZLL->GetBinContent(iB);
+    float zlle = ZLL->GetBinError(iB);
+    zlle = TMath::Sqrt(zlle*zlle+zll*zll*(mu_ID*mu_ID+ZLL_mtau*ZLL_mtau));
+    ZLL->SetBinError(iB,zlle);
+
+  }
+
   EWK->Add(EWK,TT);
   W->Add(W,EWK);
   QCD->Add(QCD,W);
@@ -253,12 +312,12 @@ void Plot( bool embedded = true) {
   }
   InitData(histData);
 
-  InitHist(QCD,TColor::GetColor("#FFCCFF"));
-  InitHist(TT,TColor::GetColor("#9999CC"));
-  InitHist(EWK,TColor::GetColor("#6F2D35"));
-  InitHist(W,TColor::GetColor("#DE5A6A"));
-  InitHist(ZLL,TColor::GetColor("#4496C8"));
-  InitHist(ZTT,TColor::GetColor("#FFCC66"));
+  InitHist(QCD,"","",TColor::GetColor("#FFCCFF"),1001);
+  InitHist(TT,"","",TColor::GetColor("#9999CC"),1001);
+  InitHist(EWK,"","",TColor::GetColor("#6F2D35"),1001);
+  InitHist(W,"","",TColor::GetColor("#DE5A6A"),1001);
+  InitHist(ZLL,"","",TColor::GetColor("#4496C8"),1001);
+  InitHist(ZTT,"","",TColor::GetColor("#FFCC66"),1001);
 
   histData->GetXaxis()->SetTitle(xtitle);
   histData->GetYaxis()->SetTitle(ytitle);
@@ -271,6 +330,7 @@ void Plot( bool embedded = true) {
   ZTT->GetYaxis()->SetRangeUser(0,1.2*ZTT->GetMaximum());
   if (logY) {
     histData->GetYaxis()->SetRangeUser(yLower,scaleYUpper*yUpper);
+    ZTT->GetYaxis()->SetRangeUser(yLower,scaleYUpper*yUpper);
   }
 
   histData->SetMarkerSize(1.4);
@@ -301,7 +361,7 @@ void Plot( bool embedded = true) {
   upper->SetFrameBorderSize(10);
 
   histData->Draw("e1");
-  ZTT->Draw("h");
+  ZTT->Draw("sameh");
   ZLL->Draw("sameh");
   QCD->Draw("sameh");
   W->Draw("sameh");
@@ -323,17 +383,17 @@ void Plot( bool embedded = true) {
   std::cout << "Chi2 = " << chi2 << std::endl;
   std::cout << std::endl;
 
-  TLegend * leg = new TLegend(0.55,0.48,0.8,0.78);
+  TLegend * leg = new TLegend(0.61,0.47,0.85,0.77);
   SetLegendStyle(leg);
-  leg->SetTextSize(0.044);
-  //  leg->AddEntry(histData,"Data","lp");
+  leg->SetTextSize(0.042);
+  leg->AddEntry(histData,"Data","lp");
   leg->AddEntry(ZTT,"embedded Z#rightarrow#tau#tau","f");
   leg->AddEntry(ZLL,"Z#rightarrow#mu#mu","f");
   leg->AddEntry(QCD,"QCD","f");
   leg->AddEntry(W,"W#rightarrow#mu#nu","f");
   leg->AddEntry(EWK,"electroweak","f");
   leg->AddEntry(TT,"t#bar{t}","f");
-  leg->Draw();
+  if (plotLegend) leg->Draw();
   writeExtraText = true;
   extraText = "Preliminary";
   CMS_lumi(upper,4,33); 
@@ -431,6 +491,6 @@ void Plot( bool embedded = true) {
   canv1->cd();
   canv1->SetSelected(canv1);
   canv1->Update();
-  canv1->Print("figures/plot_"+Variable+suffix+".png");
+  canv1->Print("figures/plot_"+Variable+suffix+"_OS_SS_"+era+".png");
 
 }
