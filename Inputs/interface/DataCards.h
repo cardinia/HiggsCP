@@ -107,7 +107,7 @@ class DataCards {
   TString output_filename_;
 
   bool loadFiles();
-  void createOutputFile();
+  void createOutputFile(int classIndex, TString channel);
   
   void closeOutputFile();
   

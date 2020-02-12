@@ -70,13 +70,13 @@ bool DataCards::loadFiles() {
 
 }
 
-void DataCards::createOutputFile() {
-
-  outputFile_ = new TFile(output_dir_+"/"+output_filename_,"recreate");
+void DataCards::createOutputFile(int classIndex=-1, TString channel="") {
+  if (classIndex==-1&&channel=="") outputFile_ = new TFile(output_dir_+"/"+output_filename_+".root","recreate");
+  else outputFile_ = new TFile(output_dir_+"/"+output_filename_+"_"+channel+"_"+classNames[classIndex].second+".root","recreate");
   for (auto category : categories) {
     outputFile_->mkdir(category);
   } 
-
+  cout << "Created file " << outputFile_->GetName() <<endl;
 }
 
 void DataCards::closeOutputFile() {
@@ -100,6 +100,10 @@ void DataCards::createCategoryList(int classIndex=-1, TString channel="") {
       categories.push_back(catNamePrefix+"_"+ch+"_"+classNames[cl].second);
     }
   }
+  cout << "***************************************" << endl << "Running on the following categories: " <<endl;
+  for (auto category : categories) cout << category << endl;
+  cout << "***************************************" << endl << endl;
+
 }
 
 
@@ -236,7 +240,7 @@ TH1D * DataCards::CreateCardsFakesOrQCD(TString FakeOrQCD, params parameters, TS
 
 void DataCards::RunOnCategory(TString category) {
 
-  cout << "Running on category " << endl;
+  cout << "Running on category " << category << endl;
 
   vector<TH1D*> allHists; allHists.clear();
 
@@ -342,7 +346,7 @@ bool DataCards::Run(int classIndex=-1, TString channel="") {
 
   createCategoryList(classIndex,channel);
   setCategoryCuts();
-  createOutputFile();
+  createOutputFile(classIndex,channel);
 
   for (auto category : categories) 
     RunOnCategory(category);

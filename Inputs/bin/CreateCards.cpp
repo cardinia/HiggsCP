@@ -64,7 +64,6 @@ int main(int argc, char * argv[]) {
   cards->SetInputDirectory(Input_dir);
   cards->SetOutputDirectory(Output_dir);
   cards->SetOutputFileName(Output_filename);
-
   bool error = cards->Run(classIndex,channel);
   delete cards;
 
