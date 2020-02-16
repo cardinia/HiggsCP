@@ -105,10 +105,10 @@ int main(int argc, char * argv[]) {
     embedded_trigger_weight  = 1.03;
     embedded_tracking_weight = 0.98;
     input_dir="/nfs/dust/cms/user/rasp/HiggsCP/2016";
-    //output_dir="/nfs/dust/cms/user/rasp/HiggsCP/2016/DNN";
+    output_dir="/nfs/dust/cms/user/rasp/HiggsCP/2016/DNN";
   }
   //  TString output_dir = "./test/NTuples_"+channel+"_" + era;
-  gSystem -> Exec("mkdir " + output_dir);
+  //  gSystem -> Exec("mkdir " + output_dir);
   // Needed for stitching
   double xsecWIncl      = xsec_map->at(process_map->at("WJets"));
   double xsecW1Jets     = xsec_map->at(process_map->at("W1Jets"));
@@ -191,7 +191,8 @@ int main(int argc, char * argv[]) {
 	cout << "Tree name : " << TreeName << endl;        
 	outFile->cd("");
         TTree *outTree = new TTree(TreeName, "tree created as DNN input");
-	outTree->SetAutoSave(100000000); // auto save after 100.000.000 of events
+	outTree->SetDirectory(0);
+	outTree->SetAutoSave(10000000); // auto save after 100.000.000 of events
 	
 	uint run; 
 	ULong64_t      evt;
