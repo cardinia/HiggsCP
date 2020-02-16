@@ -93,8 +93,8 @@ int main(int argc, char * argv[]) {
     qcd_ss_os_iso_relaxed_ratio = 1.; 
     embedded_trigger_weight  = 1.00;
     embedded_tracking_weight = 0.99;
-    input_dir="/nfs/dust/cms/user/rasp/Run/Run2017/CP";
-    output_dir="/nfs/dust/cms/user/rasp/HiggsCP/2017/DNN_MVADM";
+    input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2017/";
+    output_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/HiggsCP/Inputs/NTuples_"+channel+"_" + era;
   }  
   else if(era == "2016"){
     xsec_map    = &xsec_map_2016;
@@ -108,7 +108,7 @@ int main(int argc, char * argv[]) {
     //output_dir="/nfs/dust/cms/user/rasp/HiggsCP/2016/DNN";
   }
   //  TString output_dir = "./test/NTuples_"+channel+"_" + era;
-  //  gSystem -> Exec("mkdir " + output_dir);
+  gSystem -> Exec("mkdir " + output_dir);
   // Needed for stitching
   double xsecWIncl      = xsec_map->at(process_map->at("WJets"));
   double xsecW1Jets     = xsec_map->at(process_map->at("W1Jets"));
@@ -525,7 +525,7 @@ int main(int argc, char * argv[]) {
 	  if(!isData && !isEmbedded) xsec = xsec_map->at(subsample);
 	  int counter=0;
 	  
-	  cout << "Cross section : " << xsec << endl;
+	  //cout << "Cross section : " << xsec << endl;
 
 	  cout << "    entries in tree = " << inTree->GetEntries() << endl;
 	  for (int i=0; i<inTree->GetEntries(); i++) {
@@ -609,12 +609,12 @@ int main(int argc, char * argv[]) {
 	      xsec_lumi_weight = xsec*luminosity/nevents;
 	      qcd_correction = qcd_ss_os_iso_relaxed_ratio;
 	      trigger_filter_weight = trigger_filter_efficiency;
-	      
+	      /*
 	      cout << "lumi = " << luminosity << endl;
 	      cout << "xsec = " << xsec << endl;
 	      cout << "nevents = " << nevents << endl;
 	      cout << "XSecLumi = " << xsec_lumi_weight << endl;
-
+	      */
 	      // Initialize variables for jet observables to -10 for NN
 	      if(njets < 2){
 		jdeta   = -10;

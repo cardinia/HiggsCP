@@ -3,7 +3,7 @@
 # $2 - era 
 
 cat > $1_$2.submit <<EOF
-+RequestRuntime=20000
++RequestRuntime=10000
 
 RequestMemory = 2000
 

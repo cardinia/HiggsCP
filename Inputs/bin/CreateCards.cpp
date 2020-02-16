@@ -10,6 +10,13 @@ int main(int argc, char * argv[]) {
 
   Config cfg(argv[1]);
 
+  TString channel="";
+  int classIndex=-1;
+  if(argc>=3){
+    classIndex = std::atoi(argv[2]);
+    channel = argv[3];
+  }
+
   const string era = cfg.get<string>("Era");
   TString Era(era);
   const bool embedded = cfg.get<bool>("IsEmbedded");
@@ -57,8 +64,7 @@ int main(int argc, char * argv[]) {
   cards->SetInputDirectory(Input_dir);
   cards->SetOutputDirectory(Output_dir);
   cards->SetOutputFileName(Output_filename);
-
-  bool error = cards->Run();
+  bool error = cards->Run(classIndex,channel);
   delete cards;
 
 }
