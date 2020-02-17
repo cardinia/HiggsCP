@@ -191,8 +191,8 @@ int main(int argc, char * argv[]) {
 	cout << "Tree name : " << TreeName << endl;        
 	outFile->cd("");
         TTree *outTree = new TTree(TreeName, "tree created as DNN input");
-	outTree->SetDirectory(0);
-	outTree->SetAutoSave(10000000); // auto save after 100.000.000 of events
+	//	outTree->SetDirectory(0);
+	outTree->SetAutoSave(100000000); // auto save after 100.000.000 of events
 	
 	uint run; 
 	ULong64_t      evt;

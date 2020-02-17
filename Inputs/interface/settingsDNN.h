@@ -218,8 +218,8 @@ const vector<TString> DYJets_2016          = { "DY1JetsToLL_M-50",
 					       "DY2JetsToLL_M-50",
 					       "DY3JetsToLL_M-50",
 					       "DY4JetsToLL_M-50",
-					       "DYJetsToLL_M-50",
-					       "DYJetsToLL_M-10to50"};
+					       "DYJetsToLL_M-50"};
+					       //"DYJetsToLL_M-10to50";
 const vector<TString> WJets_2016           = { "W1JetsToLNu",
 					       "W2JetsToLNu", 
 					       "W3JetsToLNu", 
@@ -347,8 +347,8 @@ const map<TString, double> xsec_map_2017 = {
   { "GluGluHToTauTau_M125" , 48.58*0.0627 },
   { "SUSYGluGluToHToTauTau" , 48.58*0.0627 },
   { "VBFHToTauTau_M125"    , 3.782*0.0627 },
-  { "GluGluHToTauTauUncorrDecays_M125" , 48.58*0.0627 },
-  { "VBFHToTauTauUncorrDecays_M125"    , 3.782*0.0627 },
+  { "GluGluHToTauTauUncorrDecays_M125" , 48.58*0.0627*0.2447 },
+  { "VBFHToTauTauUncorrDecays_M125"    , 3.782*0.0627*0.2697 },
   { "EWKWMinus2Jets_WToLNu_M-50" , 23.24 },
   { "EWKWPlus2Jets_WToLNu_M-50" , 29.59 },
   { "WGToLNuG"    , 464.4 },
@@ -389,8 +389,10 @@ const map<TString, double> xsec_map_2016 = {
     { "WZJToLLLNu"               , 5.26 },
     { "ZZTo4L"                   , 1.212 },
     { "ZZTo2L2Q"                 , 3.22 },
+    { "GluGluHToTauTauUncorrDecays_M125" , 48.58*0.0627*0.2455 },
+    { "VBFHToTauTauUncorrDecays_M125"    , 3.782*0.0627*0.2727 },
     {"ZZ" , 12.14},
-    {"WW" , 12.14},
+    {"WW" , 75.88},
     {"WZ" , 27.6},
     { "WGToLNuG"                 , 178.4 }, // xsdb
     { "WGstarToLNuMuMu"          , 2.793 },
