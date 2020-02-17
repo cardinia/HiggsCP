@@ -347,8 +347,8 @@ const map<TString, double> xsec_map_2017 = {
   { "GluGluHToTauTau_M125" , 48.58*0.0627 },
   { "SUSYGluGluToHToTauTau" , 48.58*0.0627 },
   { "VBFHToTauTau_M125"    , 3.782*0.0627 },
-  { "GluGluHToTauTauUncorrDecays_M125" , 48.58*0.0627 },
-  { "VBFHToTauTauUncorrDecays_M125"    , 3.782*0.0627 },
+  { "GluGluHToTauTauUncorrDecays_M125" , 48.58*0.0627*0.2447 },
+  { "VBFHToTauTauUncorrDecays_M125"    , 3.782*0.0627*0.2697 },
   { "EWKWMinus2Jets_WToLNu_M-50" , 23.24 },
   { "EWKWPlus2Jets_WToLNu_M-50" , 29.59 },
   { "WGToLNuG"    , 464.4 },
@@ -392,6 +392,8 @@ const map<TString, double> xsec_map_2016 = {
     {"ZZ" , 12.14},
     {"WW" , 12.14},
     {"WZ" , 27.6},
+    { "GluGluHToTauTauUncorrDecays_M125" , 48.58*0.0627*0.2455 },
+    { "VBFHToTauTauUncorrDecays_M125"    , 3.782*0.0627*0.2727 },
     { "WGToLNuG"                 , 178.4 }, // xsdb
     { "WGstarToLNuMuMu"          , 2.793 },
     { "WGstarToLNuEE"            , 3.526 },
@@ -577,13 +579,16 @@ std::vector<KeyTemp> extract_keys(std::map<KeyTemp, ValTemp> const& input_map) {
 double getNEventsProcessed(TString input_dir, TString sample, TString Year="2017")
 {
   double nevents;
+  /*
   vector<TString> keys_list;
   if(Year=="2017") keys_list = extract_keys(n_events_per_sample_2017);
   else keys_list = extract_keys(n_events_per_sample_2016);
   if((std::find(keys_list.begin(), keys_list.end(), sample) != keys_list.end())&&Year!="2018"){
     if(Year=="2017") nevents = n_events_per_sample_2017.at(sample);
     else nevents = n_events_per_sample_2016.at(sample);
-  }else if(!sample.Contains("Run")){
+  }else
+  */
+  if(!sample.Contains("Run")){
     TFile * file = new TFile(input_dir+"/"+sample+".root");
     TH1D * histWeightsH = (TH1D*)file->Get("nWeightedEvents");
     if(!histWeightsH){
@@ -591,7 +596,7 @@ double getNEventsProcessed(TString input_dir, TString sample, TString Year="2017
       exit(-1);
     }
     nevents = histWeightsH->GetSumOfWeights();
-    if(Year!="2018")cout << "WARNING: normalization taken from nWeightedEvents, please check! ";
+    //if(Year!="2018")cout << "WARNING: normalization taken from nWeightedEvents, please check! ";
     file -> Close();
     delete file;
   }else nevents=0;
