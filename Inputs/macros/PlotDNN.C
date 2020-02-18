@@ -2,7 +2,7 @@
 #include "CMS_lumi.C"
 
 void PlotDNN( bool embedded = true,
-	      TString era = "2018") {
+	      TString era = "2017") {
 
   SetStyle();
 
@@ -10,9 +10,11 @@ void PlotDNN( bool embedded = true,
   if (embedded) suffix = "_embedded";
 
   bool plotLegend = true;
-  TString dir = "/nfs/dust/cms/user/rasp/HiggsCP/2017/DNN_MVADM";
+  TString dir = "/nfs/dust/cms/user/rasp/HiggsCP/2016/DNN";
+  if (era=="2017")
+    dir = "/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/HiggsCP/Inputs/NTuples_mt_2017_v2";
   if (era=="2018")
-    dir = "/nfs/dust/cms/user/rasp/HiggsCP/2018/DNN_MVADM_Old/";
+    dir = "/nfs/dust/cms/user/rasp/HiggsCP/2018/DNN";
 
   lumi_13TeV = "2018, 59.7 fb^{-1}";
   if (era=="2017")
@@ -20,14 +22,17 @@ void PlotDNN( bool embedded = true,
 
 
   TString DataFile = "SingleMuon";
-  TString Variable = "";
-  TString xtitle = "p_{T,#tau#tau} [GeV]";
+  TString Variable = "m_vis";
+  TString xtitle = "m_{vis} [GeV]";
   TString ytitle = "Events";
-  int nBins  =                  40;
+  int nBins  =                  30;
   float xmin =                   0;
-  float xmax =                 400;
-  float yLower =                10;
+  float xmax =                 300;
+  float yLower =                 0;
   float scaleYUpper =           10;
+  bool logY = false;
+  bool logX = false;
+
 
   TString Cuts("pt_1>21&&os>0.5&&puppimt_1<50");
 
@@ -39,9 +44,6 @@ void PlotDNN( bool embedded = true,
 
   TString CutsZLL_Sig = Cuts_Sig + TString("&&!(gen_match_1==4&&gen_match_2==5)");
   TString CutsZLL_FF  = Cuts_FF  + TString("&&!(gen_match_1==4&&gen_match_2==5)");
-
-  bool logY = true;
-  bool logX = false;
 
   TH1::SetDefaultSumw2();
   TH2::SetDefaultSumw2();
@@ -77,7 +79,7 @@ void PlotDNN( bool embedded = true,
 
   if (embedded) {
     cuts_Sig[6] = "weight*("+Cuts_Sig+"&&gen_match_2!=6)";
-    cuts_FF[6]  = "weight*ff_mva*("+Cuts_FF+"&&gen_match_2!=6)";
+    cuts_FF[6]  = "weight*ff_nom*("+Cuts_FF+"&&gen_match_2!=6)";
   }
   else {
     cuts_Sig[5] = "weight*("+CutsZLL_Sig+"&&gen_match_2!=6)";
@@ -95,7 +97,6 @@ void PlotDNN( bool embedded = true,
 
   // filling histograms
   for (int i=0; i<nSamples; ++i) {
-    cout << sampleNames[i] << endl;
     TFile * file = new TFile(dir+"/mt-NOMINAL_ntuple_"+sampleNames[i]+"_"+era+".root");
     TTree * tree = (TTree*)file->Get("TauCheck");
     TString histNameSig = sampleNames[i] + "_sig";
@@ -272,7 +273,10 @@ void PlotDNN( bool embedded = true,
   SetLegendStyle(leg);
   leg->SetTextSize(0.044);
   leg->AddEntry(histData,"Data","lp");
-  leg->AddEntry(ZTT,"embedded Z#rightarrow#tau#tau","f");
+  if (embedded)
+    leg->AddEntry(ZTT,"embedded Z#rightarrow#tau#tau","f");
+  else
+    leg->AddEntry(ZTT,"Z#rightarrow#tau#tau","f");
   leg->AddEntry(ZLL,"Z#rightarrow#mu#mu","f");
   leg->AddEntry(QCD,"misidentified j#rightarrow#tau","f");
   leg->AddEntry(EWK,"electroweak","f");
