@@ -27,8 +27,8 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
 			       int nBins  =   25,
 			       float xmin =    0,
 			       float xmax =  250,
-			       TString Weight = "xsec_lumi_weight*weight*",
-			       TString Cut="(pt_1>21&&os>0.5&&puppimt_1<50)*",
+			       TString Weight = "weight*",
+			       TString Cut="(pt_1>21&&os>0.5&&puppimt_1<50&&byVVVLooseDeepTau2017v2p1VSjet_2>0.5)*",
 			       TString ytitle = "Events",
 			       int categoryIndex=-1,
 			       TString directory = "/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/HiggsCP/Inputs/NTuples_mt_2017_v2/",
@@ -142,8 +142,8 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   TString cutsaIso[nSamples];
 
   // MC specific cuts to select certain type of particle
-  TString isZTT="*(gen_match_2==5)";
-  TString isZLL="*!(gen_match_2==5)";
+  TString isZTT="*(gen_match_2==5&&gen_match_1==4)";
+  TString isZLL="*!(gen_match_2==5&&gen_match_1==4)";
 
   // Selection cuts applied to all samples
   for (int i=1; i<nSamples; ++i){
