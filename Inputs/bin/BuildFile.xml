@@ -1,5 +1,4 @@
 <Flags CXXFLAGS="-Wno-unused-variable -Wno-error=unused-but-set-variable -Wno-error=maybe-uninitialized" />
-<flags CXXFLAGS="-g -DDEBUG -O3 -Wall -std=c++17" />
 
 <bin name="CreateDNN" file="CreateDNN.cpp">
  <use name="PhysicsTools/Utilities"/>

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <map>
 #include <algorithm>
+#include <experimental/filesystem>
 #include "TString.h"
 #include "TFile.h"
 #include "TTree.h"
@@ -12,6 +13,10 @@
 #include "RooFunctor.h"
 #include "HiggsCP/Inputs/interface/settingsDNN.h"
 #include "HTTutilities/Jet2TauFakes/interface/FakeFactor.h"
+
+bool TEST = false;
+namespace fs = std::experimental::filesystem;
+
 
 int main(int argc, char * argv[]) {
 
@@ -94,7 +99,7 @@ int main(int argc, char * argv[]) {
     embedded_trigger_weight  = 1.00;
     embedded_tracking_weight = 0.99;
     input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2017/";
-    output_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/HiggsCP/Inputs/NTuples_"+channel+"_" + era;
+    output_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/HiggsCP/Inputs/NTuples_"+channel+"_" + era +"_v2";
   }  
   else if(era == "2016"){
     xsec_map    = &xsec_map_2016;
@@ -107,8 +112,21 @@ int main(int argc, char * argv[]) {
     input_dir="/nfs/dust/cms/user/rasp/HiggsCP/2016";
     output_dir="/nfs/dust/cms/user/rasp/HiggsCP/2016/DNN";
   }
+  fs::path path(output_dir.Data());
+  if (!(fs::exists(path))) {
+    cout << "WARNING: Output directory (" << output_dir.Data() << ") not found, it will be created automatically!"
+	 << endl;
+    //  exit(EXIT_FAILURE);
+    fs::create_directory(path);
+    if (!(fs::exists(path))) {
+      cout << "ERROR: Output directory (" << output_dir.Data() << ") has not been created!" << endl
+	   << "At least the parent directory needs to exist, please check!" << endl;
+      exit(EXIT_FAILURE);
+    }
+  }
   //  TString output_dir = "./test/NTuples_"+channel+"_" + era;
-  //  gSystem -> Exec("mkdir " + output_dir);
+  //gSystem -> Exec("mkdir " + output_dir);
+
   // Needed for stitching
   double xsecWIncl      = xsec_map->at(process_map->at("WJets"));
   double xsecW1Jets     = xsec_map->at(process_map->at("W1Jets"));
@@ -191,7 +209,6 @@ int main(int argc, char * argv[]) {
 	cout << "Tree name : " << TreeName << endl;        
 	outFile->cd("");
         TTree *outTree = new TTree(TreeName, "tree created as DNN input");
-	//	outTree->SetDirectory(0);
 	outTree->SetAutoSave(100000000); // auto save after 100.000.000 of events
 	
 	uint run; 
@@ -209,7 +226,9 @@ int main(int argc, char * argv[]) {
 	float ipx_1;
 	float ipy_1;
 	float ipz_1;
-	double ip_sig_1;
+	double IP_signif_PV_with_BS_1;
+ 	double IP_signif_RefitV_with_BS_1;
+ 	double IP_signif_RefitV_with_BS_uncorr_1;
 	  
 	float pt_2;
 	float eta_2;
@@ -221,8 +240,10 @@ int main(int argc, char * argv[]) {
 	float ipx_2;
 	float ipy_2;
 	float ipz_2;
-	double ip_sig_2;
-	
+	double IP_signif_PV_with_BS_2;
+ 	double IP_signif_RefitV_with_BS_2;
+ 	double IP_signif_RefitV_with_BS_uncorr_2;
+ 	
 	bool trg_singlemuon;
 	bool trg_mutaucross;
 	
@@ -257,6 +278,8 @@ int main(int argc, char * argv[]) {
 	float mt_tot;
 	float m_sv;
 	float pt_sv;
+	float m_fast;
+	float pt_fast;
 	
 	float ff_nom;
 	float ff_sys;
@@ -286,6 +309,19 @@ int main(int argc, char * argv[]) {
 	
 	float acotautau_helix_uncorr_00;
 	float acotautau_helix_uncorr_01;
+
+	float acotautau_bs_00;
+ 	float acotautau_bs_01;
+ 	
+ 	float acotautau_bs_uncorr_00;
+ 	float acotautau_bs_uncorr_01;
+ 	
+ 	float acotautau_00;
+ 	float acotautau_01;
+ 	
+ 	float acotautau_uncorr_00;
+ 	float acotautau_uncorr_01;
+
 
 	// New branches
 	float xsec_lumi_weight;      
@@ -318,7 +354,9 @@ int main(int argc, char * argv[]) {
 	outTree->Branch("ipx_1",&ipx_1,"ipx_1/F");
 	outTree->Branch("ipy_1",&ipy_1,"ipy_1/F");
 	outTree->Branch("ipz_1",&ipz_1,"ipz_1/F");
-	outTree->Branch("IP_signif_PV_with_BS_1",&ip_sig_1,"IP_signif_PV_with_BS_1/D");
+	outTree->Branch("IP_signif_PV_with_BS_1",&IP_signif_PV_with_BS_1,"IP_signif_PV_with_BS_1/D");
+ 	outTree->Branch("IP_signif_RefitV_with_BS_1",&IP_signif_RefitV_with_BS_1,"IP_signif_RefitV_with_BS_1/D");
+ 	outTree->Branch("IP_signif_RefitV_with_BS_uncorr_1",&IP_signif_RefitV_with_BS_uncorr_1,"IP_signif_RefitV_with_BS_uncorr_1/D");
 	
 	outTree->Branch("pt_2",&pt_2,"pt_2/F");
 	outTree->Branch("eta_2",&eta_2,"eta_2/F");
@@ -330,7 +368,9 @@ int main(int argc, char * argv[]) {
 	outTree->Branch("ipx_2",&ipx_2,"ipx_2/F");
 	outTree->Branch("ipy_2",&ipy_2,"ipy_2/F");
 	outTree->Branch("ipz_2",&ipz_2,"ipz_2/F");
-	outTree->Branch("IP_signif_PV_with_BS_2",&ip_sig_2,"IP_signif_PV_with_BS_2/D");
+	outTree->Branch("IP_signif_PV_with_BS_2",&IP_signif_PV_with_BS_2,"IP_signif_PV_with_BS_2/D");
+ 	outTree->Branch("IP_signif_RefitV_with_BS_2",&IP_signif_RefitV_with_BS_2,"IP_signif_RefitV_with_BS_2/D");
+ 	outTree->Branch("IP_signif_RefitV_with_BS_uncorr_2",&IP_signif_RefitV_with_BS_uncorr_2,"IP_signif_RefitV_with_BS_uncorr_2/D");
 	
 	//	outTree->Branch("trg_singlemuon",&trg_singlemuon,"trg_singlemuon/O");
 	//	outTree->Branch("trg_mutaucross",&trg_mutaucross,"trg_mutaucross/O");
@@ -361,6 +401,8 @@ int main(int argc, char * argv[]) {
 	outTree->Branch("mt_tot",&mt_tot,"mt_tot/F");
 	outTree->Branch("m_sv",&m_sv,"m_sv/F");
 	outTree->Branch("pt_sv",&pt_sv,"pt_sv/F");
+	outTree->Branch("m_fast",&m_fast,"m_fast/F");
+	outTree->Branch("pt_fast",&pt_fast,"pt_fast/F");
 	
 	outTree->Branch("puppimet",&puppimet,"puppimet/F");      
 	outTree->Branch("os",&os,"os/I");      
@@ -380,12 +422,24 @@ int main(int argc, char * argv[]) {
 	
 	outTree->Branch("acotautau_helix_00",&acotautau_helix_00,"acotautau_helix_00/F");
 	outTree->Branch("acotautau_helix_01",&acotautau_helix_01,"acotautau_helix_01/F");
+
+	outTree->Branch("acotautau_bs_00",&acotautau_bs_00,"acotautau_bs_00/F");
+ 	outTree->Branch("acotautau_bs_01",&acotautau_bs_01,"acotautau_bs_01/F");
+ 	
+ 	outTree->Branch("acotautau_00",&acotautau_00,"acotautau_00/F");
+ 	outTree->Branch("acotautau_01",&acotautau_01,"acotautau_01/F");
+
+	outTree->Branch("acotautau_refitbs_uncorr_00",&acotautau_refitbs_uncorr_00,"acotautau_refitbs_uncorr_00/F");
+ 	outTree->Branch("acotautau_refitbs_uncorr_01",&acotautau_refitbs_uncorr_01,"acotautau_refitbs_uncorr_01/F");
 	
-	//	outTree->Branch("acotautau_refitbs_uncorr_00",&acotautau_refitbs_uncorr_00,"acotautau_refitbs_uncorr_00/F");
-	//	outTree->Branch("acotautau_refitbs_uncorr_01",&acotautau_refitbs_uncorr_01,"acotautau_refitbs_uncorr_01/F");
-	
-	//	outTree->Branch("acotautau_helix_uncorr_00",&acotautau_helix_uncorr_00,"acotautau_helix_uncorr_00/F");
-	//	outTree->Branch("acotautau_helix_uncorr_01",&acotautau_helix_uncorr_01,"acotautau_helix_uncorr_01/F");
+	outTree->Branch("acotautau_helix_uncorr_00",&acotautau_helix_uncorr_00,"acotautau_helix_uncorr_00/F");
+ 	outTree->Branch("acotautau_helix_uncorr_01",&acotautau_helix_uncorr_01,"acotautau_helix_uncorr_01/F");
+ 	
+ 	outTree->Branch("acotautau_bs_uncorr_00",&acotautau_bs_uncorr_00,"acotautau_bs_uncorr_00/F");
+ 	outTree->Branch("acotautau_bs_uncorr_01",&acotautau_bs_uncorr_01,"acotautau_bs_uncorr_01/F");
+ 	
+ 	outTree->Branch("acotautau_uncorr_00",&acotautau_uncorr_00,"acotautau_uncorr_00/F");
+ 	outTree->Branch("acotautau_uncorr_01",&acotautau_uncorr_01,"acotautau_uncorr_01/F");
 	
 	outTree->Branch("xsec_lumi_weight", &xsec_lumi_weight, "xsec_lumi_weight/F");
 	//	outTree->Branch("qcd_correction", &qcd_correction, "qcd_correction/F");
@@ -440,8 +494,10 @@ int main(int argc, char * argv[]) {
 	  inTree->SetBranchAddress("ipx_1",&ipx_1);
 	  inTree->SetBranchAddress("ipy_1",&ipy_1);
 	  inTree->SetBranchAddress("ipz_1",&ipz_1);
-	  inTree->SetBranchAddress("IP_signif_PV_with_BS_1",&ip_sig_1);
-	  
+	  inTree->SetBranchAddress("IP_signif_PV_with_BS_1",&IP_signif_PV_with_BS_1);
+ 	  inTree->SetBranchAddress("IP_signif_RefitV_with_BS_1",&IP_signif_RefitV_with_BS_1);
+ 	  inTree->SetBranchAddress("IP_signif_RefitV_with_BS_uncorr_1",&IP_signif_RefitV_with_BS_uncorr_1);
+
 	  inTree->SetBranchAddress("pt_2",&pt_2);
 	  inTree->SetBranchAddress("eta_2",&eta_2);
 	  inTree->SetBranchAddress("phi_2",&phi_2);
@@ -452,7 +508,9 @@ int main(int argc, char * argv[]) {
 	  inTree->SetBranchAddress("ipx_2",&ipx_2);
 	  inTree->SetBranchAddress("ipy_2",&ipy_2);
 	  inTree->SetBranchAddress("ipz_2",&ipz_2);
-	  inTree->SetBranchAddress("IP_signif_PV_with_BS_2",&ip_sig_2);
+	  inTree->SetBranchAddress("IP_signif_PV_with_BS_2",&IP_signif_PV_with_BS_2);
+ 	  inTree->SetBranchAddress("IP_signif_RefitV_with_BS_2",&IP_signif_RefitV_with_BS_2);
+ 	  inTree->SetBranchAddress("IP_signif_RefitV_with_BS_uncorr_2",&IP_signif_RefitV_with_BS_uncorr_2);
 	  
 	  inTree->SetBranchAddress("trg_singlemuon",&trg_singlemuon);
 	  inTree->SetBranchAddress("trg_mutaucross",&trg_mutaucross);
@@ -484,6 +542,8 @@ int main(int argc, char * argv[]) {
 	  inTree->SetBranchAddress("mt_tot",&mt_tot);
 	  inTree->SetBranchAddress("m_sv",&m_sv);
 	  inTree->SetBranchAddress("pt_sv",&pt_sv);
+	  inTree->SetBranchAddress("m_fast",&m_fast);
+	  inTree->SetBranchAddress("pt_fast",&pt_fast);
 	  
 	  inTree->SetBranchAddress("puppimet",&puppimet);      
 	  inTree->SetBranchAddress("os",&os);      
@@ -503,12 +563,25 @@ int main(int argc, char * argv[]) {
 	  
 	  inTree->SetBranchAddress("acotautau_helix_00",&acotautau_helix_00);
 	  inTree->SetBranchAddress("acotautau_helix_01",&acotautau_helix_01);
+ 	  
+	  inTree->SetBranchAddress("acotautau_bs_00",&acotautau_bs_00);
+ 	  inTree->SetBranchAddress("acotautau_bs_01",&acotautau_bs_01);
+ 	  
+ 	  inTree->SetBranchAddress("acotautau_00",&acotautau_00);
+ 	  inTree->SetBranchAddress("acotautau_01",&acotautau_01);
+
 	  
 	  inTree->SetBranchAddress("acotautau_refitbs_uncorr_00",&acotautau_refitbs_uncorr_00);
 	  inTree->SetBranchAddress("acotautau_refitbs_uncorr_01",&acotautau_refitbs_uncorr_01);
 	  
 	  inTree->SetBranchAddress("acotautau_helix_uncorr_00",&acotautau_helix_uncorr_00);
 	  inTree->SetBranchAddress("acotautau_helix_uncorr_01",&acotautau_helix_uncorr_01);
+
+ 	  inTree->SetBranchAddress("acotautau_bs_uncorr_00",&acotautau_bs_uncorr_00);
+ 	  inTree->SetBranchAddress("acotautau_bs_uncorr_01",&acotautau_bs_uncorr_01);
+ 	  
+ 	  inTree->SetBranchAddress("acotautau_uncorr_00",&acotautau_bs_uncorr_00);
+ 	  inTree->SetBranchAddress("acotautau__uncorr_01",&acotautau_bs_uncorr_01);
 
 	  inTree->SetBranchAddress("gen_sm_htt125", &TauSpinnerWeightsEven);
 	  inTree->SetBranchAddress("gen_ps_htt125", &TauSpinnerWeightsOdd);
@@ -532,8 +605,10 @@ int main(int argc, char * argv[]) {
 	  for (int i=0; i<inTree->GetEntries(); i++) {
 	    // for (int i=0; i<10000; i++) {
 	      inTree->GetEntry(i);
-	      if (i%100000==0) cout << "processed " << i << " events " << endl;
-	      
+	      if (i%100000==0){
+		cout << "processed " << i << " events " << endl;
+		if(TEST) continue;
+	      }
 	      if(applyPreselection){
 		bool is_trigger = false;
 		bool is_singleLepTrigger = false;
@@ -749,4 +824,5 @@ int main(int argc, char * argv[]) {
     cout << endl; 
     cout << endl; 
   }
+
 }
