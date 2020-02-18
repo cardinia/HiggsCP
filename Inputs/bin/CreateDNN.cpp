@@ -313,14 +313,14 @@ int main(int argc, char * argv[]) {
 	float acotautau_bs_00;
  	float acotautau_bs_01;
  	
- 	float acotautau_bs_uncorr_00;
- 	float acotautau_bs_uncorr_01;
+ 	//float acotautau_bs_uncorr_00;
+ 	//float acotautau_bs_uncorr_01;
  	
  	float acotautau_00;
  	float acotautau_01;
  	
- 	float acotautau_uncorr_00;
- 	float acotautau_uncorr_01;
+ 	//float acotautau_uncorr_00;
+ 	//float acotautau_uncorr_01;
 
 
 	// New branches
@@ -435,11 +435,11 @@ int main(int argc, char * argv[]) {
 	outTree->Branch("acotautau_helix_uncorr_00",&acotautau_helix_uncorr_00,"acotautau_helix_uncorr_00/F");
  	outTree->Branch("acotautau_helix_uncorr_01",&acotautau_helix_uncorr_01,"acotautau_helix_uncorr_01/F");
  	
- 	outTree->Branch("acotautau_bs_uncorr_00",&acotautau_bs_uncorr_00,"acotautau_bs_uncorr_00/F");
- 	outTree->Branch("acotautau_bs_uncorr_01",&acotautau_bs_uncorr_01,"acotautau_bs_uncorr_01/F");
+ 	//outTree->Branch("acotautau_bs_uncorr_00",&acotautau_bs_uncorr_00,"acotautau_bs_uncorr_00/F");
+ 	//outTree->Branch("acotautau_bs_uncorr_01",&acotautau_bs_uncorr_01,"acotautau_bs_uncorr_01/F");
  	
- 	outTree->Branch("acotautau_uncorr_00",&acotautau_uncorr_00,"acotautau_uncorr_00/F");
- 	outTree->Branch("acotautau_uncorr_01",&acotautau_uncorr_01,"acotautau_uncorr_01/F");
+ 	//outTree->Branch("acotautau_uncorr_00",&acotautau_uncorr_00,"acotautau_uncorr_00/F");
+ 	//outTree->Branch("acotautau_uncorr_01",&acotautau_uncorr_01,"acotautau_uncorr_01/F");
 	
 	outTree->Branch("xsec_lumi_weight", &xsec_lumi_weight, "xsec_lumi_weight/F");
 	//	outTree->Branch("qcd_correction", &qcd_correction, "qcd_correction/F");
@@ -577,11 +577,11 @@ int main(int argc, char * argv[]) {
 	  inTree->SetBranchAddress("acotautau_helix_uncorr_00",&acotautau_helix_uncorr_00);
 	  inTree->SetBranchAddress("acotautau_helix_uncorr_01",&acotautau_helix_uncorr_01);
 
- 	  inTree->SetBranchAddress("acotautau_bs_uncorr_00",&acotautau_bs_uncorr_00);
- 	  inTree->SetBranchAddress("acotautau_bs_uncorr_01",&acotautau_bs_uncorr_01);
+ 	  //inTree->SetBranchAddress("acotautau_bs_uncorr_00",&acotautau_bs_uncorr_00);
+ 	  //inTree->SetBranchAddress("acotautau_bs_uncorr_01",&acotautau_bs_uncorr_01);
  	  
- 	  inTree->SetBranchAddress("acotautau_uncorr_00",&acotautau_bs_uncorr_00);
- 	  inTree->SetBranchAddress("acotautau__uncorr_01",&acotautau_bs_uncorr_01);
+ 	  //inTree->SetBranchAddress("acotautau_uncorr_00",&acotautau_bs_uncorr_00);
+ 	  //inTree->SetBranchAddress("acotautau_uncorr_01",&acotautau_bs_uncorr_01);
 
 	  inTree->SetBranchAddress("gen_sm_htt125", &TauSpinnerWeightsEven);
 	  inTree->SetBranchAddress("gen_ps_htt125", &TauSpinnerWeightsOdd);
