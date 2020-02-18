@@ -10,9 +10,9 @@
 #include <vector>
 #include <map>
 #include <iomanip>
-#include "Plotting.h"
-#include "Plotting_Style.h"
-#include "HttStylesNew.cc"
+#include "DesyTauAnalyses/NTupleMaker/test/Plotting.h"
+#include "DesyTauAnalyses/NTupleMaker/test/Plotting_Style.h"
+#include "DesyTauAnalyses/NTupleMaker/test/HttStylesNew.cc"
 #include "TPad.h"
 #include "TROOT.h"
 #include "TColor.h"
@@ -20,20 +20,20 @@
 #include "TMath.h"
 
 
+bool DeepTau = true;
 
-void Plot_lept_mutau_NNNTuples(TString Variable = "mt_1",
-			       TString xtitle = "m_{T} [GeV]",
-			       int nBins  =   30,
+void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
+			       TString xtitle = "m_{#tau#tau} [GeV]",
+			       int nBins  =   25,
 			       float xmin =    0,
-			       float xmax =  150,
+			       float xmax =  250,
 			       TString Weight = "xsec_lumi_weight*weight*",
-			       TString Cut="(mt_1<50)*",
+			       TString Cut="(pt_1>21&&os>0.5&&puppimt_1<50)*",
 			       TString ytitle = "Events",
 			       int categoryIndex=-1,
-			       TString directory = "/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_10_2_16/src/HiggsCP/Inputs/test/NTuples_mt_2017/",
-			       TString outputDir = "./Plots/",
-			       int year=2017,
-			       bool DeepTau = false, 
+			       TString directory = "/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/HiggsCP/Inputs/NTuples_mt_2017_v2/",
+			       TString outputDir = "./figures/",
+			       int era=2017,
 			       bool FFmethod = false,
 			       bool useEmbedded = false,
 			       bool LargeScale = false,  
@@ -46,7 +46,7 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "mt_1",
 			       )
 {
   using namespace std;
-  if(year!=2017)compareCP=false;
+  if(era!=2017)compareCP=false;
   if(categoryIndex>=0){
     Cut+="(predicted_class=="+TString::Itoa(categoryIndex,10)+")*";
   }
@@ -112,23 +112,25 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "mt_1",
     };
   }else{
     sampleNames = {
-      "mt-NOMINAL_ntuple_Data", // data (0)
-      "mt-NOMINAL_ntuple_DY",// (1)Drell-Yan Z->TT
-      "mt-NOMINAL_ntuple_DY", // (2)Drell-Yan Z->LL
+      "mt-NOMINAL_ntuple_SingleMuon", // data (0)
+      "mt-NOMINAL_ntuple_DYJets",// (1)Drell-Yan Z->TT
+      "mt-NOMINAL_ntuple_DYJets", // (2)Drell-Yan Z->LL
       "mt-NOMINAL_ntuple_WJets",// (3)WJets
-      "mt-NOMINAL_ntuple_TT",//(4)TTbar leptonic, hadronic, + semileptonic
+      "mt-NOMINAL_ntuple_TTbar",//(4)TTbar leptonic, hadronic, + semileptonic
       "mt-NOMINAL_ntuple_SingleTop", // (5) SingleTop tW tbar, SingleTop tW t, SingleTop t antitop, SingleTop t top
-      "mt-NOMINAL_ntuple_VV",// (6) WW, WZ, ZZ
-      "mt-NOMINAL_ntuple_ggH", // (7) Scalar ggH
-      "mt-NOMINAL_ntuple_VBF", // (8) Scalar VBF H
-      "mt-NOMINAL_ntuple_ggH", // (9) Pseudoscalar 
-      "mt-NOMINAL_ntuple_VBF" // (10) Scalar VBF H
+      "mt-NOMINAL_ntuple_Diboson",// (6) WW, WZ, ZZ
+      "mt-NOMINAL_ntuple_GluGluHToUncorrTauTau", // (7) Scalar ggH
+      "mt-NOMINAL_ntuple_VBFHToUncorrTauTau", // (8) Scalar VBF H
+      "mt-NOMINAL_ntuple_GluGluHToUncorrTauTau", // (9) Pseudoscalar 
+      "mt-NOMINAL_ntuple_VBFHToUncorrTauTau" // (10) Scalar VBF H
     }; 
   }
-  if(useEmbedded)sampleNames[1]="mt-NOMINAL_ntuple_Embedded";
+  if(useEmbedded)sampleNames[1]="mt-NOMINAL_ntuple_EmbeddedMuTau";
   const int nSamples = sampleNames.size(); //DY is used twice, for Zll and Ztt
   cout<<"this are the samples"<<endl;
   for (int i=0; i<nSamples; ++i) {
+    sampleNames[i]+="_";
+    sampleNames[i]+=era;
     cout << endl << sampleNames[i] << ":" << endl;}
 
   // *******************************
@@ -153,7 +155,7 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "mt_1",
   //specific selection weights for data, DY and top
   cuts[0] = IsoCut+"(os>0.5)"; //DATA
   if(useEmbedded){
-    cuts[1] = IsoCut+"(os>0.5)*embweight*effweight*mcweight"; //Embedded, i.e. data
+    cuts[1] = IsoCut+"(os>0.5)*weight"; //Embedded, i.e. data
     cuts[2] += zptmassweight;
 
   }else{
@@ -178,7 +180,7 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "mt_1",
    
   cutsSS[0] = IsoCut+qcdweight+"(os<0.5)";
   if(useEmbedded){
-    cutsSS[1] = IsoCut+qcdweight+"(os<0.5)*embweight*effweight*mcweight";
+    cutsSS[1] = IsoCut+qcdweight+"(os<0.5)*weight";
     cutsSS[2] += zptmassweight;
   }else{
     cutsSS[1] += zptmassweight+isZTT;
@@ -201,7 +203,7 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "mt_1",
 
   cutsaIso[0] = AntiIsoCut+"(os>0.5)*"+FFweight;
   if(useEmbedded){
-    cutsaIso[1] = AntiIsoCut+"(os>0.5)*embweight*effweight*mcweight*"+FFweight;
+    cutsaIso[1] = AntiIsoCut+"(os>0.5)*weight*"+FFweight;
     cutsaIso[2] += zptmassweight;
  }else{
     cutsaIso[1] += zptmassweight+isZTT;
@@ -617,9 +619,9 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "mt_1",
   FixTopRange(pads[0], GetPadYMax(pads[0]), 0.115);
   //DrawCMSLogo(pads[0], "CMS", "Preliminary", 11, 0.045, 0.035, 1.2);
 
-  if (year== 2016) DrawTitle(pads[0], "35.9 fb^{-1} (13 TeV, 2016)", 3);
-  else if (year== 2017) DrawTitle(pads[0], "41.9 fb^{-1} (13 TeV, 2017)", 3);
-  else if (year== 2018) DrawTitle(pads[0], "59.9 fb^{-1} (13 TeV, 2018)", 3);
+  if (era== 2016) DrawTitle(pads[0], "35.9 fb^{-1} (13 TeV, 2016)", 3);
+  else if (era== 2017) DrawTitle(pads[0], "41.9 fb^{-1} (13 TeV, 2017)", 3);
+  else if (era== 2018) DrawTitle(pads[0], "59.9 fb^{-1} (13 TeV, 2018)", 3);
   
   DrawTitle(pads[0], "#scale[1.2]{         #bf{CMS} Work in progress}", 1);
   FixBoxPadding(pads[0], legend, 0.05);
@@ -628,6 +630,6 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "mt_1",
   FixOverlay();
   canv1->Update();
   pads[0]->GetFrame()->Draw();
-  canv1 -> Print( outputDir + "MuTau"+TString::Itoa(year,10)+"_" + VariableName + (categoryIndex>=0 ? ((TString)"_Cat"+TString::Itoa(categoryIndex,10)+"_") : (TString)"_") +(useEmbedded ? (TString)"Emb-" : (TString)"") + (FFmethod ? (TString)"fakes" : (TString)"MC") + ".pdf" );
-  canv1 -> Print( outputDir + "MuTau"+TString::Itoa(year,10)+"_" + VariableName + (categoryIndex>=0 ? ((TString)"_Cat"+TString::Itoa(categoryIndex,10)+"_") : (TString)"_") +(useEmbedded ? (TString)"Emb-" : (TString)"") + (FFmethod ? (TString)"fakes" : (TString)"MC") + ".png" );
+  canv1 -> Print( outputDir + "MuTau"+TString::Itoa(era,10)+"_" + VariableName + (categoryIndex>=0 ? ((TString)"_Cat"+TString::Itoa(categoryIndex,10)+"_") : (TString)"_") +(useEmbedded ? (TString)"Emb-" : (TString)"") + (FFmethod ? (TString)"fakes" : (TString)"MC") + ".pdf" );
+  canv1 -> Print( outputDir + "MuTau"+TString::Itoa(era,10)+"_" + VariableName + (categoryIndex>=0 ? ((TString)"_Cat"+TString::Itoa(categoryIndex,10)+"_") : (TString)"_") +(useEmbedded ? (TString)"Emb-" : (TString)"") + (FFmethod ? (TString)"fakes" : (TString)"MC") + ".png" );
 }
