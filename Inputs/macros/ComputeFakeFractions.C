@@ -2,86 +2,79 @@
 #include <vector>
 #include <map>
 #include <iomanip>
-#include "boost/lexical_cast.hpp"
-#include "boost/algorithm/string.hpp"
-#include "boost/format.hpp"
-#include "boost/program_options.hpp"
-#include "boost/range/algorithm.hpp"
-#include "boost/range/algorithm_ext.hpp"
-#include "Plotting.h"
-#include "Plotting_Style.h"
-#include "HttStylesNew.cc"
+#include "DesyTauAnalyses/NTupleMaker/test/Plotting.h"
+#include "DesyTauAnalyses/NTupleMaker/test/Plotting_Style.h"
+#include "DesyTauAnalyses/NTupleMaker/test/HttStylesNew.cc"
 #include "TPad.h"
 #include "TROOT.h"
 #include "TColor.h"
 #include "TEfficiency.h"
 #include "TMath.h"
+#include "HiggsCP/Inputs/settings_for_eras_newNTuples.h"
 
-void ComputeFakeFractions(TString directory = "./mutau/",
-			  TString outputDir = "./Plots/",
+void ComputeFakeFractions(TString Variable = "m_vis",
+			  TString VariableName = "m_vis",
+			  TString xtitle = "m_{vis} [GeV]",
+			  const int nBins  =   15,
+			  float xmin = 0,
+			  float xmax = 250,  
+			  TString Weight = "puweight*mcweight*effweight*",
+			  TString Cuts = "(((trg_singlemuon>0.5&&pt_1>25)||(trg_mutaucross&&pt_1>21&&pt_2>32&&abs(eta_1)<2.1&&abs(eta_2)<2.1))&&iso_1<0.15&&pt_1>21&&pt_2>20&&byTightDeepTau2017v2p1VSmu_2>0.5&&byVVVLooseDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2<0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.4&&abs(eta_2)<2.3&&os>0.5)",
+			  TString directory = "/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2017/",
+			  TString outputDir = "./",
 			  TString suffix = "_antiIso",
-			  //double lumi = 14350  //RunsBC
-			  //double lumi = 13463  //MuF
-			  //double lumi = 27835 //RunsBCDE
-			  double lumi = 41465 //SingleMuon
-			  ) {
+			  TString era = "2017") {
 
   TH1::SetDefaultSumw2();
   SetStyle();
-  const int nSamples = 13;
+  const map<TString, double>  *xsec_map    = 0;
+  if (era == "2018") xsec_map = &xsec_map_2018;
+  else if (era == "2017") xsec_map = &xsec_map_2017;
+  else if (era == "2016") xsec_map = &xsec_map_2016;
+  else exit(EXIT_FAILURE);
 
-  TString Variable = "m_vis";
-  TString xtitle = "m_{vis} [GeV]";
-  //const int nBins  =   29;
-  const int nBins  =   9;
-  //float bins[nBins+1]={0.,20.,30.,40.,50.,60.,70.,80.,90.,100.,110.,120.,130.,140.,150.,160.,170.,180.,190.,200.,210.,220.,230.,240.,250.,300.,400.,500.,1000.,10000.};
-  float bins[nBins+1]={0.,50.,80.,100.,110.,120.,130.,150.,200.,250.};//,700.,1000.,10000.};
+  float lumi;
+  if(era=="2018") lumi = 59970;
+  else if(era=="2017") lumi = 41860;
+  else if(era=="2016") lumi = 36773;
+  else exit(EXIT_FAILURE);
 
-  TString Weight = "puweight*effweight*mcweight*";
-  TString Cuts = "(os>0.5&&iso_1<0.15&&mva17_2<0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&pt_1>20&&pt_2>30&&mt_1<50&&againstMuonTight3_2>0.5&&againstElectronVLooseMVA6_2>0.5&&(singleLepTrigger>0.5||xTrigger>0.5))*(byVLooseIsolationMVArun2v1DBoldDMwLT_2>0.5)";//&&mva17_2>0.5&&mt_1<60&&(m_vis>60&&m_vis<90)
-  TString ytitle = "Events";
+  TString ytitle = "process / data";
   
-  // scale factors
-  double TTnorm = 1.0;   //scale factors for normalization of ttbar and wjets
-  double Wnorm  = 1.0;  // TO DO: this need to be determined !!!
-
-  // weights
-  TString topweight("1*");   
-  TString qcdweight("1.06*");
-  TString zptmassweight="1.0*";                  //TO DO: CHANGE WEIGHTs
    
   // These samples names should match the root file names (-> sampleNames[i].root is read in later)
-  TString sampleNames[nSamples] = {
-        "SingleMuon_Run2017", // data (0)
-        "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8",// (1)Drell-Yan Z->TT
-        "WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8",// (2)WJets
-        "WW_TuneCP5_13TeV-pythia8",// (3)WW
-        "WZ_TuneCP5_13TeV-pythia8",// (4)WZ
-        "ZZ_TuneCP5_13TeV-pythia8",// (5)ZZ
-        "ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8", // (9) SingleTop tW tbar
-        "ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8", // (10) SingleTop tW t
-        "ST_t-channel_antitop_4f_inclusiveDecays_TuneCP5_13TeV-powhegV2-madspin-pythia8",// (11) SingleTop t antitop
-        "ST_t-channel_top_4f_inclusiveDecays_TuneCP5_13TeV-powhegV2-madspin-pythia8",// (12) SingleTop t top
-        "TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8",//(6)TTbar leptonic
-        "TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8",//(7) hadronic
-        "TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8"//(8) semileptonic
-  };
 
-  // Corresponding cross sections
-  double xsec[nSamples] = {1, // data (0)
-			   6225.42,  // DY(50) (1)
-			   Wnorm*61526.7,// WJets (2)
-			   63.21, // WW   (3)
-			   22.82,  // WZ    (4)
-			   10.32,  // ZZ      (5)
-			   38.06,           // ST_tW_antitop (6)
-			   38.09,           // ST_tW_top_5f (7)
-			   80.95,           // ST_t-channel_antitop (8)
-			   136.95,           // ST_t-channel_top (9)
-			   TTnorm*88.29,  // TT Leptonic (10)
-			   TTnorm*377.96,  // TT Hadronic  (11)
-			   TTnorm*365.35  // TT Semilept  (12)
-  };     
+  vector<TString> sampleNames;
+ if(era!="2016") sampleNames= {
+        "SingleMuon_Run", // data (0)
+        "DYJetsToLL_M-50",// (1)Drell-Yan
+        "WJetsToLNu",// (2)WJets
+        "WW",// (3)WW
+        "WZ",// (4)WZ
+        "ZZ",// (5)ZZ
+        "ST_tW_antitop_5f", // (6) SingleTop tW tbar
+        "ST_tW_top_5f", // (7) SingleTop tW t
+        "ST_t-channel_antitop_4f",// (8) SingleTop t antitop
+        "ST_t-channel_top_4f",// (9) SingleTop t top
+        "TTTo2L2Nu",//(10)TTbar leptonic
+        "TTToHadronic",//(11) hadronic
+        "TTToSemiLeptonic"//(12) semileptonic
+  };
+  else  sampleNames = {
+        "SingleMuon_Run", // data (0)
+        "DYJetsToLL_M-50",// (1)Drell-Yan Z->TT
+        "WJetsToLNu",// (2)WJets
+        "WW",// (3)WW
+        "WZ",// (4)WZ
+        "ZZ",// (5)ZZ
+        "ST_tW_antitop_5f", // (6) SingleTop tW tbar
+        "ST_tW_top_5f", // (7) SingleTop tW t
+        "ST_t-channel_antitop_4f",// (8) SingleTop t antitop
+        "ST_t-channel_top_4f",// (9) SingleTop t top
+        "TT"//(10) semileptonic
+   };
+  sampleNames[0]+=era;
+  const int nSamples = sampleNames.size(); //DY is used twice, for Zll and Ztt
 
 
   // *******************************
@@ -91,8 +84,7 @@ void ComputeFakeFractions(TString directory = "./mutau/",
   TString cuts[nSamples];
   TString cutstrueT[nSamples];
   TString fakeT="*(gen_match_2==6)";
-  TString trueT="*((gen_match_2==5)*0.88+(gen_match_2<5))";
-  //TString fakeT="";
+  TString trueT="*(gen_match_2!=6)";
 
   // MC specific cuts to select certain type of particle
   
@@ -102,20 +94,9 @@ void ComputeFakeFractions(TString directory = "./mutau/",
     cutstrueT[i] = Weight+Cuts+trueT;
   };
 
-  // Some special cuts/weights applied to only a few samples
-  //cuts[0] = "(os>0.5"+Cuts+"&&metFilters>0.5)"; //DATA
   cuts[0] = Cuts; //DATA
-  cuts[1] = Weight+zptmassweight+Cuts+fakeT;
-  cuts[10] = Weight+topweight+Cuts+fakeT;
-  cuts[11] = Weight+topweight+Cuts+fakeT;
-  cuts[12] = Weight+topweight+Cuts+fakeT;
    
-  //cutstrueT[0] = Cuts+"&&metFilters>0.5)";
   cutstrueT[0] = Cuts;
-  cutstrueT[1] = Weight+zptmassweight+Cuts+trueT;
-  cutstrueT[10] = Weight+topweight+Cuts+trueT;
-  cutstrueT[11] = Weight+topweight+Cuts+trueT;
-  cutstrueT[12] = Weight+topweight+Cuts+trueT;
 
   // *******************************
   // ***** Filling Histograms ******
@@ -139,17 +120,20 @@ void ComputeFakeFractions(TString directory = "./mutau/",
     TTree * tree = (TTree*)file->Get("TauCheck");
 
     // Calculate normalization of this sample
-    double norm = xsec[i]*lumi/nWeightedEvents->GetSumOfWeights(); 
+    float xsec = 1;
+    if(!sampleNames[i].Contains("Run")) xsec = xsec_map->at(sampleNames[i]);
+    else cout << cuts[i] <<endl;
+    double norm = xsec*lumi/nWeightedEvents->GetSumOfWeights(); 
 
-    cout << "xsec: " << xsec[i] << endl;
+    cout << "xsec: " << xsec << endl;
     cout << "lumi: " << lumi << endl;
     cout << "norm: " << norm << endl;
 
     // Name and initialize histograms
-    TString histName   = sampleNames[i] + Variable + "_fake";
-    TString histNametrueT = sampleNames[i] + Variable + "_trueT";
-    hist[i]   = new TH1D(histName,"",nBins,bins);
-    histtrueT[i] = new TH1D(histNametrueT,"",nBins,bins);
+    TString histName   = sampleNames[i] + VariableName + "_fake";
+    TString histNametrueT = sampleNames[i] + VariableName + "_trueT";
+    hist[i]   = new TH1D(histName,"",nBins,xmin,xmax);
+    histtrueT[i] = new TH1D(histNametrueT,"",nBins,xmin,xmax);
 
     cout << "Drawing ..." << endl;
     tree->Draw(Variable+">>"+histName,cuts[i]);
@@ -187,20 +171,15 @@ void ComputeFakeFractions(TString directory = "./mutau/",
   };
 
   TString refSamples[6];
-  double refXSec[6];
   double refEvents[6] = {0,0,0,0,0,0};
+  double refXSec[6] = {0,0,0,0,0,0};
 
   // redefine reference cross sections and reference samples
-  refSamples[0] = "WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8";
-  refSamples[1] = "W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8";
-  refSamples[2] = "W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8";
-  refSamples[3] = "W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8";
-  refSamples[4] = "W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8";
-  refXSec[0] = 61526.7;
-  refXSec[1] = 1.1622*8104.0;
-  refXSec[2] = 1.1622*2793.0;
-  refXSec[3] = 1.1622*992.5;
-  refXSec[4] = 1.1622*544.3;
+  refSamples[0] = "WJetsToLNu";
+  refSamples[1] = "W1JetsToLNu";
+  refSamples[2] = "W2JetsToLNu";
+  refSamples[3] = "W3JetsToLNu";
+  refSamples[4] = "W4JetsToLNu";
   refEvents[0] = 0;
   refEvents[1] = 0;
   refEvents[2] = 0;
@@ -208,20 +187,21 @@ void ComputeFakeFractions(TString directory = "./mutau/",
   refEvents[4] = 0;
 
   for (int iW=0; iW<5; ++iW) {
+    refXSec[iW] = xsec_map->at(refSamples[iW]);
     TFile * file = new TFile(directory+refSamples[iW]+".root");
     TH1D * nWeightedEvents = (TH1D*)file->Get("nWeightedEvents");
     refEvents[iW] = nWeightedEvents->GetSumOfWeights();   //number of events with amc@NLO weight
   }
 
-  TString wSampleNames[9] = {"WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8",
-			     "WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8",
-			     "WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8",
-			     "WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8",
-			     "WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8",
-			     "W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8",
-			     "W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8",
-			     "W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8",
-			     "W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8"
+  TString wSampleNames[9] = {"WJetsToLNu",
+			     "WJetsToLNu",
+			     "WJetsToLNu",
+			     "WJetsToLNu",
+			     "WJetsToLNu",
+			     "W1JetsToLNu",
+			     "W2JetsToLNu",
+			     "W3JetsToLNu",
+			     "W4JetsToLNu"
   };
 
   double wNorm[9];
@@ -250,10 +230,10 @@ void ComputeFakeFractions(TString directory = "./mutau/",
     TTree * tree = (TTree*)file->Get("TauCheck");
     double norm = wNorm[i];
 
-    TString histNameW   = wSampleNames[i] + Variable + "_w_fake";
-    TString histNameWtrueT = wSampleNames[i] + Variable + "_w_trueT";
-    histW[i]   = new TH1D(histNameW,"",nBins,bins);
-    histWtrueT[i] = new TH1D(histNameWtrueT,"",nBins,bins);
+    TString histNameW   = wSampleNames[i] + VariableName + "_w_fake";
+    TString histNameWtrueT = wSampleNames[i] + VariableName + "_w_trueT";
+    histW[i]   = new TH1D(histNameW,"",nBins,xmin,xmax);
+    histWtrueT[i] = new TH1D(histNameWtrueT,"",nBins,xmin,xmax);
 
     tree->Draw(Variable+">>"+histNameW,  cutsW[i]); //fill histogram with cuts applied
     tree->Draw(Variable+">>"+histNameWtrueT,cutsWtrueT[i]);
@@ -280,21 +260,14 @@ void ComputeFakeFractions(TString directory = "./mutau/",
   TH1D * histZtt[9];
   TH1D * histZtttrueT[9];
 
-  refSamples[0] = "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8";
-  refSamples[1] = "DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8";
-  refSamples[2] = "DY2JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8";
-  refSamples[3] = "DY3JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8";
-  refSamples[4] = "DY4JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8";
-  //refSamples[5] = "DYJetsToLL_M-10to50";
-
-  refXSec[0] = 6225.42;
-  refXSec[1] = 1.165*877.8;
-  refXSec[2] = 1.165*304.4;
-  refXSec[3] = 1.165*111.5;
-  refXSec[4] = 1.165*44.03;
-  //refXSec[5] = 15820;
+  refSamples[0] = "DYJetsToLL_M-50";
+  refSamples[1] = "DY1JetsToLL_M-50";
+  refSamples[2] = "DY2JetsToLL_M-50";
+  refSamples[3] = "DY3JetsToLL_M-50";
+  refSamples[4] = "DY4JetsToLL_M-50";
 
   for (int iDY=0; iDY<5; ++iDY) {
+    refXSec[iDY] = xsec_map->at(refSamples[iDY]);
     TFile * file = new TFile(directory+refSamples[iDY]+".root");
     TH1D * nWeightedEvents = (TH1D*)file->Get("nWeightedEvents");
     refEvents[iDY] = nWeightedEvents->GetSumOfWeights();
@@ -302,16 +275,15 @@ void ComputeFakeFractions(TString directory = "./mutau/",
 
   
 
-  TString dySampleNames[9] = {"DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8",
-			       "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8",
-			       "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8",
-			       "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8",
-			       "DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8",
-			       "DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8",
-			       "DY2JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8",
-			       "DY3JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8",
-			       "DY4JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8"//,
-			      //"DYJetsToLL_M-10to50"
+  TString dySampleNames[9] = {"DYJetsToLL_M-50",
+			      "DYJetsToLL_M-50",
+			      "DYJetsToLL_M-50",
+			      "DYJetsToLL_M-50",
+			      "DYJetsToLL_M-50",
+			      "DY1JetsToLL_M-50",
+			      "DY2JetsToLL_M-50",
+			       "DY3JetsToLL_M-50",
+			      "DY4JetsToLL_M-50"
   };
 
   double dyNorm[9];
@@ -342,10 +314,10 @@ void ComputeFakeFractions(TString directory = "./mutau/",
     TTree * tree = (TTree*)file->Get("TauCheck");
     double norm = dyNorm[i];
 
-    TString histNameZtt   = dySampleNames[i] + Variable + "_ztt_fake";
-    TString histNameZtttrueT = dySampleNames[i] + Variable + "_ztt_trueT";
-    histZtt[i]   = new TH1D(histNameZtt,"",nBins,bins);
-    histZtttrueT[i] = new TH1D(histNameZtttrueT,"",nBins,bins);
+    TString histNameZtt   = dySampleNames[i] + VariableName + "_ztt_fake";
+    TString histNameZtttrueT = dySampleNames[i] + VariableName + "_ztt_trueT";
+    histZtt[i]   = new TH1D(histNameZtt,"",nBins,xmin,xmax);
+    histZtttrueT[i] = new TH1D(histNameZtttrueT,"",nBins,xmin,xmax);
 
     tree -> Draw(Variable+">>"+histNameZtt,  cutsZtt[i]);
     tree -> Draw(Variable+">>"+histNameZtttrueT,cutsZtttrueT[i]);
@@ -380,7 +352,7 @@ void ComputeFakeFractions(TString directory = "./mutau/",
   for (int iH=2; iH<10; ++iH) hist[1]->Add(hist[1],hist[iH]);
 
   //Adding top
-  for (int iH=11; iH<nSamples; ++iH) hist[10]->Add(hist[10],hist[iH]);
+  if(era!="2016") for (int iH=11; iH<nSamples; ++iH) hist[10]->Add(hist[10],hist[iH]);
 
   // Adding trueT backgrounds
   for (int iH=2; iH<nSamples; ++iH) histtrueT[1]->Add(histtrueT[1],histtrueT[iH]);
@@ -428,6 +400,8 @@ void ComputeFakeFractions(TString directory = "./mutau/",
   cout << "QCD : Sum of weights = " << QCD->GetSumOfWeights() << " : Integral = " << QCD->Integral(1,nBins+1) << endl;
   cout << "Vfakes  : Sum of weights = " << Vfakes->GetSumOfWeights()  << " : Integral = " << Vfakes->Integral(1,nBins+1)  << endl;
   cout << "Topfakes  : Sum of weights = " << Topfakes->GetSumOfWeights()  << " : Integral = " << Topfakes->Integral(1,nBins+1)  << endl;
+  cout << "TrueTaus : Sum of weights = " << TrueTaus->GetSumOfWeights() << " : Integral = " << TrueTaus->Integral(1,nBins+1) << endl;
+  cout << "Data : Sum of weights = " << histData->GetSumOfWeights() << " : Integral = " << histData->Integral(1,nBins+1) << endl;
   
   QCD->Divide(QCD,histData);
   Vfakes->Divide(Vfakes,histData);
@@ -509,7 +483,7 @@ void ComputeFakeFractions(TString directory = "./mutau/",
 
   InitHist(QCD,TColor::GetColor("#FFCCFF"));
   InitHist(Topfakes,TColor::GetColor("#9999CC"));
-  InitHist(Vfakes,TColor::GetColor("#4496C8"));
+  InitHist(Vfakes,TColor::GetColor("#DE5A6A"));
   InitHist(TrueTaus,TColor::GetColor("#FFCC66"));
 
   legend -> AddEntry(histData, "Observed", "ple");
@@ -606,15 +580,13 @@ void ComputeFakeFractions(TString directory = "./mutau/",
   canv1->Update();
   pads[0]->GetFrame()->Draw();
 
-  canv1 -> Print( outputDir + "Fakes_" + Variable +suffix + ".pdf" );
-  canv1 -> Print( outputDir + "Fakes_" + Variable +suffix + ".eps" );
-  canv1 -> Print( outputDir + "Fakes_" + Variable +suffix + ".png" );
+  canv1 -> Print( outputDir + "Fakes_" + VariableName +suffix + ".png" );
 
-  TFile * file = new TFile("./FakeFractions_mvisbinned.root","recreate");
+  TFile * file = new TFile("./FakeFractions_"+VariableName+".root","recreate");
 
-  TH1D * ff_QCD      = new TH1D("ff_QCD","",nBins,bins);
-  TH1D * ff_W      = new TH1D("ff_W","",nBins,bins);
-  TH1D * ff_tt      = new TH1D("ff_tt","",nBins,bins);
+  TH1D * ff_QCD      = new TH1D("ff_QCD","",nBins,xmin,xmax);
+  TH1D * ff_W      = new TH1D("ff_W","",nBins,xmin,xmax);
+  TH1D * ff_tt      = new TH1D("ff_tt","",nBins,xmin,xmax);
   ff_QCD->Divide(QCD,histData);
   ff_W->Divide(Vfakes,histData);
   ff_tt->Divide(Topfakes,histData);
