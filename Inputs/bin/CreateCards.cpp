@@ -41,6 +41,12 @@ int main(int argc, char * argv[]) {
   const string output_filename = cfg.get<string>("OutputFileName");
   TString Output_filename(output_filename);
 
+  const string cutIpMuon = cfg.get<string>("CutIPmuon");
+  TString CutIpMuon(cutIpMuon);
+
+  const string cutIpPion = cfg.get<string>("CutIPpion");
+  TString CutIpPion(cutIpPion);
+
   /*
   for (auto XDNN : DNNbins) 
     cout << " " << XDNN;
@@ -64,6 +70,9 @@ int main(int argc, char * argv[]) {
 				    mvaDM,
 				    applyIPcut,
 				    runSystematics);
+
+  cards->SetCutIPmuon(CutIpMuon);
+  cards->SetCutIPpion(CutIpPion);
 
   cards->SetInputDirectory(Input_dir);
   cards->SetOutputDirectory(Output_dir);

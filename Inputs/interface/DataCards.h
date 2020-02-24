@@ -60,6 +60,16 @@ class DataCards {
   void SetOutputDirectory(TString output_dir);
   void SetOutputFileName(TString output_filename);
 
+  void SetCutIPmuon(TString CutIP_muon) {
+    CutIP_muon_ = CutIP_muon;
+  };
+
+  void SetCutIPpion(TString CutIP_pion) {
+    CutIP_pion_ = CutIP_pion;
+  };
+
+
+
   bool Run(int classIndex, TString channel);
 
   ~DataCards();
@@ -101,6 +111,9 @@ class DataCards {
   double xmin_;
   double xmax_;
   vector<double> xDNN_;  
+
+  TString CutIP_muon_;
+  TString CutIP_pion_;
 
   const TString prefix_ = "mt-NOMINAL_ntuple_";
 

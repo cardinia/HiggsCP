@@ -262,9 +262,9 @@ void DataCards::RunOnCategory(TString category) {
     TString IPCut("");
     if (applyIPcut_) {
       if (category.Contains("_mupi_"))
-	IPCut = "&&IP_signif_PV_with_BS_1>1.0&&IP_signif_PV_with_BS_2>1.0";
+	IPCut = "&&"+CutIP_muon_+"&&"+CutIP_pion_;
       else
-	IPCut = "&&IP_signif_PV_with_BS_1>1.0";
+	IPCut = "&&"+CutIP_muon_;
     }
     cuts += IPCut;
     cutsFF += IPCut;
