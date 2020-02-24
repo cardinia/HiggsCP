@@ -46,6 +46,7 @@ class DataCards {
 
   DataCards(TString era,
 	    bool embedded, 
+	    TString variableCP,
 	    int nbins,
 	    double xmin,
 	    double xmax,
@@ -95,10 +96,11 @@ class DataCards {
   bool applyIPcut_;
   bool runSystematics_;
   TString era_;
+  TString variableCP_;
   int nbins_;
   double xmin_;
   double xmax_;
-  vector<double> xDNN_;
+  vector<double> xDNN_;  
 
   const TString prefix_ = "mt-NOMINAL_ntuple_";
 
@@ -122,44 +124,68 @@ class DataCards {
   
   vector<TString> SystematicsNames = {
     "",
-    "CMS_shape_t_1prong_13TeVUp",
-    "CMS_shape_t_1prong_13TeVDown",
-    "CMS_shape_t_1prong1pi0_13TeVUp",
-    "CMS_shape_t_1prong1pi0_13TeVDown",
-    "CMS_shape_t_3prong_13TeVUp",
-    "CMS_shape_t_3prong_13TeVDown",
+    "CMS_scale_t_1prong_13TeVUp",
+    "CMS_scale_t_1prong_13TeVDown",
+    "CMS_scale_t_1prong1pizero_13TeVUp",
+    "CMS_scale_t_1prong1pizero_13TeVDown",
+    "CMS_scale_t_3prong_13TeVUp",
+    "CMS_scale_t_3prong_13TeVDown",
     "CMS_shape_dyShape_13TeVUp",
     "CMS_shape_dyShape_13TeVDown",
     "topPtWeightUp",
     "topPtWeightDown",
-    "CMS_met_UnclusteredEn_13TeVUp",
-    "CMS_met_UnclusteredEn_13TeVDown",
-    "CMS_met_boson_resolution_13TeVUp",
-    "CMS_met_boson_resolution_13TeVDown",
-    "CMS_met_boson_response_13TeVUp",
-    "CMS_met_boson_response_13TeVDown",
-    "CMS_scale_j_FlavorQCD13TeVUp",
-    "CMS_scale_j_FlavorQCD13TeVDown",
-    "CMS_scale_j_RelativeBal13TeVUp",
-    "CMS_scale_j_RelativeBal13TeVDown",
-    "CMS_scale_j_HF13TeVUp",
-    "CMS_scale_j_HF13TeVDown",
-    "CMS_scale_j_BBEC113TeVUp",
-    "CMS_scale_j_BBEC113TeVDown",
-    "CMS_scale_j_EC213TeVUp",
-    "CMS_scale_j_EC213TeVDown",
-    "CMS_scale_j_Absolute13TeVUp",
-    "CMS_scale_j_Absolute13TeVDown",
-    "CMS_scale_j_Absolute_201813TeVUp",
-    "CMS_scale_j_Absolute_201813TeVDown",
-    "CMS_scale_j_HF_201813TeVUp",
-    "CMS_scale_j_HF_201813TeVDown",
-    "CMS_scale_j_EC2_201813TeVUp",
-    "CMS_scale_j_EC2_201813TeVDown",
-    "CMS_scale_j_RelativeSample_201813TeVUp",
-    "CMS_scale_j_RelativeSample_201813TeVDown",
-    "CMS_scale_j_BBEC1_201813TeVUp",
-    "CMS_scale_j_BBEC1_201813TeVDown"
+    "CMS_scale_met_unclustered_13TeVUp",
+    "CMS_scale_met_unclustered_13TeVDown",
+    "CMS_scale_met_boson_resolution_13TeVUp",
+    "CMS_scale_met_boson_resolution_13TeVDown",
+    "CMS_scale_met_boson_response_13TeVUp",
+    "CMS_scale_met_boson_response_13TeVDown",
+    "CMS_scale_j_FlavorQCD_13TeVUp",
+    "CMS_scale_j_FlavorQCD_13TeVDown",
+    "CMS_scale_j_RelativeBal_13TeVUp",
+    "CMS_scale_j_RelativeBal_13TeVDown",
+    "CMS_scale_j_HF_13TeVUp",
+    "CMS_scale_j_HF_13TeVDown",
+    "CMS_scale_j_BBEC1_13TeVUp",
+    "CMS_scale_j_BBEC1_13TeVDown",
+    "CMS_scale_j_EC2_13TeVUp",
+    "CMS_scale_j_EC2_13TeVDown",
+    "CMS_scale_j_Absolute_13TeVUp",
+    "CMS_scale_j_Absolute_13TeVDown",
+    "CMS_scale_j_Absolute_2016_13TeVUp",
+    "CMS_scale_j_Absolute_2016_13TeVDown",
+    "CMS_scale_j_HF_2016_13TeVUp",
+    "CMS_scale_j_HF_2016_13TeVDown",
+    "CMS_scale_j_EC2_2016_13TeVUp",
+    "CMS_scale_j_EC2_2016_13TeVDown",
+    "CMS_scale_j_RelativeSample_2016_13TeVUp",
+    "CMS_scale_j_RelativeSample_2016_13TeVDown",
+    "CMS_scale_j_BBEC1_2016_13TeVUp",
+    "CMS_scale_j_BBEC1_2016_13TeVDown",
+    "CMS_scale_j_Absolute_2017_13TeVUp",
+    "CMS_scale_j_Absolute_2017_13TeVDown",
+    "CMS_scale_j_HF_2017_13TeVUp",
+    "CMS_scale_j_HF_2017_13TeVDown",
+    "CMS_scale_j_EC2_2017_13TeVUp",
+    "CMS_scale_j_EC2_2017_13TeVDown",
+    "CMS_scale_j_RelativeSample_2017_13TeVUp",
+    "CMS_scale_j_RelativeSample_2017_13TeVDown",
+    "CMS_scale_j_BBEC1_2017_13TeVUp",
+    "CMS_scale_j_BBEC1_2017_13TeVDown",
+    "CMS_scale_j_Absolute_2018_13TeVUp",
+    "CMS_scale_j_Absolute_2018_13TeVDown",
+    "CMS_scale_j_HF_2018_13TeVUp",
+    "CMS_scale_j_HF_2018_13TeVDown",
+    "CMS_scale_j_EC2_2018_13TeVUp",
+    "CMS_scale_j_EC2_2018_13TeVDown",
+    "CMS_scale_j_RelativeSample_2018_13TeVUp",
+    "CMS_scale_j_RelativeSample_2018_13TeVDown",
+    "CMS_scale_j_BBEC1_2018_13TeVUp",
+    "CMS_scale_j_BBEC1_2018_13TeVDown",
+    "CMS_scale_mu_13TeVUp",
+    "CMS_scale_mu_13TeVDown",
+    "CMS_res_j_13TeVUp",
+    "CMS_res_j_13TeVDown"
   };
 
   vector<TString> sampleNames = {
@@ -192,7 +218,7 @@ class DataCards {
   };
 
   vector<TString> fileNames = {
-    "SingleMuon_2018",
+    "data",
     "EMB",
     "DY",
     "VV",
@@ -206,7 +232,7 @@ class DataCards {
   vector<TFile*> filePointer;
 
   map<TString, TString> mapSampleFileName ={
-    {"data_obs","SingleMuon_2018"},
+    {"data_obs","data"},
     {"EMB","EMB"},
     {"ZLL","DY"},
     {"ZTT","DY"},
@@ -214,8 +240,8 @@ class DataCards {
     {"TT","TT"},
     {"VV","VV"},
     {"W","W"},
-    {"QCD","SingleMuon_2018"},
-    {"fakes","SingleMuon_2018"},
+    {"QCD","data"},
+    {"fakes","data"},
     {"ggH_sm_htt125","ggH125"},
     {"ggH_ps_htt125","ggH125"},
     {"ggH_mm_htt125","ggH125"},

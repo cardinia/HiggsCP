@@ -6,6 +6,7 @@ using namespace std;
 
 DataCards::DataCards(TString era,
 		     bool embedded,
+		     TString variableCP,
 		     int nbins,
 		     double xmin,
 		     double xmax,
@@ -25,6 +26,7 @@ DataCards::DataCards(TString era,
   mvaDM_ = mvaDM;
   applyIPcut_ = applyIPcut;
   runSystematics_ = runSystematic;
+  variableCP_ = variableCP;
 
 }
 
@@ -97,7 +99,7 @@ void DataCards::createCategoryList(int classIndex=-1, TString channel="") {
   else classIndices.push_back(classIndex);
   for (auto ch : channels){
     for (auto cl : classIndices){
-      categories.push_back(catNamePrefix+"_"+ch+"_"+classNames[cl].second);
+      categories.push_back(catNamePrefix+"_"+ch+"_"+classNames[cl].second+"_"+era_);
     }
   }
   cout << "***************************************" << endl << "Running on the following categories: " <<endl;
@@ -248,14 +250,14 @@ void DataCards::RunOnCategory(TString category) {
     params parameters;
     TString cuts = "";
     TString weight = "weight*";
-    TString acotautau = "acotautau_refitbs_00";
+    TString acotautau = variableCP_+"_00";
     bool runSystematics = true;
 
-    cuts = mapCategoryCut[category] + "&&pt_1>21&&os>0.5&&puppimt_1<50&&byMediumDeepTau2017v2p1VSjet_2>0.5";    
+    cuts = mapCategoryCut[category] + "&&pt_1>21&&pt_2>20&&TMath::Abs(eta_1)<2.1&&os>0.5&&puppimt_1<50&&byMediumDeepTau2017v2p1VSjet_2>0.5";    
 
 
-    TString cutsFF = mapCategoryCut[category]  + "&&pt_1>21&&os>0.5&&puppimt_1<50&&byMediumDeepTau2017v2p1VSjet_2<0.5&&byVVVLooseDeepTau2017v2p1VSjet_2>0.5";
-    TString cutsQCD = mapCategoryCut[category] + "&&pt_1>21&&os<0.5&&puppimt_1<50&&byMediumDeepTau2017v2p1VSjet_2>0.5";
+    TString cutsFF = mapCategoryCut[category]  + "&&pt_1>21&&pt_2>20&&TMath::Abs(eta_1)<2.1&&os>0.5&&puppimt_1<50&&byMediumDeepTau2017v2p1VSjet_2<0.5&&byVVVLooseDeepTau2017v2p1VSjet_2>0.5";
+    TString cutsQCD = mapCategoryCut[category] + "&&pt_1>21&&pt_2>20&&TMath::Abs(eta_1)<2.1&&os<0.5&&puppimt_1<50&&byMediumDeepTau2017v2p1VSjet_2>0.5";
 
     TString IPCut("");
     if (applyIPcut_) {
@@ -287,7 +289,7 @@ void DataCards::RunOnCategory(TString category) {
    
     
     if (category.Contains("_murho_")||category.Contains("_mua1_"))
-      acotautau = "acotautau_refitbs_01";    
+      acotautau = variableCP_+"_01";    
 
     if (category.Contains("_sig")) {
       parameters.hist2D = true;

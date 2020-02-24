@@ -29,6 +29,9 @@ int main(int argc, char * argv[]) {
   const bool applyIPcut = cfg.get<bool>("ApplyIPcut");
   const bool runSystematics = cfg.get<bool>("RunSystematics");
 
+  const string variableCP = cfg.get<string>("CPvariables");
+  TString VariableCP(variableCP);
+
   const string input_dir = cfg.get<string>("InputDirectory");
   TString Input_dir(input_dir);
 
@@ -52,6 +55,7 @@ int main(int argc, char * argv[]) {
   
   DataCards * cards = new DataCards(Era,
 				    embedded,
+				    VariableCP,
 				    nbins,
 				    xmin,
 				    xmax,
