@@ -1,13 +1,14 @@
 #!/bin/sh 
-# $1 - sample
-# $2 - era 
+# $1 - confi
+# $2 - NN class
+# $3 - channel
 
-cat > $1_$2.submit <<EOF
+cat > createCards$1_$2_$3.submit <<EOF
 +RequestRuntime=10000
 
 RequestMemory = 2000
 
-executable = $1_$2.sh
+executable = createCards$1_$2_$3.sh
 
 transfer_executable = True
 universe            = vanilla
