@@ -169,14 +169,14 @@ int main(int argc, char * argv[]) {
     neventsDY4Jets = getNEventsProcessed(input_dir,process_map->at("DY4Jets"),era);
   }
 
-  TFile * ff_file = TFile::Open("/nfs/dust/cms/user/cardinia/public/FF_from_IC/fakefactors_ws_mt_lite_"+era+".root");
+  TFile * ff_file = TFile::Open("/nfs/dust/cms/user/cardinia/public/FF_from_IC_1p5cut/fakefactors_ws_mt_lite_"+era+".root");
   FakeFactor* ff = (FakeFactor*)ff_file->Get("ff_comb");
   
   std::shared_ptr<RooWorkspace> ff_ws_;
   std::map<std::string, std::shared_ptr<RooFunctor>> fns_;
   ff_ws_ = std::shared_ptr<RooWorkspace>((RooWorkspace*)gDirectory->Get("w"));
   fns_["ff_mt_medium_dmbins"] = std::shared_ptr<RooFunctor>(ff_ws_->function("ff_mt_medium_dmbins")->functor(ff_ws_->argSet("pt,dm,njets,m_pt,os,mt,m_iso,pass_single,mvis")));
-  fns_["ff_mt_medium_mvadmbins"] = std::shared_ptr<RooFunctor>(ff_ws_->function("ff_mt_medium_mvadmbins")->functor(ff_ws_->argSet("pt,mvadm,ipsig,njets,m_pt,os,m_iso,pass_single,met_var_qcd,met_var_w")));
+  fns_["ff_mt_medium_mvadmbins"] = std::shared_ptr<RooFunctor>(ff_ws_->function("ff_mt_medium_mvadmbins")->functor(ff_ws_->argSet("pt,mvadm,ipsig,njets,m_pt,os,m_iso,pass_single,met_var_qcd,met_var_w,WpT")));
 
   vector<TString>SystematicsFF={
     "wjets_stat_njet0_mvadm0_sig_lt3_up",
@@ -1207,7 +1207,8 @@ int main(int argc, char * argv[]) {
 						    iso_1,
 						    static_cast<double>(trg_singlemuon),
 						    met_var_qcd,
-						    met_var_w};
+						    met_var_w,
+						    FakeMET.Pt()};
 		ff_mva = fns_["ff_mt_medium_mvadmbins"]->eval(args_mva.data());
 
 		///Weights for FF
