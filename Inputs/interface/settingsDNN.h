@@ -3,6 +3,13 @@
 
 using namespace std;
 
+float DeltaPhi(float phi1, float phi2){
+  float deltaphi=fabs(phi1-phi2);
+  if(deltaphi>TMath::Pi()) deltaphi=2*TMath::Pi()-deltaphi;
+  return deltaphi;
+}
+
+
 // **************************************************************************************************
 // Define the subsamples that belong to a certain process
 // 2018
@@ -15,16 +22,20 @@ vector<TString> SystematicsNames = {"",
 				    "CMS_scale_t_1prong1pizero_13TeVDown",
 				    "CMS_scale_t_3prong_13TeVUp",
 				    "CMS_scale_t_3prong_13TeVDown",
-				    "CMS_shape_dyShape_13TeVUp",
-				    "CMS_shape_dyShape_13TeVDown",
-				    "topPtWeightUp",
-				    "topPtWeightDown",
 				    "CMS_scale_met_unclustered_13TeVUp",
 				    "CMS_scale_met_unclustered_13TeVDown",
 				    "CMS_scale_met_boson_resolution_13TeVUp",
 				    "CMS_scale_met_boson_resolution_13TeVDown",
 				    "CMS_scale_met_boson_response_13TeVUp",
 				    "CMS_scale_met_boson_response_13TeVDown",
+				    "CMS_htt_boson_reso_met_13TeVUp",
+				    "CMS_htt_boson_reso_met_13TeVDown",
+				    "CMS_htt_boson_scale_met_13TeVUp",
+				    "CMS_htt_boson_scale_met_13TeVDown",
+				    "CMS_htt_ZLShape_1prong_13TeVUp",
+				    "CMS_htt_ZLShape_1prong_13TeVDown",
+				    "CMS_htt_ZLShape_1prong1pi_13TeVUp",
+				    "CMS_htt_ZLShape_1prong1pi_13TeVDown",
 				    "CMS_scale_j_FlavorQCD_13TeVUp",
 				    "CMS_scale_j_FlavorQCD_13TeVDown",
 				    "CMS_scale_j_RelativeBal_13TeVUp",
