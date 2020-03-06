@@ -77,7 +77,7 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   TString TauIso="mva17_2";
   if(DeepTau)TauIso="byMediumDeepTau2017v2p1VSjet_2";
   TString FFweight="ff_nom";
-  if(DeepTau)FFweight="ff_nom";
+  if(DeepTau)FFweight="ff_mva";
   TString IsoCut=Cut+"("+TauIso+">0.5)*";
   TString AntiIsoCut=Cut+"("+TauIso+"<0.5)*";
   // directory="$CMSSW_BASE/src/"+directory;
@@ -96,9 +96,9 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   TString zptmassweight="*1.0";                  //TO DO: CHANGE WEIGHTs
  
   vector<TString> sampleNames;
-  if(directory.Contains("Outputs")){
+  if(directory.Contains("Out")){
     sampleNames = {
-      "mt-NOMINAL_ntuple_Data", // data (0)
+      "mt-NOMINAL_ntuple_data", // data (0)
       "mt-NOMINAL_ntuple_DY",// (1)Drell-Yan Z->TT  or Embedded
       "mt-NOMINAL_ntuple_DY", // (2)Drell-Yan Z->LL
       "mt-NOMINAL_ntuple_W",// (3)WJets
@@ -125,13 +125,14 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
       "mt-NOMINAL_ntuple_VBFHToUncorrTauTau" // (10) Scalar VBF H
     }; 
   }
-  if(useEmbedded)sampleNames[1]="mt-NOMINAL_ntuple_EmbeddedMuTau";
+  if(useEmbedded&&!directory.Contains("Out"))sampleNames[1]="mt-NOMINAL_ntuple_EmbeddedMuTau";
+  else if(useEmbedded&&directory.Contains("Out"))sampleNames[1]="mt-NOMINAL_ntuple_EMB";
   const int nSamples = sampleNames.size(); //DY is used twice, for Zll and Ztt
   cout<<"this are the samples"<<endl;
-  for (int i=0; i<nSamples; ++i) {
-    sampleNames[i]+="_";
-    sampleNames[i]+=era;
-    cout << endl << sampleNames[i] << ":" << endl;}
+  if(!directory.Contains("Out")) for (int i=0; i<nSamples; ++i) {
+      sampleNames[i]+="_";
+      sampleNames[i]+=era;
+      cout << endl << sampleNames[i] << ":" << endl;}
 
   // *******************************
   // ***** Selection Cuts    *******
@@ -383,36 +384,6 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   cout << "************************" << endl;
   cout << endl;
 
-  // ***********************************
-  // **** Systematic uncertainties *****
-  // ***********************************
-
-  TH1D * dummy = (TH1D*)ZTT->Clone("dummy");
-  float errFake = 0.15; // ad-hoc sys uncertainty of Fakes background
-  float errQCD = 0.15; // ad-hoc sys uncertainty of QCD background
-  float errVV  = 0.15; // ad-hoc sys uncertainty of VV background
-  float errW   = 0.10; // ad-hoc sys uncertainty of W+Jets background
-  float errTT  = 0.07; // ad-hoc sys uncertainty of TT background
-  float errDY  = 0.06; // ad-hoc sys uncertainty of DY background
-
-  for (int iB=1; iB<=nBins; ++iB) {   // Add general systematic uncertainties to each bin as error
-    float eQCD   = errFake*Fakes->GetBinContent(iB);
-    float eFake   = errQCD*QCD->GetBinContent(iB);
-    float eVV    = errVV*VV->GetBinContent(iB);
-    float eW     = errW*W->GetBinContent(iB);
-    float eTT    = errTT*TT->GetBinContent(iB);
-    float eDY    = errDY*ZTT->GetBinContent(iB);
-    float err2   ;
-    if(FFmethod)err2= eVV*eVV + eTT*eTT + eDY*eDY + eFake*eFake;     //TO DO: WAS IST MIT DEM FEHLER AUF DY?
-    else err2= eQCD*eQCD+eVV*eVV + eW*eW + eTT*eTT + eDY*eDY;     //TO DO: WAS IST MIT DEM FEHLER AUF DY?
-    float errTot = TMath::Sqrt(err2);
-    cout << "eQCD: " << eQCD << "  eVV: " << eVV << "  eW: " << eW << "  eTT: " << eTT << "  eDY: " << eDY << "  eTotal: " << errTot << endl;
-    dummy -> SetBinError(iB,errTot);
-    ggH   -> SetBinError(iB,0);
-    if(compareCP)CPoddH  -> SetBinError(iB,0);
-  }
-  cout << endl;
-
   ///////////////////////////////////////////////////////////////////////////////////////////////
   // FINAL PLOTTING 
   ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -541,12 +512,55 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
 
   canv1->Update();
 
+  // ***********************************
+  // **** Systematic uncertainties *****
+  // ***********************************
+
+  TH1D * dummy = (TH1D*)ZTT->Clone("dummy");
   // Initialize a histogram which adds all error up
   TH1D * bkgdErr = (TH1D*)stack->GetStack()->Last()->Clone("bkgdErr");
   float errLumi = 0.03;
   float errMuon = 0.03;
   float errElectron = 0.04;
-  for (int iB=1; iB<=nBins; ++iB) {
+  float errFake = 0.15; // ad-hoc sys uncertainty of Fakes background
+  float errQCD = 0.15; // ad-hoc sys uncertainty of QCD background
+  float errVV  = 0.15; // ad-hoc sys uncertainty of VV background
+  float errW   = 0.10; // ad-hoc sys uncertainty of W+Jets background
+  float errTT  = 0.07; // ad-hoc sys uncertainty of TT background
+  float errDY  = 0.06; // ad-hoc sys uncertainty of DY background
+  float errEmb  = 0.04; // ad-hoc sys uncertainty of DY background
+  float errtau_ID   = 0.05; //  tau ID            :  5%
+  float errZLL_mtau = 0.10; //  mu->tau fake rate ZLL : 10%
+
+  for (int iB=1; iB<=nBins; ++iB) {   // Add general systematic uncertainties to each bin as error
+    //stat error and general systematics
+    float eStat =  bkgdErr->GetBinError(iB);
+    float X = bkgdErr->GetBinContent(iB);
+    float eLumi = errLumi * X;
+    float eMuon = errMuon * X;
+    float eElectron = errElectron * X;
+    float eBkg = dummy->GetBinError(iB);
+    //sample specific systematics
+    float eQCD   = errFake*Fakes->GetBinContent(iB);
+    float eFake   = errQCD*QCD->GetBinContent(iB);
+    float eVV    = errVV*VV->GetBinContent(iB);
+    float eW     = errW*W->GetBinContent(iB);
+    float eTT    = errTT*TT->GetBinContent(iB);
+    float eDY    = TMath::Sqrt(errDY*errDY+errtau_ID*errtau_ID)*ZTT->GetBinContent(iB);
+    float eZLL    = errZLL_mtau*ZLL->GetBinContent(iB);
+    if(useEmbedded) eDY = TMath::Sqrt(errEmb*errEmb+errtau_ID*errtau_ID)*ZTT->GetBinContent(iB);
+    float err2   ;
+    if(FFmethod)err2= eVV*eVV + eTT*eTT + eDY*eDY + eFake*eFake + eZLL*eZLL + eStat*eStat+eLumi*eLumi+eBkg*eBkg+eMuon*eMuon;     
+    else err2= eQCD*eQCD+eVV*eVV + eW*eW + eTT*eTT + eDY*eDY + eStat*eStat+eLumi*eLumi+eBkg*eBkg+eMuon*eMuon;     
+
+    float errTot = TMath::Sqrt(err2);
+    bkgdErr->SetBinError(iB,errTot);
+
+    cout << "eQCD: " << eQCD << "  eVV: " << eVV << "  eW: " << eW << "  eTT: " << eTT << "  eDY: " << eDY << "  eTotal: " << errTot << endl;
+    cout << "eStat = " << eStat << " : eLumi = "<< eLumi <<" : eBkg = " << eBkg << endl;
+    //dummy -> SetBinError(iB,errTot);
+    //ggH   -> SetBinError(iB,0);
+
     Fakes->SetBinError(iB,0);
     QCD->SetBinError(iB,0);
     VV->SetBinError(iB,0);
@@ -554,16 +568,10 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
     W->SetBinError(iB,0);
     ZLL->SetBinError(iB,0);
     ZTT->SetBinError(iB,0);
-    float eStat =  bkgdErr->GetBinError(iB);
-    float X = bkgdErr->GetBinContent(iB);
-    float eLumi = errLumi * X;
-    float eMuon = errMuon * X;
-    float eElectron = errElectron * X;
-    float eBkg = dummy->GetBinError(iB);
-    float Err = TMath::Sqrt(eStat*eStat+eLumi*eLumi+eBkg*eBkg+eMuon*eMuon);
-    bkgdErr->SetBinError(iB,Err);
-    cout << "eStat = " << eStat << " : eLumi = "<< eLumi <<" : eBkg = " << eBkg << endl;
+
+    if(compareCP)CPoddH  -> SetBinError(iB,0);
   }
+  cout << endl;
 
   bkgdErr -> SetMarkerSize(0);
   int new_idx = 923;//CreateTransparentColor(13,1.0);
