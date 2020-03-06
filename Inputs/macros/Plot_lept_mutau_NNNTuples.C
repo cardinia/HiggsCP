@@ -28,14 +28,14 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
 			       float xmin =    0,
 			       float xmax =  250,
 			       TString Weight = "weight*",
-			       TString Cut="(pt_1>21&&os>0.5&&puppimt_1<50&&byVVVLooseDeepTau2017v2p1VSjet_2>0.5)*",
+			       TString Cut="(pt_1>21&&os>0.5&&puppimt_1<50&&byVVVLooseDeepTau2017v2p1VSjet_2>0.5&&abs(eta_1)<2.1&&((trg_singlemuon&&pt_1>25)))*",
 			       TString ytitle = "Events",
 			       int categoryIndex=-1,
-			       TString directory = "/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/HiggsCP/Inputs/NTuples_mt_2017_v2/",
-			       TString outputDir = "./figures/",
-			       int era=2017,
-			       bool FFmethod = false,
-			       bool useEmbedded = false,
+			       TString directory = "/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/HiggsCP/Inputs/test/NTuples_mt_2018_v2/",
+			       TString outputDir = "./figures_March5/",
+			       int era=2018,
+			       bool FFmethod = true,
+			       bool useEmbedded = true,
 			       bool LargeScale = false,  
 			       bool logY = false,
 			       bool showSignal = true,
@@ -46,7 +46,7 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
 			       )
 {
   using namespace std;
-  if(era!=2017)compareCP=false;
+  //if(era!=2017)compareCP=false;
   if(categoryIndex>=0){
     Cut+="(predicted_class=="+TString::Itoa(categoryIndex,10)+")*";
   }
