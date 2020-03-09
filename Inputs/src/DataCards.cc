@@ -151,33 +151,44 @@ vector<TH1D*> DataCards::CreateCardsSample(TString sampleName, params param, boo
   vector<TH1D*> histos;
 
   cout << "   Running on sample " << sampleName << " : " << fileSample->GetName() << endl;
+  vector<TString> SystematicsPerSample = SystematicsNames ;
+  SystematicsPerSample.insert(SystematicsPerSample.end(),WeightSystematics.begin(),WeightSystematics.end());
+  if(sampleName.Contains("ggH")||sampleName.Contains("qqH")){
+    SystematicsPerSample.push_back("CMS_scale_gg_13TeVUp");
+    SystematicsPerSample.push_back("CMS_scale_gg_13TeVDown");
+  }
+  else if(sampleName=="ZTT"||sampleName=="ZLL"){
+    SystematicsPerSample.push_back("CMS_htt_dyShape_13TeVUp");
+    SystematicsPerSample.push_back("CMS_htt_dyShape_13TeVDown");
+  }
 
-  for (auto systematicName : SystematicsNames ) {
-
+  for (auto systematicName : SystematicsPerSample ) {
     if (!runSystematics && systematicName!="") continue;
-
     if (systematicName!="") cout << "     Running on systematics " << systematicName << std::endl;
     
     TString TreeName = "TauCheck";
     TString HistName = sampleName;
+    params parameterSystematic = param;
     if (systematicName!="") {
-      TreeName = "TauCheck_" + systematicName;
+      if(find(WeightSystematics.begin(),WeightSystematics.end(),systematicName)==WeightSystematics.end()||systematicName.Contains("CMS_scale_gg_13TeV")||systematicName.Contains("CMS_htt_dyShape_13TeV"))TreeName = "TauCheck_" + systematicName; 
+      else parameterSystematic.weights = param.weights + "weight_" +systematicName+"*";
       HistName = sampleName + "_" + systematicName;
     }
+
     TTree * tree = (TTree*)fileSample->Get(TreeName);
     if (tree==NULL) continue;
     TH2D * hist2D;
     TH1D * hist1D;
     double xbins[10];
     double ybins[10];
-    int nbinsx = param.nbins;
-    double widthx = (param.xmax-param.xmin)/double(nbinsx);
+    int nbinsx = parameterSystematic.nbins;
+    double widthx = (parameterSystematic.xmax-parameterSystematic.xmin)/double(nbinsx);
     for (int i=0; i<=nbinsx; ++i)
-      xbins[i] = param.xmin + double(i)*widthx;
-    int nbinsy = param.xDNN.size() - 1;
+      xbins[i] = parameterSystematic.xmin + double(i)*widthx;
+    int nbinsy = parameterSystematic.xDNN.size() - 1;
     for (int i=0; i<=nbinsy; ++i)
-      ybins[i] = param.xDNN.at(i);
-    if (param.hist2D) {      
+      ybins[i] = parameterSystematic.xDNN.at(i);
+    if (parameterSystematic.hist2D) {      
       hist2D = new TH2D("hist","",
 			nbinsx,xbins,nbinsy,ybins);
     }
@@ -185,10 +196,11 @@ vector<TH1D*> DataCards::CreateCardsSample(TString sampleName, params param, boo
       hist1D = new TH1D("hist","",
                         nbinsy,ybins); 
     }
-    //    cout << "      plot : " << param.varToPlot << endl;
-    //    cout << "       cut : " << param.cuts << endl;
-    tree->Draw(param.varToPlot+">>hist",param.cuts);
-    if (param.hist2D) {
+    //    cout << "      plot : " << parameterSystematic.varToPlot << endl;
+    //    cout << "       cut : " << parameterSystematic.cuts << endl;
+    tree->Draw(parameterSystematic.varToPlot+">>hist",parameterSystematic.weights+"("+parameterSystematic.cuts+")");
+    //std::cout << parameterSystematic.weights << "(" << parameterSystematic.cuts << ")" << endl;
+    if (parameterSystematic.hist2D) {
       TH1D * hist = Unfold(hist2D);
       histos.push_back((TH1D*)hist->Clone(HistName));
       delete hist2D;
@@ -204,13 +216,75 @@ vector<TH1D*> DataCards::CreateCardsSample(TString sampleName, params param, boo
 
 }
 
-TH1D * DataCards::CreateCardsFakesOrQCD(TString FakeOrQCD, params parameters, TString weightFForQCD) {
+vector<TH1D*> DataCards::CreateCardsSample(TString sampleName, params param, TString systematicName) {
+
+  TFile * fileSample = mapSampleFile[sampleName];
+
+  vector<TH1D*> histos;
+
+  cout << "   Running on sample " << sampleName << " : " << fileSample->GetName() << endl;
   
+  if (systematicName!="") cout << "     Running on systematics " << systematicName << std::endl;
+    
+    TString TreeName = "TauCheck";
+    TString HistName = sampleName;
+    params parameterSystematic = param;
+    //if systematic corresponds to a shift in event weight the histogram should be renamed, but not the tree
+    if (systematicName!="") {
+      HistName = sampleName + "_" + systematicName;
+      if(!systematicName.Contains("jetFakes_ff_mt_sub_syst"))parameterSystematic.weights = param.weights + "weight_" +systematicName+"*";
+      else if(sampleName=="fakes")parameterSystematic.weights = param.weights; // small exception: for jetFakes_ff_mt_sub_syst we want the fake bkg to not be scaled, but just the contribution coming from genuine taus
+      else if(systematicName=="jetFakes_ff_mt_sub_systUp")parameterSystematic.weights = param.weights + "1.1*";
+      else if(systematicName=="jetFakes_ff_mt_sub_systDown")parameterSystematic.weights = param.weights + "0.9*";
+    }
+    TTree * tree = (TTree*)fileSample->Get(TreeName);
+    TH2D * hist2D;
+    TH1D * hist1D;
+    double xbins[10];
+    double ybins[10];
+    int nbinsx = parameterSystematic.nbins;
+    double widthx = (parameterSystematic.xmax-parameterSystematic.xmin)/double(nbinsx);
+    for (int i=0; i<=nbinsx; ++i)
+      xbins[i] = parameterSystematic.xmin + double(i)*widthx;
+    int nbinsy = parameterSystematic.xDNN.size() - 1;
+    for (int i=0; i<=nbinsy; ++i)
+      ybins[i] = parameterSystematic.xDNN.at(i);
+    if (parameterSystematic.hist2D) {      
+      hist2D = new TH2D("hist","",
+			nbinsx,xbins,nbinsy,ybins);
+    }
+    else {
+      hist1D = new TH1D("hist","",
+                        nbinsy,ybins); 
+    }
+    //    cout << "      plot : " << parameterSystematic.varToPlot << endl;
+    //    cout << "       cut : " << parameterSystematic.cuts << endl;
+    tree->Draw(parameterSystematic.varToPlot+">>hist","("+parameterSystematic.weights+parameterSystematic.cuts+")");
+    if (parameterSystematic.hist2D) {
+      TH1D * hist = Unfold(hist2D);
+      histos.push_back((TH1D*)hist->Clone(HistName));
+      delete hist2D;
+      delete hist;
+    }
+    else {
+      histos.push_back((TH1D*)hist1D->Clone(HistName));
+      delete hist1D;
+    }
+  
+    
+  return histos;
+
+}
+
+TH1D* DataCards::CreateCardsFakesOrQCD(TString FakeOrQCD, params parameters, TString weightFForQCD) {
+  /*  
   TString weight = "weight*"+weightFForQCD;
   TString cuts = parameters.cuts;
   parameters.cuts = weight + "(" + cuts + ")";
+  */
+  TString cuts = parameters.cuts;
+  parameters.weights = "weight*"+weightFForQCD;
   bool runSystematics = false;
-
   vector<TH1D*> histFF = CreateCardsSample(FakeOrQCD,parameters,runSystematics);
   for (auto sample : samplesToSubtract) {
     if (sample=="ZTT"&&embedded_) continue;
@@ -228,7 +302,8 @@ TH1D * DataCards::CreateCardsFakesOrQCD(TString FakeOrQCD, params parameters, TS
 
     cutsSample += "&&gen_match_2!=6";
 
-    parametersSample.cuts = weight + "(" + cutsSample + ")";
+    //parametersSample.cuts = weight + "(" + cutsSample + ")";
+    parametersSample.cuts = cutsSample;
 
     cout << "  Subtracting " << sample << " for data-driven estimation" << endl;
     vector<TH1D*> histos = CreateCardsSample(sample,parametersSample,runSystematics);
@@ -240,6 +315,49 @@ TH1D * DataCards::CreateCardsFakesOrQCD(TString FakeOrQCD, params parameters, TS
 
 }
 
+vector<TH1D*> DataCards::CreateCardsFakes(TString FakeOrQCD, params parameters, TString weightFForQCD, bool runSystematics) {
+  /*  
+  TString weight = "weight*"+weightFForQCD;
+  TString cuts = parameters.cuts;
+  parameters.cuts = weight + "(" + cuts + ")";
+  */
+  vector<TH1D*> all_histFF;
+  TString cuts = parameters.cuts;
+  for (auto systematicName : FFSystematics ) {
+    parameters.weights = "weight*"+weightFForQCD;
+    if (!runSystematics && systematicName!="") continue;
+    if (systematicName!="") cout << "     Running on systematics " << systematicName << std::endl;
+
+    vector<TH1D*> histFF = CreateCardsSample(FakeOrQCD,parameters,systematicName);
+    for (auto sample : samplesToSubtract) {
+      if (sample=="ZTT"&&embedded_) continue;
+      if (sample=="EMB"&&!embedded_) continue;
+      
+      TString cutsSample = cuts;
+      params parametersSample = parameters;
+      
+      if (sample=="ZTT")
+	cutsSample += "&&gen_match_1==4&&gen_match_2==5";
+      else if (sample=="ZLL")
+	cutsSample += "&&!(gen_match_1==4&&gen_match_2==5)";
+      else if (embedded_)
+	cutsSample += "&&!(gen_match_1==4&&gen_match_2==5)";
+      
+      cutsSample += "&&gen_match_2!=6";
+      
+      //parametersSampleUp.cuts = weight + "(" + cutsSample + ")";
+      cout << "  Subtracting " << sample << " for data-driven estimation" << endl;
+      vector<TH1D*> histos = CreateCardsSample(sample,parametersSample,systematicName);
+      histFF[0]->Add(histFF[0],histos[0],1,-1);
+      
+    }
+    all_histFF.push_back(histFF[0]);
+
+  }
+  return all_histFF;
+  
+}
+  
 void DataCards::RunOnCategory(TString category) {
 
   cout << "Running on category " << category << endl;
@@ -249,7 +367,7 @@ void DataCards::RunOnCategory(TString category) {
   for (auto sampleName : sampleNames) {
     params parameters;
     TString cuts = "";
-    TString weight = "weight*";
+    TString weight = "weight*"; 
     TString acotautau = variableCP_+"_00";
     bool runSystematics = true;
 
@@ -285,7 +403,9 @@ void DataCards::RunOnCategory(TString category) {
     else if (sampleName.Contains("_mm_htt125"))
       weight += "gen_mm_htt125*";
 
-    parameters.cuts = weight + "(" + cuts + ")"; 
+
+    parameters.weights = weight ; 
+    parameters.cuts = cuts ; 
    
     
     if (category.Contains("_murho_")||category.Contains("_mua1_"))
@@ -314,8 +434,10 @@ void DataCards::RunOnCategory(TString category) {
       params parametersFF = parameters;
       parametersFF.cuts = cutsFF;
       TString weightFF("ff_nom*");
-      TH1D * hist = CreateCardsFakesOrQCD(sampleName,parametersFF,weightFF);
-      allHists.push_back(hist);
+      vector<TH1D*> hists = CreateCardsFakes(sampleName,parametersFF,weightFF, 
+					      runSystematics);
+      for (auto hist : hists)
+	allHists.push_back(hist);
     }
     else if (sampleName=="QCD") {
       params parametersQCD = parameters;

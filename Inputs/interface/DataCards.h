@@ -8,7 +8,7 @@
 #include "TString.h"
 #include <vector>
 #include <iostream>
-
+#include <algorithm>
 using namespace std;
 
 
@@ -31,6 +31,7 @@ vector<T2> extract_second(const vector<pair<T1, T2> >& v) {
 };
 
 struct params {
+  TString weights;
   TString cuts;
   bool hist2D;
   int nbins;
@@ -131,8 +132,12 @@ class DataCards {
   vector<TH1D*> CreateCardsSample(TString sampleName, 
 				  params param,
 				  bool runSystematics);
+  vector<TH1D*> CreateCardsSample(TString sampleName, 
+				  params param,
+				  TString systematicName);
 
   TH1D* CreateCardsFakesOrQCD(TString sampleName, params param, TString weightFForQCD);
+  vector<TH1D*> CreateCardsFakes(TString sampleName, params param, TString weightFForQCD,bool runSystematics);
   void RunOnCategory(TString category);
   
   vector<TString> SystematicsNames = {
@@ -201,16 +206,197 @@ class DataCards {
     "CMS_res_j_13TeVDown"
   };
 
+  vector<TString> FFSystematics = {
+        "",
+	"ff_mt_sub_systUp",
+	"ff_mt_sub_systDown",
+	"ff_mt_wjets_stat_njets0_mvadm0_sig_ltUp",
+	"ff_mt_qcd_stat_njets0_mvadm0_sig_ltUp",
+	
+	"ff_mt_wjets_stat_njets1_mvadm0_sig_ltUp",
+	"ff_mt_qcd_stat_njets1_mvadm0_sig_ltUp",
+		
+	"ff_mt_wjets_stat_njets2_mvadm0_sig_ltUp",
+	"ff_mt_qcd_stat_njets2_mvadm0_sig_ltUp",
+	
+
+	"ff_mt_wjets_stat_njets0_mvadm0_sig_gtUp",
+	"ff_mt_qcd_stat_njets0_mvadm0_sig_gtUp",
+	
+	"ff_mt_wjets_stat_njets1_mvadm0_sig_gtUp",
+	"ff_mt_qcd_stat_njets1_mvadm0_sig_gtUp",
+	
+	"ff_mt_wjets_stat_njets2_mvadm0_sig_gtUp",
+	"ff_mt_qcd_stat_njets2_mvadm0_sig_gtUp",
+	
+	"ff_mt_wjets_stat_njets0_mvadm1Up",
+	"ff_mt_qcd_stat_njets0_mvadm1Up",
+	
+	"ff_mt_wjets_stat_njets1_mvadm1Up",
+	"ff_mt_qcd_stat_njets1_mvadm1Up",
+	
+	"ff_mt_wjets_stat_njets2_mvadm1Up",
+	"ff_mt_qcd_stat_njets2_mvadm1Up",
+	
+	
+	"ff_mt_wjets_stat_njets0_mvadm2Up",
+	"ff_mt_qcd_stat_njets0_mvadm2Up",
+	
+	"ff_mt_wjets_stat_njets1_mvadm2Up",
+	"ff_mt_qcd_stat_njets1_mvadm2Up",
+	
+	"ff_mt_wjets_stat_njets2_mvadm2Up",
+	"ff_mt_qcd_stat_njets2_mvadm2Up",
+
+
+	"ff_mt_wjets_stat_njets0_mvadm10Up",
+	"ff_mt_qcd_stat_njets0_mvadm10Up",
+	
+	"ff_mt_wjets_stat_njets1_mvadm10Up",
+	"ff_mt_qcd_stat_njets1_mvadm10Up",
+	
+	"ff_mt_wjets_stat_njets2_mvadm10Up",
+	"ff_mt_qcd_stat_njets2_mvadm10Up",
+
+
+	"ff_mt_wjets_stat_njets0_mvadm11Up",
+	"ff_mt_qcd_stat_njets0_mvadm11Up",
+	
+	"ff_mt_wjets_stat_njets1_mvadm11Up",
+	"ff_mt_qcd_stat_njets1_mvadm11Up",
+	
+	"ff_mt_wjets_stat_njets2_mvadm11Up",
+	"ff_mt_qcd_stat_njets2_mvadm11Up",
+
+	"ff_mt_wjets_stat_njets0_mvadm0_sig_ltDown",
+	"ff_mt_qcd_stat_njets0_mvadm0_sig_ltDown",
+	
+	"ff_mt_wjets_stat_njets1_mvadm0_sig_ltDown",
+	"ff_mt_qcd_stat_njets1_mvadm0_sig_ltDown",
+		
+	"ff_mt_wjets_stat_njets2_mvadm0_sig_ltDown",
+	"ff_mt_qcd_stat_njets2_mvadm0_sig_ltDown",
+	
+
+	"ff_mt_wjets_stat_njets0_mvadm0_sig_gtDown",
+	"ff_mt_qcd_stat_njets0_mvadm0_sig_gtDown",
+	
+	"ff_mt_wjets_stat_njets1_mvadm0_sig_gtDown",
+	"ff_mt_qcd_stat_njets1_mvadm0_sig_gtDown",
+	
+	"ff_mt_wjets_stat_njets2_mvadm0_sig_gtDown",
+	"ff_mt_qcd_stat_njets2_mvadm0_sig_gtDown",
+	
+	"ff_mt_wjets_stat_njets0_mvadm1Down",
+	"ff_mt_qcd_stat_njets0_mvadm1Down",
+	
+	"ff_mt_wjets_stat_njets1_mvadm1Down",
+	"ff_mt_qcd_stat_njets1_mvadm1Down",
+	
+	"ff_mt_wjets_stat_njets2_mvadm1Down",
+	"ff_mt_qcd_stat_njets2_mvadm1Down",
+	
+	
+	"ff_mt_wjets_stat_njets0_mvadm2Down",
+	"ff_mt_qcd_stat_njets0_mvadm2Down",
+	
+	"ff_mt_wjets_stat_njets1_mvadm2Down",
+	"ff_mt_qcd_stat_njets1_mvadm2Down",
+	
+	"ff_mt_wjets_stat_njets2_mvadm2Down",
+	"ff_mt_qcd_stat_njets2_mvadm2Down",
+
+
+	"ff_mt_wjets_stat_njets0_mvadm10Down",
+	"ff_mt_qcd_stat_njets0_mvadm10Down",
+	
+	"ff_mt_wjets_stat_njets1_mvadm10Down",
+	"ff_mt_qcd_stat_njets1_mvadm10Down",
+	
+	"ff_mt_wjets_stat_njets2_mvadm10Down",
+	"ff_mt_qcd_stat_njets2_mvadm10Down",
+
+
+	"ff_mt_wjets_stat_njets0_mvadm11Down",
+	"ff_mt_qcd_stat_njets0_mvadm11Down",
+	
+	"ff_mt_wjets_stat_njets1_mvadm11Down",
+	"ff_mt_qcd_stat_njets1_mvadm11Down",
+	
+	"ff_mt_wjets_stat_njets2_mvadm11Down",
+	"ff_mt_qcd_stat_njets2_mvadm11Down",
+
+
+	//met_var_qcd and met_var_w non-closure corrections
+
+	"ff_mt_qcd_met_closure_systUp",
+	"ff_mt_wjets_met_closure_systUp",
+	"ff_mt_ttbar_met_closure_systUp",
+	"ff_mt_qcd_met_closure_systDown",
+	"ff_mt_wjets_met_closure_systDown",
+	"ff_mt_ttbar_met_closure_systDown",
+
+	//m_pt non-closure corrections
+
+	"ff_mt_qcd_l_pt_closure_systUp",
+	"ff_mt_qcd_l_pt_closure_systDown",
+	"ff_mt_wjets_l_pt_closure_systUp",
+	"ff_mt_wjets_l_pt_closure_systDown",
+
+	//extrapolations from DR to SR
+	"ff_mt_qcd_systUp",
+	"ff_mt_qcd_systDown",
+	"ff_mt_wjets_systUp",
+	"ff_mt_wjets_systDown",
+	"ff_mt_ttbar_systUp",
+	"ff_mt_ttbar_systDown"
+
+  };
+
+  vector<TString> WeightSystematics = {
+    "CMS_eff_Xtrigger_mt_MVADM0_13TeVUp",
+    "CMS_eff_Xtrigger_mt_MVADM1_13TeVUp",
+    "CMS_eff_Xtrigger_mt_MVADM2_13TeVUp",
+    "CMS_eff_Xtrigger_mt_MVADM10_13TeVUp",
+    "CMS_eff_Xtrigger_mt_MVADM11_13TeVUp",
+    "CMS_eff_Xtrigger_mt_MVADM0_13TeVDown",
+    "CMS_eff_Xtrigger_mt_MVADM1_13TeVDown",
+    "CMS_eff_Xtrigger_mt_MVADM2_13TeVDown",
+    "CMS_eff_Xtrigger_mt_MVADM10_13TeVDown",
+    "CMS_eff_Xtrigger_mt_MVADM11_13TeVDown",
+    "CMS_eff_t_pTlow_MVADM0_13TeVUp", 
+    "CMS_eff_t_pTlow_MVADM1_13TeVUp", 
+    "CMS_eff_t_pTlow_MVADM2_13TeVUp", 
+    "CMS_eff_t_pTlow_MVADM10_13TeVUp",
+    "CMS_eff_t_pTlow_MVADM11_13TeVUp",
+    "CMS_eff_t_pThigh_MVADM0_13TeVUp",
+    "CMS_eff_t_pThigh_MVADM1_13TeVUp",
+    "CMS_eff_t_pThigh_MVADM2_13TeVUp",
+    "CMS_eff_t_pThigh_MVADM10_13TeVUp", 
+    "CMS_eff_t_pThigh_MVADM11_13TeVUp", 
+    "CMS_eff_t_pTlow_MVADM0_13TeVDown", 
+    "CMS_eff_t_pTlow_MVADM1_13TeVDown", 
+    "CMS_eff_t_pTlow_MVADM2_13TeVDown", 
+    "CMS_eff_t_pTlow_MVADM10_13TeVDown", 
+    "CMS_eff_t_pTlow_MVADM11_13TeVDown", 
+    "CMS_eff_t_pThigh_MVADM0_13TeVDown", 
+    "CMS_eff_t_pThigh_MVADM1_13TeVDown", 
+    "CMS_eff_t_pThigh_MVADM2_13TeVDown", 
+    "CMS_eff_t_pThigh_MVADM10_13TeVDown",
+    "CMS_eff_t_pThigh_MVADM11_13TeVDown",
+  };
+
+
   vector<TString> sampleNames = {
     "data_obs",
-    "EMB",
+    "EmbedZTT",
     "ZTT",
     "ZLL",
-    "ST",
+    //"ST",
     "VV",
     "TT",
     "QCD",
-    "fakes",
+    "jetFakes",
     "W",
     "qqH_sm_htt125",
     "qqH_ps_htt125",
@@ -221,10 +407,10 @@ class DataCards {
   };
 
   vector<TString> samplesToSubtract = {
-    "EMB",
+    "EmbedZTT",
     "ZTT",
     "ZLL",
-    "ST",
+    //"ST",
     "VV",
     "TT",
     "W"
@@ -236,7 +422,7 @@ class DataCards {
     "DY",
     "VV",
     "W",
-    "ST",
+    //"ST",
     "TT",
     "ggH125",
     "qqH125"
@@ -246,15 +432,15 @@ class DataCards {
 
   map<TString, TString> mapSampleFileName ={
     {"data_obs","data"},
-    {"EMB","EMB"},
+    {"EmbedZTT","EMB"},
     {"ZLL","DY"},
     {"ZTT","DY"},
-    {"ST","ST"},
+    //{"ST","ST"},
     {"TT","TT"},
     {"VV","VV"},
     {"W","W"},
     {"QCD","data"},
-    {"fakes","data"},
+    {"jetFakes","data"},
     {"ggH_sm_htt125","ggH125"},
     {"ggH_ps_htt125","ggH125"},
     {"ggH_mm_htt125","ggH125"},
