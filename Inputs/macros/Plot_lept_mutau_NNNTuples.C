@@ -59,14 +59,18 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
     yVar=array->At(0)->GetName();
     xVar=array->At(1)->GetName();
     TString range=to_string(xmax-xmin).c_str();
-    if(categoryIndex==1){
-      nBins=nBins*5;
-      xmax+=4*(xmax-xmin);
-      Variable=xVar+"*("+yVar+"<0.3)+(("+range+"+"+xVar+")*("+yVar+">=0.3&&"+yVar+"<0.5))+((2*"+range+"+"+xVar+")*("+yVar+">=0.5&&"+yVar+"<0.65))+((3*"+range+"+"+xVar+")*("+yVar+">=0.65&&"+yVar+"<0.85))+((4*"+range+"+"+xVar+")*("+yVar+">=0.85))";
+    if(categoryIndex==0){
+      nBins=nBins*4;
+      xmax+=3*(xmax-xmin);
+      Variable=xVar+"*("+yVar+"<0.5)+(("+range+"+"+xVar+")*("+yVar+">=0.5&&"+yVar+"<0.7))+((2*"+range+"+"+xVar+")*("+yVar+">=0.7&&"+yVar+"<0.8))+((3*"+range+"+"+xVar+")*("+yVar+">=0.8))";
+    }else if (categoryIndex==1){
+      nBins=nBins*4;
+      xmax+=3*(xmax-xmin);
+			Variable=xVar+"*("+yVar+"<0.5)+(("+range+"+"+xVar+")*("+yVar+">=0.5&&"+yVar+"<0.7))+((2*"+range+"+"+xVar+")*("+yVar+">=0.7&&"+yVar+"<0.8))+((3*"+range+"+"+xVar+")*("+yVar+">=0.8))";
     }else{
       nBins=nBins*3;
       xmax+=2*(xmax-xmin);
-      Variable=xVar+"*("+yVar+"<0.3)+(("+range+"+"+xVar+")*("+yVar+">=0.3&&"+yVar+"<0.5))+((2*"+range+"+"+xVar+")*("+yVar+">=0.5))";//&&"+yVar+"<0.6))+((3*"+range+"+"+xVar+")*("+yVar+">=0.6))";
+      Variable=xVar+"*("+yVar+"<0.6)+(("+range+"+"+xVar+")*("+yVar+">=0.6&&"+yVar+"<0.8))+((2*"+range+"+"+xVar+")*("+yVar+">=0.8))";//&&"+yVar+"<0.6))+((3*"+range+"+"+xVar+")*("+yVar+">=0.6))";
     }
     VariableName="Unrolled_"+xVar;
     var2D=true;
@@ -85,7 +89,7 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   SetStyle();
 
   // Simple check to prevent accidental unblinding in SR, to unblind set FORCE to True
-  if(!FORCE&&(categoryIndex==0||categoryIndex==1)){
+  if(!FORCE&&(categoryIndex==0)){
     blindData=true;
   }
 
@@ -128,11 +132,15 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   if(useEmbedded&&!directory.Contains("Out"))sampleNames[1]="mt-NOMINAL_ntuple_EmbeddedMuTau";
   else if(useEmbedded&&directory.Contains("Out"))sampleNames[1]="mt-NOMINAL_ntuple_EMB";
   const int nSamples = sampleNames.size(); //DY is used twice, for Zll and Ztt
+  if(!directory.Contains("Out")){ 
+		for (int i=0; i<nSamples; ++i) {
+	      sampleNames[i]+="_";
+	      sampleNames[i]+=era;
+	  }
+	}
   cout<<"this are the samples"<<endl;
-  if(!directory.Contains("Out")) for (int i=0; i<nSamples; ++i) {
-      sampleNames[i]+="_";
-      sampleNames[i]+=era;
-      cout << endl << sampleNames[i] << ":" << endl;}
+	for (size_t i = 0; i < nSamples; i++)
+		cout << endl << sampleNames[i] << ":" << endl;
 
   // *******************************
   // ***** Selection Cuts    *******
@@ -591,7 +599,7 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
 	  float errbkg = max(0.1,bkgdErr->GetBinError(iB)/bkgYield);
 	  float signalYield = ggH->GetBinContent(iB)/scaleSignal;
 	  float ye = signalYield / sqrt(bkgYield+pow(bkgYield*errbkg,2));
-	  if(ye>=0.2||(categoryIndex==0||categoryIndex==1)){
+	  if(ye>=0.2||(categoryIndex==0)){
 	    histData->SetBinContent(iB,-1);
 	    histData->SetBinError(iB,0);
 	  }
