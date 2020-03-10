@@ -156,7 +156,7 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   //specific selection weights for data, DY and top
   cuts[0] = IsoCut+"(os>0.5)"; //DATA
   if(useEmbedded){
-    cuts[1] = IsoCut+"(os>0.5)*weight"; //Embedded, i.e. data
+    cuts[1] = IsoCut+"(os>0.5)*weight*(weight<1000)"; //Embedded, i.e. data
     cuts[2] += zptmassweight;
 
   }else{
@@ -170,10 +170,10 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   cuts[9] += "*"+TString::Itoa(scaleSignal,10);
   cuts[10]+= "*"+TString::Itoa(scaleSignal,10);
   if(compareCP){
-    cuts[7] +="*gen_sm_htt125";
-    cuts[8] +="*gen_sm_htt125";
-    cuts[9] +="*gen_ps_htt125";
-    cuts[10] +="*gen_ps_htt125";
+    cuts[7] +="*gen_sm_htt125*(gen_sm_htt125>=0)";
+    cuts[8] +="*gen_sm_htt125*(gen_sm_htt125>=0)";
+    cuts[9] +="*gen_ps_htt125*(gen_ps_htt125>=0)";
+    cuts[10] +="*gen_ps_htt125*(gen_ps_htt125>=0)";
   }    
   if(FFmethod) for(int i=2; i<7; ++i) cuts[i] += "*(gen_match_2!=6)";
   if(useEmbedded) for(int i=2; i<7; ++i) cuts[i] += "*!(gen_match_2==5 &&gen_match_1==4)";
@@ -181,7 +181,7 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
    
   cutsSS[0] = IsoCut+qcdweight+"(os<0.5)";
   if(useEmbedded){
-    cutsSS[1] = IsoCut+qcdweight+"(os<0.5)*weight";
+    cutsSS[1] = IsoCut+qcdweight+"(os<0.5)*weight*(weight<1000)";
     cutsSS[2] += zptmassweight;
   }else{
     cutsSS[1] += zptmassweight+isZTT;
@@ -195,16 +195,16 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   cutsSS[9] += "*"+TString::Itoa(scaleSignal,10);
   cutsSS[10]+= "*"+TString::Itoa(scaleSignal,10);
  if(compareCP){
-    cutsSS[7] +="*gen_sm_htt125";
-    cutsSS[8] +="*gen_sm_htt125";
-    cutsSS[9] +="*gen_ps_htt125";
-    cutsSS[10] +="*gen_ps_htt125";
+    cutsSS[7] +="*gen_sm_htt125*(gen_sm_htt125>=0)";
+    cutsSS[8] +="*gen_sm_htt125*(gen_sm_htt125>=0)";
+    cutsSS[9] +="*gen_ps_htt125*(gen_ps_htt125>=0)";
+    cutsSS[10] +="*gen_ps_htt125*(gen_ps_htt125>=0)";
   }  
   if(useEmbedded) for(int i=2; i<7; ++i)cutsSS[i] += "*!(gen_match_2==5 &&gen_match_1==4)";
 
   cutsaIso[0] = AntiIsoCut+"(os>0.5)*"+FFweight;
   if(useEmbedded){
-    cutsaIso[1] = AntiIsoCut+"(os>0.5)*weight*"+FFweight;
+    cutsaIso[1] = AntiIsoCut+"(os>0.5)*weight*(weight<1000)*"+FFweight;
     cutsaIso[2] += zptmassweight;
  }else{
     cutsaIso[1] += zptmassweight+isZTT;
@@ -218,10 +218,10 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   cutsaIso[9] += "*"+TString::Itoa(scaleSignal,10);
   cutsaIso[10]+= "*"+TString::Itoa(scaleSignal,10);
   if(compareCP){
-    cutsaIso[7] +="*gen_sm_htt125";
-    cutsaIso[8] +="*gen_sm_htt125";
-    cutsaIso[9] +="*gen_ps_htt125";
-    cutsaIso[10] +="*gen_ps_htt125";
+    cutsaIso[7] +="*gen_sm_htt125*(gen_sm_htt125>=0&&gen_sm_htt125<7)";
+    cutsaIso[8] +="*gen_sm_htt125*(gen_sm_htt125>=0)";
+    cutsaIso[9] +="*gen_ps_htt125*(gen_ps_htt125>=0)";
+    cutsaIso[10] +="*gen_ps_htt125*(gen_ps_htt125>=0)";
   }  
   if(useEmbedded) for(int i=2; i<7; ++i)cutsaIso[i] += "*!(gen_match_2==5 && gen_match_1==4)";
   // *******************************
@@ -601,6 +601,8 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
 
   TH1D * ratioH    = (TH1D*)histData -> Clone("ratioH");
   TH1D * ratioErrH = (TH1D*)bkgdErr  -> Clone("ratioErrH");
+  TH1D * ratioggH = (TH1D*)ggH  -> Clone("ratioggH");
+  TH1D * ratioqqH = (TH1D*)qqH  -> Clone("ratioqqH");
   ratioH -> Divide((TH1D*)stack->GetStack()->Last()); // Divide by the sum of the THStack
 
   // Set error of MC bkg correctly in ratio
@@ -609,16 +611,28 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
     ratioErrH -> SetBinError(iB,0.0);
     float xBkg   = bkgdErr -> GetBinContent(iB);
     float errBkg = bkgdErr -> GetBinError(iB);
+    float xggH = ratioggH->GetBinContent(iB)/scaleSignal;
+    float xqqH = ratioqqH->GetBinContent(iB)/scaleSignal;
+    ratioggH->SetBinContent(iB,1.0);
+    ratioggH->SetBinError(iB,0.0);
+    ratioqqH->SetBinContent(iB,1.0);
+    ratioqqH->SetBinError(iB,0.0);
     if (xBkg>0) {
       float relErr = errBkg/xBkg;
       ratioErrH->SetBinError(iB,relErr);
+      ratioggH->SetBinContent(iB,1+(xggH/xBkg));
+      ratioqqH->SetBinContent(iB,1+(xqqH/xBkg));
     }
+
   }
 
   pads[1]->cd();
   ratioErrH->Draw("e2same");
   ratioH->Draw("pe0same");
-
+  if(showSignal){
+    ratioggH->Draw("hist same");
+    ratioqqH->Draw("hist same");
+  }
   pads[0]->cd();
   if(categoryIndex==5) histData -> GetYaxis()->SetRangeUser(0.,10000.);
 
