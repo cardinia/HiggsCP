@@ -13,6 +13,7 @@
 #include "TSystem.h"
 #include "RooWorkspace.h"
 #include "RooFunctor.h"
+#include "TMVA/Reader.h"
 #include "HiggsCP/Inputs/interface/settingsDNN.h"
 #include "HTTutilities/Jet2TauFakes/interface/FakeFactor.h"
 
@@ -20,6 +21,9 @@ namespace fs = std::experimental::filesystem;
 
 
 int main(int argc, char * argv[]) {
+
+  TString FFlocation = "/nfs/dust/cms/user/cardinia/public/FF_from_IC_1p5cut_v2/";
+
   bool TEST = false;
 
   TString process(argv[1]);
@@ -89,7 +93,7 @@ int main(int argc, char * argv[]) {
     embedded_tracking_weight = 1.00;
     input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2018/";
     //     input_dir = "/nfs/dust/cms/user/rasp/Run/Run2018/CP/sys";
-    output_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/HiggsCP/Inputs/test/NTuples_"+channel+"_" + era +"_v2";
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN_v3";
   }
   else if(era == "2017"){
     xsec_map    = &xsec_map_2017; 
@@ -100,7 +104,7 @@ int main(int argc, char * argv[]) {
     embedded_trigger_weight  = 1.00;
     embedded_tracking_weight = 0.99;
     input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2017/";
-    output_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/HiggsCP/Inputs/test/NTuples_"+channel+"_" + era +"_v2";
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN_v3";
   }  
   else if(era == "2016"){
     xsec_map    = &xsec_map_2016;
@@ -110,8 +114,8 @@ int main(int argc, char * argv[]) {
     qcd_ss_os_iso_relaxed_ratio = 2.3;
     embedded_trigger_weight  = 1.03;
     embedded_tracking_weight = 0.98;
-    input_dir="/nfs/dust/cms/user/rasp/HiggsCP/2016";
-    output_dir="/nfs/dust/cms/user/rasp/HiggsCP/2016/DNN";
+    input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2016/";
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN_v3";
   }
   fs::path path(output_dir.Data());
   if (!(fs::exists(path))) {
@@ -169,120 +173,46 @@ int main(int argc, char * argv[]) {
     neventsDY4Jets = getNEventsProcessed(input_dir,process_map->at("DY4Jets"),era);
   }
 
-  TFile * ff_file = TFile::Open("/nfs/dust/cms/user/cardinia/public/FF_from_IC_1p5cut/fakefactors_ws_mt_lite_"+era+".root");
+  TMVA::Reader *reader_;
+  TH2D *ff_fracs_qcd_;
+  TH2D *ff_fracs_wjets_;
+  float met_, pt_1_, pt_2_, mva_dm_2_, mt_1_, m_vis_, pt_tt_, mjj_, n_jets_;
+  
+  reader_ = new TMVA::Reader();
+  reader_->AddVariable( "pt_tt", &pt_tt_ );
+  reader_->AddVariable( "pt_1", &pt_1_ );
+  reader_->AddVariable( "pt_2", &pt_2_ );
+  reader_->AddVariable( "met", &met_ );
+  reader_->AddVariable( "m_vis", &m_vis_ );
+  reader_->AddVariable( "n_jets", &n_jets_ );
+  reader_->AddVariable( "mjj", &mjj_ );
+  reader_->AddVariable( "mva_dm_2", &mva_dm_2_ );
+  reader_->AddVariable( "mt_1", &mt_1_ );
+  reader_->BookMVA( "BDT method", FFlocation+"fractions_"+era+"_mt.xml" );
+
+  TFile f_fracs(FFlocation+"mva_fract_mt_"+era+".root");
+  ff_fracs_qcd_ = (TH2D*)f_fracs.Get("QCD");
+  ff_fracs_wjets_ = (TH2D*)f_fracs.Get("W");
+  ff_fracs_qcd_->SetDirectory(0);
+  ff_fracs_wjets_->SetDirectory(0);
+  f_fracs.Close();
+
+
+
+
+  TFile * ff_file = TFile::Open(FFlocation+"fakefactors_ws_mt_lite_"+era+".root");
   FakeFactor* ff = (FakeFactor*)ff_file->Get("ff_comb");
   
   std::shared_ptr<RooWorkspace> ff_ws_;
   std::map<std::string, std::shared_ptr<RooFunctor>> fns_;
   ff_ws_ = std::shared_ptr<RooWorkspace>((RooWorkspace*)gDirectory->Get("w"));
   fns_["ff_mt_medium_dmbins"] = std::shared_ptr<RooFunctor>(ff_ws_->function("ff_mt_medium_dmbins")->functor(ff_ws_->argSet("pt,dm,njets,m_pt,os,mt,m_iso,pass_single,mvis")));
-  fns_["ff_mt_medium_mvadmbins"] = std::shared_ptr<RooFunctor>(ff_ws_->function("ff_mt_medium_mvadmbins")->functor(ff_ws_->argSet("pt,mvadm,ipsig,njets,m_pt,os,m_iso,pass_single,met_var_qcd,met_var_w,WpT")));
+  fns_["ff_mt_medium_mvadmbins"] = std::shared_ptr<RooFunctor>(ff_ws_->function("ff_mt_medium_mvadmbins")->functor(ff_ws_->argSet("pt,mvadm,ipsig,njets,m_pt,os,m_iso,pass_single,met_var_qcd,met_var_w,WpT,w_frac,qcd_frac,ttbar_frac")));
 
-  vector<TString>SystematicsFF={
-    "wjets_stat_njet0_mvadm0_sig_lt3_up",
-    "wjets_stat_njet0_mvadm0_sig_lt3_down",
-    "qcd_stat_njet0_mvadm0_sig_lt3_up",
-    "qcd_stat_njet0_mvadm0_sig_lt3_down",
-    "wjets_stat_njet1_mvadm0_sig_lt3_up",
-    "wjets_stat_njet1_mvadm0_sig_lt3_down",
-    "qcd_stat_njet1_mvadm0_sig_lt3_up",
-    "qcd_stat_njet1_mvadm0_sig_lt3_down",
-    "wjets_stat_njet2_mvadm0_sig_lt3_up",
-    "wjets_stat_njet2_mvadm0_sig_lt3_down",
-    "qcd_stat_njet2_mvadm0_sig_lt3_up",
-    "qcd_stat_njet2_mvadm0_sig_lt3_down",
-
-    "wjets_stat_njet0_mvadm0_sig_gt3_up",
-    "wjets_stat_njet0_mvadm0_sig_gt3_down",
-    "qcd_stat_njet0_mvadm0_sig_gt3_up",
-    "qcd_stat_njet0_mvadm0_sig_gt3_down",
-    "wjets_stat_njet1_mvadm0_sig_gt3_up",
-    "wjets_stat_njet1_mvadm0_sig_gt3_down",
-    "qcd_stat_njet1_mvadm0_sig_gt3_up",
-    "qcd_stat_njet1_mvadm0_sig_gt3_down",
-    "wjets_stat_njet2_mvadm0_sig_gt3_up",
-    "wjets_stat_njet2_mvadm0_sig_gt3_down",
-    "qcd_stat_njet2_mvadm0_sig_gt3_up",
-    "qcd_stat_njet2_mvadm0_sig_gt3_down",
-
-    "wjets_stat_njet0_mvadm1_up",
-    "wjets_stat_njet0_mvadm1_down",
-    "qcd_stat_njet0_mvadm1_up",
-    "qcd_stat_njet0_mvadm1_down",
-    "wjets_stat_njet1_mvadm1_up",
-    "wjets_stat_njet1_mvadm1_down",
-    "qcd_stat_njet1_mvadm1_up",
-    "qcd_stat_njet1_mvadm1_down",
-    "wjets_stat_njet2_mvadm1_up",
-    "wjets_stat_njet2_mvadm1_down",
-    "qcd_stat_njet2_mvadm1_up",
-    "qcd_stat_njet2_mvadm1_down",
-
-    "wjets_stat_njet0_mvadm2_up",
-    "wjets_stat_njet0_mvadm2_down",
-    "qcd_stat_njet0_mvadm2_up",
-    "qcd_stat_njet0_mvadm2_down",
-    "wjets_stat_njet1_mvadm2_up",
-    "wjets_stat_njet1_mvadm2_down",
-    "qcd_stat_njet1_mvadm2_up",
-    "qcd_stat_njet1_mvadm2_down",
-    "wjets_stat_njet2_mvadm2_up",
-    "wjets_stat_njet2_mvadm2_down",
-    "qcd_stat_njet2_mvadm2_up",
-    "qcd_stat_njet2_mvadm2_down",
-
-    "wjets_stat_njet0_mvadm10_up",
-    "wjets_stat_njet0_mvadm10_down",
-    "qcd_stat_njet0_mvadm10_up",
-    "qcd_stat_njet0_mvadm10_down",
-    "wjets_stat_njet1_mvadm10_up",
-    "wjets_stat_njet1_mvadm10_down",
-    "qcd_stat_njet1_mvadm10_up",
-    "qcd_stat_njet1_mvadm10_down",
-    "wjets_stat_njet2_mvadm10_up",
-    "wjets_stat_njet2_mvadm10_down",
-    "qcd_stat_njet2_mvadm10_up",
-    "qcd_stat_njet2_mvadm10_down",
-
-    "wjets_stat_njet0_mvadm11_up",
-    "wjets_stat_njet0_mvadm11_down",
-    "qcd_stat_njet0_mvadm11_up",
-    "qcd_stat_njet0_mvadm11_down",
-    "wjets_stat_njet1_mvadm11_up",
-    "wjets_stat_njet1_mvadm11_down",
-    "qcd_stat_njet1_mvadm11_up",
-    "qcd_stat_njet1_mvadm11_down",
-    "wjets_stat_njet2_mvadm11_up",
-    "wjets_stat_njet2_mvadm11_down",
-    "qcd_stat_njet2_mvadm11_up",
-    "qcd_stat_njet2_mvadm11_down",
-
-    "qcd_met_up",
-    "wjets_met_up",
-    "ttbar_met_up",
-
-    "qcd_met_down",
-    "wjets_met_down",
-    "ttbar_met_down",
-
-    "qcd_l_pt_up",
-    "wjets_l_pt_up",
-
-    "qcd_l_pt_down",
-    "wjets_l_pt_down",
-
-    "qcd_syst_up",
-    "wjets_syst_up",
-    "ttbar_syst_up",
-
-    "qcd_syst_down",
-    "wjets_syst_down",
-    "ttbar_syst_down"
-  };
   for(auto systematicFF : SystematicsFF){
     string functionname="ff_mt_medium_mvadmbins_";
     functionname+=systematicFF.Data();
-    fns_[functionname.c_str()] = std::shared_ptr<RooFunctor>(ff_ws_->function(functionname.c_str())->functor(ff_ws_->argSet("pt,mvadm,ipsig,njets,m_pt,os,mt,m_iso,pass_single,met_var_qcd,met_var_w")));
+    fns_[functionname.c_str()] = std::shared_ptr<RooFunctor>(ff_ws_->function(functionname.c_str())->functor(ff_ws_->argSet("pt,mvadm,ipsig,njets,m_pt,os,mt,m_iso,pass_single,met_var_qcd,met_var_w,WpT,w_frac,qcd_frac,ttbar_frac")));
   };
 
   if (!PropagateSystematics)
@@ -441,11 +371,11 @@ int main(int argc, char * argv[]) {
 	int htxs_reco_flag_ggh;
 	int htxs_reco_flag_qqh;
 
-	double TauSpinnerWeightsEven;
-	double TauSpinnerWeightsOdd;
-	double TauSpinnerWeightsMaxMix;
-	double TauSpinnerWeightsMinusMaxMix;
-	double TauSpinnerWeightsMix0p375;
+	double gen_sm_htt125;
+	double gen_ps_htt125;
+	double gen_mm_htt125;
+	//double TauSpinnerWeightsMinusMaxMix;
+	//double TauSpinnerWeightsMix0p375;
 	
 	//Weights for top and Z pt reweighting
 	float weight_CMS_htt_dyShape_13TeVDown;
@@ -754,11 +684,11 @@ int main(int argc, char * argv[]) {
 	outTree->Branch("ff_mva", &ff_mva, "ff_mva/F");
 	outTree->Branch("ff_sys", &ff_sys, "ff_sys/F");
 	
-	outTree->Branch("gen_sm_htt125", &TauSpinnerWeightsEven,"gen_sm_htt125/D");
-	outTree->Branch("gen_ps_htt125", &TauSpinnerWeightsOdd,"gen_ps_htt125/D");
-	outTree->Branch("gen_mm_htt125", &TauSpinnerWeightsMaxMix,"gen_mm_htt125/D");
-	outTree->Branch("gen_minusmm_htt125", &TauSpinnerWeightsMinusMaxMix,"gen_minusmm_htt125/D");
-	outTree->Branch("gen_mix0p375_htt125", &TauSpinnerWeightsMix0p375,"gen_mix0p375_htt125/D");
+	outTree->Branch("gen_sm_htt125", &gen_sm_htt125,"gen_sm_htt125/D");
+	outTree->Branch("gen_ps_htt125", &gen_ps_htt125,"gen_ps_htt125/D");
+	outTree->Branch("gen_mm_htt125", &gen_mm_htt125,"gen_mm_htt125/D");
+	//outTree->Branch("gen_minusmm_htt125", &TauSpinnerWeightsMinusMaxMix,"gen_minusmm_htt125/D");
+	//outTree->Branch("gen_mix0p375_htt125", &TauSpinnerWeightsMix0p375,"gen_mix0p375_htt125/D");
 	
 	//Weights for top and Z pt reweighting
 	outTree->Branch("weight_CMS_htt_dyShape_13TeVDown",&weight_CMS_htt_dyShape_13TeVDown,"weight_CMS_htt_dyShape_13TeVDown/F");
@@ -1075,11 +1005,11 @@ int main(int argc, char * argv[]) {
  	  //inTree->SetBranchAddress("acotautau_uncorr_00",&acotautau_bs_uncorr_00);
  	  //inTree->SetBranchAddress("acotautau_uncorr_01",&acotautau_bs_uncorr_01);
 
-	  inTree->SetBranchAddress("gen_sm_htt125", &TauSpinnerWeightsEven);
-	  inTree->SetBranchAddress("gen_ps_htt125", &TauSpinnerWeightsOdd);
-	  inTree->SetBranchAddress("gen_mm_htt125", &TauSpinnerWeightsMaxMix);
-	  inTree->SetBranchAddress("gen_minusmm_htt125", &TauSpinnerWeightsMinusMaxMix);
-	  inTree->SetBranchAddress("gen_mix0p375_htt125", &TauSpinnerWeightsMix0p375);
+	  inTree->SetBranchAddress("gen_sm_htt125", &gen_sm_htt125);
+	  inTree->SetBranchAddress("gen_ps_htt125", &gen_ps_htt125);
+	  inTree->SetBranchAddress("gen_mm_htt125", &gen_mm_htt125);
+	  //inTree->SetBranchAddress("gen_minusmm_htt125", &TauSpinnerWeightsMinusMaxMix);
+	  //inTree->SetBranchAddress("gen_mix0p375_htt125", &TauSpinnerWeightsMix0p375);
 
 
 
@@ -1140,6 +1070,7 @@ int main(int argc, char * argv[]) {
 	      if (i%100000==0){
 		cout << "processed " << i << " events " << endl;
 	      }
+	      //Preselection
 	      if(applyPreselection){
 		bool is_trigger = false;
 		bool is_singleLepTrigger = false;
@@ -1148,7 +1079,7 @@ int main(int argc, char * argv[]) {
 		  if( iso_1 > 0.15 )              continue;
 		  if( pt_1 < 20)                  continue; 
 		  if( pt_2 < 20)                  continue; 
-		  if (abs(eta_1)>2.4)             continue;
+		  if (abs(eta_1)>2.1)             continue;
 		  if (abs(eta_2)>2.3)             continue;
 		  if (era=="2016") {
 		    is_singleLepTrigger = (trg_singlemuon>0.5&&pt_1>23&&abs(eta_1)<2.1);
@@ -1168,7 +1099,7 @@ int main(int argc, char * argv[]) {
 		  if( iso_1 > 0.10 )              continue;
 		  else if( pt_1 < 20 )            continue; 
 		  else if( pt_2 < 20 )            continue; 
-		  if (abs(eta_1)>2.5)             continue;
+		  if (abs(eta_1)>2.1)             continue;
 		  if (abs(eta_2)>2.3)             continue;
 		}
 		if( extraelec_veto > 0.5 )       continue;
@@ -1176,9 +1107,42 @@ int main(int argc, char * argv[]) {
 		if( extramuon_veto > 0.5 )       continue;
 		if( dilepton_veto  > 0.5 )       continue;
 		if( puppimt_1>50 )               continue;
+		if( tau_decay_mode_2==0 && (dmMVA_2==1||dmMVA_2==2) ) continue;
+		if( Sample.Contains("Uncorr") ){
+		  if ( isnan(gen_sm_htt125) ||
+		       isnan(gen_mm_htt125) ||
+		       isnan(gen_ps_htt125) ){
+
+		    cout << "Found NaN in TauSpinnerWeight -> event removed" <<endl;
+		    continue;//remove events for which the TauSpinnerWeight was not computed correctly
+		  }
+		}
+		if( isEmbedded && mcweight > 1000 ) continue;
 	      }
-	     
+	      //End of preselection
+
+
+	      //FF method
 	      if (byMediumDeepTau2017v2p1VSjet_2<0.5&&SystematicsName==""){
+
+		pt_1_ = pt_1;
+		pt_2_ = pt_2;
+		m_vis_ = m_vis;
+		mt_1_ = puppimt_1;
+		pt_tt_ = pt_tt;
+		met_ = puppimet;
+		n_jets_ = njets;
+		if(njets>1)mjj_=mjj;
+		else mjj_ = 0;
+		mva_dm_2_=dmMVA_2;
+		std::vector<float> scores = reader_->EvaluateMulticlass("BDT method");
+		double qcd_score = scores[1];
+		double w_score = scores[0];
+		double w_frac = ff_fracs_wjets_->GetBinContent(ff_fracs_wjets_->FindBin(qcd_score,w_score));
+		double qcd_frac = ff_fracs_qcd_->GetBinContent(ff_fracs_qcd_->FindBin(qcd_score,w_score));
+		double ttbar_frac = 1. - w_frac - qcd_frac;
+
+
 		TLorentzVector MET(0.,0.,0.,0.);
 		MET.SetPtEtaPhiM(puppimet,0.,puppimetphi,0);
 		TLorentzVector MU(0.,0.,0.,0.);
@@ -1208,7 +1172,10 @@ int main(int argc, char * argv[]) {
 						    static_cast<double>(trg_singlemuon),
 						    met_var_qcd,
 						    met_var_w,
-						    FakeMET.Pt()};
+						    FakeMET.Pt(),
+						    w_frac,
+						    qcd_frac,
+						    ttbar_frac};
 		ff_mva = fns_["ff_mt_medium_mvadmbins"]->eval(args_mva.data());
 
 		///Weights for FF

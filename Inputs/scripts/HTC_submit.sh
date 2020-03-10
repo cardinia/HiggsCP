@@ -1,9 +1,10 @@
 #!/bin/sh 
 # $1 - sample
 # $2 - era 
+# $3 - runtime
 
 cat > $1_$2.submit <<EOF
-+RequestRuntime=10000
++RequestRuntime=$3
 
 RequestMemory = 2000
 

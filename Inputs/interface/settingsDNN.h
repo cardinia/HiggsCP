@@ -84,6 +84,109 @@ vector<TString> SystematicsNames = {"",
 				    "CMS_res_j_13TeVDown"
 };
 
+const vector<TString>SystematicsFF={
+    "wjets_stat_njet0_mvadm0_sig_lt3_up",
+    "wjets_stat_njet0_mvadm0_sig_lt3_down",
+    "qcd_stat_njet0_mvadm0_sig_lt3_up",
+    "qcd_stat_njet0_mvadm0_sig_lt3_down",
+    "wjets_stat_njet1_mvadm0_sig_lt3_up",
+    "wjets_stat_njet1_mvadm0_sig_lt3_down",
+    "qcd_stat_njet1_mvadm0_sig_lt3_up",
+    "qcd_stat_njet1_mvadm0_sig_lt3_down",
+    "wjets_stat_njet2_mvadm0_sig_lt3_up",
+    "wjets_stat_njet2_mvadm0_sig_lt3_down",
+    "qcd_stat_njet2_mvadm0_sig_lt3_up",
+    "qcd_stat_njet2_mvadm0_sig_lt3_down",
+
+    "wjets_stat_njet0_mvadm0_sig_gt3_up",
+    "wjets_stat_njet0_mvadm0_sig_gt3_down",
+    "qcd_stat_njet0_mvadm0_sig_gt3_up",
+    "qcd_stat_njet0_mvadm0_sig_gt3_down",
+    "wjets_stat_njet1_mvadm0_sig_gt3_up",
+    "wjets_stat_njet1_mvadm0_sig_gt3_down",
+    "qcd_stat_njet1_mvadm0_sig_gt3_up",
+    "qcd_stat_njet1_mvadm0_sig_gt3_down",
+    "wjets_stat_njet2_mvadm0_sig_gt3_up",
+    "wjets_stat_njet2_mvadm0_sig_gt3_down",
+    "qcd_stat_njet2_mvadm0_sig_gt3_up",
+    "qcd_stat_njet2_mvadm0_sig_gt3_down",
+
+    "wjets_stat_njet0_mvadm1_up",
+    "wjets_stat_njet0_mvadm1_down",
+    "qcd_stat_njet0_mvadm1_up",
+    "qcd_stat_njet0_mvadm1_down",
+    "wjets_stat_njet1_mvadm1_up",
+    "wjets_stat_njet1_mvadm1_down",
+    "qcd_stat_njet1_mvadm1_up",
+    "qcd_stat_njet1_mvadm1_down",
+    "wjets_stat_njet2_mvadm1_up",
+    "wjets_stat_njet2_mvadm1_down",
+    "qcd_stat_njet2_mvadm1_up",
+    "qcd_stat_njet2_mvadm1_down",
+
+    "wjets_stat_njet0_mvadm2_up",
+    "wjets_stat_njet0_mvadm2_down",
+    "qcd_stat_njet0_mvadm2_up",
+    "qcd_stat_njet0_mvadm2_down",
+    "wjets_stat_njet1_mvadm2_up",
+    "wjets_stat_njet1_mvadm2_down",
+    "qcd_stat_njet1_mvadm2_up",
+    "qcd_stat_njet1_mvadm2_down",
+    "wjets_stat_njet2_mvadm2_up",
+    "wjets_stat_njet2_mvadm2_down",
+    "qcd_stat_njet2_mvadm2_up",
+    "qcd_stat_njet2_mvadm2_down",
+
+    "wjets_stat_njet0_mvadm10_up",
+    "wjets_stat_njet0_mvadm10_down",
+    "qcd_stat_njet0_mvadm10_up",
+    "qcd_stat_njet0_mvadm10_down",
+    "wjets_stat_njet1_mvadm10_up",
+    "wjets_stat_njet1_mvadm10_down",
+    "qcd_stat_njet1_mvadm10_up",
+    "qcd_stat_njet1_mvadm10_down",
+    "wjets_stat_njet2_mvadm10_up",
+    "wjets_stat_njet2_mvadm10_down",
+    "qcd_stat_njet2_mvadm10_up",
+    "qcd_stat_njet2_mvadm10_down",
+
+    "wjets_stat_njet0_mvadm11_up",
+    "wjets_stat_njet0_mvadm11_down",
+    "qcd_stat_njet0_mvadm11_up",
+    "qcd_stat_njet0_mvadm11_down",
+    "wjets_stat_njet1_mvadm11_up",
+    "wjets_stat_njet1_mvadm11_down",
+    "qcd_stat_njet1_mvadm11_up",
+    "qcd_stat_njet1_mvadm11_down",
+    "wjets_stat_njet2_mvadm11_up",
+    "wjets_stat_njet2_mvadm11_down",
+    "qcd_stat_njet2_mvadm11_up",
+    "qcd_stat_njet2_mvadm11_down",
+
+    "qcd_met_up",
+    "wjets_met_up",
+    "ttbar_met_up",
+
+    "qcd_met_down",
+    "wjets_met_down",
+    "ttbar_met_down",
+
+    "qcd_l_pt_up",
+    "wjets_l_pt_up",
+
+    "qcd_l_pt_down",
+    "wjets_l_pt_down",
+
+    "qcd_syst_up",
+    "wjets_syst_up",
+    "ttbar_syst_up",
+
+    "qcd_syst_down",
+    "wjets_syst_down",
+    "ttbar_syst_down"
+};
+
+
 const vector<TString> SingleMuon_2018       = { "SingleMuon_Run2018A",
 						"SingleMuon_Run2018B", 
 						"SingleMuon_Run2018C",
@@ -124,7 +227,12 @@ const vector<TString> SingleTop_2018       = { "ST_t-channel_antitop_4f" ,
                                                "ST_tW_top_5f" };
 const vector<TString> Diboson_2018         = { "WW" ,
                                                "WZ" ,
-                                               "ZZ" };
+                                               "ZZ" ,
+					       "ST_t-channel_antitop_4f" ,
+                                               "ST_t-channel_top_4f" ,
+                                               "ST_tW_antitop_5f" ,
+                                               "ST_tW_top_5f" };
+
 const vector<TString> GluGluHToTauTau_2018 = { "GluGluHToTauTau_M125" };
 const vector<TString> VBFHToTauTau_2018    = { "VBFHToTauTau_M125"}; 
 const vector<TString> GluGluHToUncorrTauTau_2018 = { "GluGluHToTauTauUncorrDecays_M125" };
@@ -176,7 +284,11 @@ const vector<TString> SingleTop_2017       = { "ST_t-channel_antitop_4f" ,
 					       "ST_tW_top_5f" };
 const vector<TString> Diboson_2017         = { "WW" ,
 					       "WZ" ,
-					       "ZZ" };
+					       "ZZ" ,
+					       "ST_t-channel_antitop_4f" ,
+					       "ST_t-channel_top_4f" ,
+					       "ST_tW_antitop_5f" ,
+					       "ST_tW_top_5f" };
 const vector<TString> GluGluHToTauTau_2017 = { "GluGluHToTauTau_M125" };
 const vector<TString> SUSYGluGluToHToTauTau_2017 = { "SUSYGluGluToHToTauTau" };
 const vector<TString> VBFHToTauTau_2017    = { "VBFHToTauTau_M125"
@@ -244,7 +356,11 @@ const vector<TString> SingleTop_2016       = { "ST_t-channel_antitop_4f",
 //const vector<TString> Diboson_2016         = { "VVTo2L2Nu" , "WZJToLLLNu" , "WZTo1L1Nu2Q" , "WZTo1L3Nu" , "WZTo2L2Q" , "ZZTo2L2Q" , "ZZTo4L" , "WWToLNuQQ" };
 const vector<TString> Diboson_2016         = { "WW",
 					       "WZ",
-					       "ZZ"};
+					       "ZZ",
+					       "ST_t-channel_antitop_4f", 
+					       "ST_t-channel_top_4f", 
+					       "ST_tW_antitop_5f", 
+					       "ST_tW_top_5f" };
 
 const vector<TString> GluGluHToUncorrTauTau_2016 = { "GluGluHToTauTauUncorrDecays_M125" };
 const vector<TString> VBFHToUncorrTauTau_2016 = { "VBFHToTauTauUncorrDecays_M125" };
@@ -308,11 +424,11 @@ const map<TString, vector<TString> > map_sample = {
 // 2018 (taken from 2018, have to be checked!)
 const map<TString, double> xsec_map_2018 = {
    { "DYJetsToLL_M-50"  , 6077.22 },
-   { "DY1JetsToLL_M-50" , 877.8*1.079 },
-   { "DY2JetsToLL_M-50" , 304.4*1.079 },
-   { "DY3JetsToLL_M-50" , 111.5*1.079 },
-   { "DY4JetsToLL_M-50" , 44.03*1.079 },
-   { "WJetsToLNu"  , 52940.0*1.162 },
+   { "DY1JetsToLL_M-50" , 877.8*1.137 },
+   { "DY2JetsToLL_M-50" , 304.4*1.137 },
+   { "DY3JetsToLL_M-50" , 111.5*1.137 },
+   { "DY4JetsToLL_M-50" , 44.03*1.137 },
+   { "WJetsToLNu"  , 61526.7 },
    { "W1JetsToLNu" , 8104.0*1.162 },
    { "W2JetsToLNu" , 2793.0*1.162 },
    { "W3JetsToLNu" , 992.5*1.162 },
@@ -336,11 +452,11 @@ const map<TString, double> xsec_map_2018 = {
 
 const map<TString, double> xsec_map_2017 = {
   { "DYJetsToLL_M-50"  , 6077.22 }, 
-  { "DY1JetsToLL_M-50" , 877.8*1.079 }, 
-  { "DY2JetsToLL_M-50" , 304.4*1.079 }, 
-  { "DY3JetsToLL_M-50" , 111.5*1.079 }, 
-  { "DY4JetsToLL_M-50" , 44.03*1.079 }, 
-  { "WJetsToLNu"  , 52940.0*1.162 }, 
+  { "DY1JetsToLL_M-50" , 877.8*1.137 }, 
+  { "DY2JetsToLL_M-50" , 304.4*1.137 }, 
+  { "DY3JetsToLL_M-50" , 111.5*1.137 }, 
+  { "DY4JetsToLL_M-50" , 44.03*1.137 }, 
+  { "WJetsToLNu"  , 61526.7 }, 
   { "W1JetsToLNu" , 8104.0*1.162 }, 
   { "W2JetsToLNu" , 2793.0*1.162 }, 
   { "W3JetsToLNu" , 992.5*1.162 },
@@ -350,8 +466,8 @@ const map<TString, double> xsec_map_2017 = {
   { "TTToSemiLeptonic" , 365.35 }, 
   { "ST_t-channel_antitop_4f" , 80.95 },
   { "ST_t-channel_top_4f"     , 136.02 },
-  { "ST_tW_antitop_5f"                  , 35.85 },
-  { "ST_tW_top_5f"                      , 35.85 },
+  { "ST_tW_antitop_5f"        , 35.85 },
+  { "ST_tW_top_5f"            , 35.85 },
   { "WW" , 75.88 },
   { "WZ" , 27.57 },
   { "ZZ" , 12.14 }, 
@@ -377,16 +493,16 @@ const map<TString, double> xsec_map_2017 = {
 // 2016 (taken from AN2016_355_v10 with minor unrelevant deviations - everything was checked)
 const map<TString, double> xsec_map_2016 = {
     { "DYJetsToLL_M-10to50"      , 18610 },
-    { "DYJetsToLL_M-50"          , 5765 },
-    { "DY1JetsToLL_M-50"         , 1.164*1012.5 },
-    { "DY2JetsToLL_M-50"         , 1.164*332.8 },
-    { "DY3JetsToLL_M-50"         , 1.164*101.8 },
-    { "DY4JetsToLL_M-50"         , 1.164*54.8 },
+    { "DYJetsToLL_M-50"          , 6077.22 },
+    { "DY1JetsToLL_M-50"         , 1.225*1012.5 },
+    { "DY2JetsToLL_M-50"         , 1.225*332.8 },
+    { "DY3JetsToLL_M-50"         , 1.225*101.8 },
+    { "DY4JetsToLL_M-50"         , 1.225*54.8 },
     { "WJetsToLNu"               , 61526.7 },
-    { "W1JetsToLNu"              , 1.221*9644.5 },
-    { "W2JetsToLNu"              , 1.221*3144.5 },
-    { "W3JetsToLNu"              , 1.221*954.8 },
-    { "W4JetsToLNu"              , 1.221*485.6 },
+    { "W1JetsToLNu"              , 1.224*9644.5 },
+    { "W2JetsToLNu"              , 1.224*3144.5 },
+    { "W3JetsToLNu"              , 1.224*954.8 },
+    { "W4JetsToLNu"              , 1.224*485.6 },
     { "TT"                    , 831.76 },
     { "ST_t-channel_antitop_4f"     , 80.95 },
     { "ST_t-channel_top_4f"         , 136.02 },
@@ -397,7 +513,7 @@ const map<TString, double> xsec_map_2016 = {
     { "WZTo2L2Q"                 , 5.595 },
     { "WZTo1L1Nu2Q"              , 10.71 },
     { "WZTo1L3Nu"                , 3.05 },
-    { "WZJToLLLNu"               , 5.26 },
+    { "WZJToLLLNu"               , 4.708 },
     { "ZZTo4L"                   , 1.212 },
     { "ZZTo2L2Q"                 , 3.22 },
     { "GluGluHToTauTauUncorrDecays_M125" , 48.58*0.0627*0.2455 },
