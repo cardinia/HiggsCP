@@ -2,15 +2,14 @@
 #include <vector>
 #include <map>
 #include <iomanip>
-#include "DesyTauAnalyses/NTupleMaker/test/Plot_lept_mutau_NNNTuples.C"
+#include "HiggsCP/Inputs/macros/Plot_lept_mutau_NNNTuples.C"
 
 
-void   Plot_lept_mutau_NNScore(TString directory = "/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/Out_Tuples_2018/test_campaign_v2/",
-			       TString outputDir = "./figures_March5/",
+void   Plot_lept_mutau_NNScore(TString directory = "/nfs/dust/cms/user/rasp/storage/cardinia/2018/OutputDNN/March7/predictions_2018/",
+			       TString outputDir = "./figures_March10/",
 			       int year=2018,
-			       bool DeepTau = true, 
 			       bool FFmethod = true,  
-			       bool useEmbedded = false,
+			       bool useEmbedded = true,
 			       bool LargeScale = false,  
 			       bool logY = false,
 			       bool showSignal = true,
@@ -35,7 +34,6 @@ void   Plot_lept_mutau_NNScore(TString directory = "/nfs/dust/cms/user/filatovo/
 			      directory,
 			      outputDir,
 			      year,
-			      DeepTau,
 			      FFmethod,
 			      useEmbedded,
 			      true,  
@@ -59,7 +57,6 @@ void   Plot_lept_mutau_NNScore(TString directory = "/nfs/dust/cms/user/filatovo/
 			      directory,
 			      outputDir,
 			      year,
-			      DeepTau,
 			      FFmethod,
 			      useEmbedded,  
 			      true,  
@@ -94,7 +91,6 @@ void   Plot_lept_mutau_NNScore(TString directory = "/nfs/dust/cms/user/filatovo/
 			      directory,
 			      outputDir,
 			      year,
-			      DeepTau,
 			      FFmethod,
 			      useEmbedded,  
 			      _largeScale,  
