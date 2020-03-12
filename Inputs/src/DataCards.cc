@@ -144,6 +144,38 @@ void DataCards::setCategoryCuts() {
 }
 
 
+vector<TH1D*> DataCards::CreateCardsEmbedSyst(params param) {
+
+  vector<TH1D*> histos;
+
+  vector<TH1D*> histsEmbed = CreateCardsSample("EmbedZTT", param, false);
+
+  TH1D * histEmbedUp = (TH1D *) histsEmbed[0]->Clone("EmbedZTT_CMS_ttbar_embeded_13TeVUp");
+  TH1D * histEmbedDown = (TH1D *) histsEmbed[0]->Clone("EmbedZTT_CMS_ttbar_embeded_13TeVDown");
+
+  params paramUp = param;
+  params paramDown = param;
+
+  paramUp.weights += "1.1*";
+  paramDown.weights += "0.9*";
+  vector<TH1D*> histsTTTUp = CreateCardsSample("TTT", paramUp, false);
+  vector<TH1D*> histsVVTUp = CreateCardsSample("VVT", paramUp, false);
+  vector<TH1D*> histsTTTDown = CreateCardsSample("TTT", paramDown, false);
+  vector<TH1D*> histsVVTDown = CreateCardsSample("VVT", paramDown, false);
+
+  histsTTTUp[0]->Add(histsVVTUp[0]);
+  histsTTTDown[0]->Add(histsVVTDown[0]);
+
+  histEmbedUp->Add(histEmbedUp,histsTTTUp[0],1,-1);
+  histEmbedDown->Add(histEmbedDown,histsTTTDown[0],1,-1);
+
+  histos.push_back(histEmbedUp);
+  histos.push_back(histEmbedDown);
+
+  return histos;
+
+}
+
 vector<TH1D*> DataCards::CreateCardsSample(TString sampleName, params param, bool runSystematics) {
 
   TFile * fileSample = mapSampleFile[sampleName];
@@ -153,11 +185,13 @@ vector<TH1D*> DataCards::CreateCardsSample(TString sampleName, params param, boo
   cout << "   Running on sample " << sampleName << " : " << fileSample->GetName() << endl;
   vector<TString> SystematicsPerSample = SystematicsNames ;
   SystematicsPerSample.insert(SystematicsPerSample.end(),WeightSystematics.begin(),WeightSystematics.end());
-  if(sampleName.Contains("ggH")||sampleName.Contains("qqH")){
+  if(sampleName.Contains("htt")){
+    cout << "Adding theory shape systematics" <<endl;
     SystematicsPerSample.push_back("CMS_scale_gg_13TeVUp");
     SystematicsPerSample.push_back("CMS_scale_gg_13TeVDown");
   }
-  else if(sampleName=="ZTT"||sampleName=="ZLL"){
+  else if(sampleName=="ZTT"||sampleName=="ZL"){
+    cout << "Adding DY shape systematics" <<endl;
     SystematicsPerSample.push_back("CMS_htt_dyShape_13TeVUp");
     SystematicsPerSample.push_back("CMS_htt_dyShape_13TeVDown");
   }
@@ -170,12 +204,13 @@ vector<TH1D*> DataCards::CreateCardsSample(TString sampleName, params param, boo
     TString HistName = sampleName;
     params parameterSystematic = param;
     if (systematicName!="") {
-      if(find(WeightSystematics.begin(),WeightSystematics.end(),systematicName)==WeightSystematics.end()||systematicName.Contains("CMS_scale_gg_13TeV")||systematicName.Contains("CMS_htt_dyShape_13TeV"))TreeName = "TauCheck_" + systematicName; 
+      if(find(WeightSystematics.begin(),WeightSystematics.end(),systematicName)==WeightSystematics.end()&&(!(systematicName.Contains("CMS_scale_gg_13TeV")))&&(!(systematicName.Contains("CMS_htt_dyShape_13TeV"))))TreeName = "TauCheck_" + systematicName; 
       else parameterSystematic.weights = param.weights + "weight_" +systematicName+"*";
       HistName = sampleName + "_" + systematicName;
     }
 
     TTree * tree = (TTree*)fileSample->Get(TreeName);
+    //cout << TreeName <<endl;
     if (tree==NULL) continue;
     TH2D * hist2D;
     TH1D * hist1D;
@@ -199,7 +234,7 @@ vector<TH1D*> DataCards::CreateCardsSample(TString sampleName, params param, boo
     //    cout << "      plot : " << parameterSystematic.varToPlot << endl;
     //    cout << "       cut : " << parameterSystematic.cuts << endl;
     tree->Draw(parameterSystematic.varToPlot+">>hist",parameterSystematic.weights+"("+parameterSystematic.cuts+")");
-    //std::cout << parameterSystematic.weights << "(" << parameterSystematic.cuts << ")" << endl;
+    //cout << parameterSystematic.weights << "(" << parameterSystematic.cuts << ")" << endl;
     if (parameterSystematic.hist2D) {
       TH1D * hist = Unfold(hist2D);
       histos.push_back((TH1D*)hist->Clone(HistName));
@@ -288,17 +323,19 @@ TH1D* DataCards::CreateCardsFakesOrQCD(TString FakeOrQCD, params parameters, TSt
   vector<TH1D*> histFF = CreateCardsSample(FakeOrQCD,parameters,runSystematics);
   for (auto sample : samplesToSubtract) {
     if (sample=="ZTT"&&embedded_) continue;
-    if (sample=="EMB"&&!embedded_) continue;
+    if (sample=="EmbedZTT"&&!embedded_) continue;
 
     TString cutsSample = cuts;
     params parametersSample = parameters;
 
     if (sample=="ZTT")
       cutsSample += "&&gen_match_1==4&&gen_match_2==5";
-    else if (sample=="ZLL")
+    else if (sample=="ZL")
       cutsSample += "&&!(gen_match_1==4&&gen_match_2==5)";
     else if (embedded_)
       cutsSample += "&&!(gen_match_1==4&&gen_match_2==5)";
+
+    if (sample=="EmbedZTT" && era_=="2016") cuts += "&&(weight<1000)";
 
     cutsSample += "&&gen_match_2!=6";
 
@@ -331,18 +368,20 @@ vector<TH1D*> DataCards::CreateCardsFakes(TString FakeOrQCD, params parameters, 
     vector<TH1D*> histFF = CreateCardsSample(FakeOrQCD,parameters,systematicName);
     for (auto sample : samplesToSubtract) {
       if (sample=="ZTT"&&embedded_) continue;
-      if (sample=="EMB"&&!embedded_) continue;
+      if (sample=="EmbedZTT"&&!embedded_) continue;
       
       TString cutsSample = cuts;
       params parametersSample = parameters;
       
       if (sample=="ZTT")
 	cutsSample += "&&gen_match_1==4&&gen_match_2==5";
-      else if (sample=="ZLL")
+      else if (sample=="ZL")
 	cutsSample += "&&!(gen_match_1==4&&gen_match_2==5)";
       else if (embedded_)
 	cutsSample += "&&!(gen_match_1==4&&gen_match_2==5)";
       
+      if (sample=="EmbedZTT" && era_=="2016") cuts += "&&(weight<1000)";
+
       cutsSample += "&&gen_match_2!=6";
       
       //parametersSampleUp.cuts = weight + "(" + cutsSample + ")";
@@ -390,11 +429,13 @@ void DataCards::RunOnCategory(TString category) {
     
     if (sampleName=="ZTT") 
       cuts += "&&gen_match_1==4&&gen_match_2==5";
-    else if (sampleName=="ZLL")
+    else if (sampleName=="ZL")
       cuts += "&&!(gen_match_1==4&&gen_match_2==5)";
-    else if ((sampleName=="TT"||sampleName=="ST"||sampleName=="W"||sampleName=="VV") && embedded_) 
+    else if ((sampleName=="TTT"||sampleName=="ST"||sampleName=="W"||sampleName=="VVT") && embedded_) 
       cuts += "&&!(gen_match_1==4&&gen_match_2==5)";
     
+    if (sampleName=="EmbedZTT" && era_=="2016") cuts += "&&(weight<1000)";
+
 
     if (sampleName.Contains("_sm_htt125"))
       weight += "gen_sm_htt125*";
@@ -429,7 +470,11 @@ void DataCards::RunOnCategory(TString category) {
     parameters.xmax = xmax_;
     parameters.xDNN = xDNN_;
 
-
+    if (sampleName=="EmbedZTT" && runSystematics){ 
+      vector<TH1D*> hists = CreateCardsEmbedSyst(parameters);
+      for (auto hist : hists)
+	allHists.push_back(hist);
+    }
     if (sampleName=="fakes") {
       params parametersFF = parameters;
       parametersFF.cuts = cutsFF;

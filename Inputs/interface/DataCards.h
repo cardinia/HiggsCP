@@ -139,7 +139,8 @@ class DataCards {
   TH1D* CreateCardsFakesOrQCD(TString sampleName, params param, TString weightFForQCD);
   vector<TH1D*> CreateCardsFakes(TString sampleName, params param, TString weightFForQCD,bool runSystematics);
   void RunOnCategory(TString category);
-  
+  vector<TH1D*> CreateCardsEmbedSyst(params param);
+
   vector<TString> SystematicsNames = {
     "",
     "CMS_scale_t_1prong_13TeVUp",
@@ -391,10 +392,10 @@ class DataCards {
     "data_obs",
     "EmbedZTT",
     "ZTT",
-    "ZLL",
+    "ZL",
     //"ST",
-    "VV",
-    "TT",
+    "VVT",
+    "TTT",
     "QCD",
     "jetFakes",
     "W",
@@ -409,10 +410,10 @@ class DataCards {
   vector<TString> samplesToSubtract = {
     "EmbedZTT",
     "ZTT",
-    "ZLL",
+    "ZL",
     //"ST",
-    "VV",
-    "TT",
+    "VVT",
+    "TTT",
     "W"
   };
 
@@ -433,11 +434,11 @@ class DataCards {
   map<TString, TString> mapSampleFileName ={
     {"data_obs","data"},
     {"EmbedZTT","EMB"},
-    {"ZLL","DY"},
+    {"ZL","DY"},
     {"ZTT","DY"},
     //{"ST","ST"},
-    {"TT","TT"},
-    {"VV","VV"},
+    {"TTT","TT"},
+    {"VVT","VV"},
     {"W","W"},
     {"QCD","data"},
     {"jetFakes","data"},

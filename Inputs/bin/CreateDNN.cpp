@@ -207,12 +207,12 @@ int main(int argc, char * argv[]) {
   std::map<std::string, std::shared_ptr<RooFunctor>> fns_;
   ff_ws_ = std::shared_ptr<RooWorkspace>((RooWorkspace*)gDirectory->Get("w"));
   fns_["ff_mt_medium_dmbins"] = std::shared_ptr<RooFunctor>(ff_ws_->function("ff_mt_medium_dmbins")->functor(ff_ws_->argSet("pt,dm,njets,m_pt,os,mt,m_iso,pass_single,mvis")));
-  fns_["ff_mt_medium_mvadmbins"] = std::shared_ptr<RooFunctor>(ff_ws_->function("ff_mt_medium_mvadmbins")->functor(ff_ws_->argSet("pt,mvadm,ipsig,njets,m_pt,os,m_iso,pass_single,met_var_qcd,met_var_w,WpT,w_frac,qcd_frac,ttbar_frac")));
+  fns_["ff_mt_medium_mvadmbins"] = std::shared_ptr<RooFunctor>(ff_ws_->function("ff_mt_medium_mvadmbins")->functor(ff_ws_->argSet("pt,mvadm,ipsig,njets,m_pt,os,m_iso,pass_single,met_var_qcd,met_var_w,WpT,wjets_frac,qcd_frac,ttbar_frac")));
 
   for(auto systematicFF : SystematicsFF){
     string functionname="ff_mt_medium_mvadmbins_";
     functionname+=systematicFF.Data();
-    fns_[functionname.c_str()] = std::shared_ptr<RooFunctor>(ff_ws_->function(functionname.c_str())->functor(ff_ws_->argSet("pt,mvadm,ipsig,njets,m_pt,os,mt,m_iso,pass_single,met_var_qcd,met_var_w,WpT,w_frac,qcd_frac,ttbar_frac")));
+    fns_[functionname.c_str()] = std::shared_ptr<RooFunctor>(ff_ws_->function(functionname.c_str())->functor(ff_ws_->argSet("pt,mvadm,ipsig,njets,m_pt,os,mt,m_iso,pass_single,met_var_qcd,met_var_w,WpT,wjets_frac,qcd_frac,ttbar_frac")));
   };
 
   if (!PropagateSystematics)
@@ -1093,7 +1093,7 @@ int main(int argc, char * argv[]) {
 		  }
 		  if( is_trigger < 0.5 ) continue;
 		  if( byTightDeepTau2017v2p1VSmu_2 < 0.5) continue;
-		  if( byVVVLooseDeepTau2017v2p1VSe_2 < 0.5 ) continue;
+		  if( byVVLooseDeepTau2017v2p1VSe_2 < 0.5 ) continue;
 		  if( byVVVLooseDeepTau2017v2p1VSjet_2 < 0.5 ) continue;
 		}else{
 		  if( iso_1 > 0.10 )              continue;
