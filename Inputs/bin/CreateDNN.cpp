@@ -330,7 +330,7 @@ int main(int argc, char * argv[]) {
 	//DeepTau variables
 	float byTightDeepTau2017v2p1VSmu_2;
 	float byVLooseDeepTau2017v2p1VSe_2;
-	float byVVVLooseDeepTau2017v2p1VSe_2;
+	float byVVLooseDeepTau2017v2p1VSe_2;
 	float byVLooseDeepTau2017v2p1VSmu_2;
 	float byTightDeepTau2017v2p1VSe_2;
 	float byVVVLooseDeepTau2017v2p1VSjet_2;
@@ -642,7 +642,7 @@ int main(int argc, char * argv[]) {
 	//DeepTua branches
 	//	outTree->Branch("byTightDeepTau2017v2p1VSmu_2",&byTightDeepTau2017v2p1VSmu_2,"byTightDeepTau2017v2p1VSmu_2/F");      
 	//	outTree->Branch("byVLooseDeepTau2017v2p1VSe_2",&byVLooseDeepTau2017v2p1VSe_2,"byVLooseDeepTau2017v2p1VSe_2/F");      
-	//	outTree->Branch("byVVVLooseDeepTau2017v2p1VSe_2",&byVVVLooseDeepTau2017v2p1VSe_2,"byVVVLooseDeepTau2017v2p1VSe_2/F");
+	//	outTree->Branch("byVVLooseDeepTau2017v2p1VSe_2",&byVVLooseDeepTau2017v2p1VSe_2,"byVVLooseDeepTau2017v2p1VSe_2/F");
 	//	outTree->Branch("byVLooseDeepTau2017v2p1VSmu_2",&byVLooseDeepTau2017v2p1VSmu_2,"byVLooseDeepTau2017v2p1VSmu_2/F");
 	//	outTree->Branch("byTightDeepTau2017v2p1VSe_2",&byTightDeepTau2017v2p1VSe_2,"byTightDeepTau2017v2p1VSe_2/F");      
 	outTree->Branch("byVVVLooseDeepTau2017v2p1VSjet_2",&byVVVLooseDeepTau2017v2p1VSjet_2,"byVVVLooseDeepTau2017v2p1VSjet_2/F");      
@@ -974,7 +974,7 @@ int main(int argc, char * argv[]) {
 	  //DeepTua branches
 	  inTree->SetBranchAddress("byTightDeepTau2017v2p1VSmu_2",&byTightDeepTau2017v2p1VSmu_2);      
 	  inTree->SetBranchAddress("byVLooseDeepTau2017v2p1VSe_2",&byVLooseDeepTau2017v2p1VSe_2);      
-	  inTree->SetBranchAddress("byVVVLooseDeepTau2017v2p1VSe_2",&byVVVLooseDeepTau2017v2p1VSe_2);
+	  inTree->SetBranchAddress("byVVLooseDeepTau2017v2p1VSe_2",&byVVLooseDeepTau2017v2p1VSe_2);
 	  inTree->SetBranchAddress("byVLooseDeepTau2017v2p1VSmu_2",&byVLooseDeepTau2017v2p1VSmu_2);
 	  inTree->SetBranchAddress("byTightDeepTau2017v2p1VSe_2",&byTightDeepTau2017v2p1VSe_2);      
 	  inTree->SetBranchAddress("byVVVLooseDeepTau2017v2p1VSjet_2",&byVVVLooseDeepTau2017v2p1VSjet_2);      

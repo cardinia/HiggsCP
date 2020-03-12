@@ -147,27 +147,24 @@ void DataCards::setCategoryCuts() {
 vector<TH1D*> DataCards::CreateCardsEmbedSyst(params param) {
 
   vector<TH1D*> histos;
-
+  //create nominal embedded template
   vector<TH1D*> histsEmbed = CreateCardsSample("EmbedZTT", param, false);
 
   TH1D * histEmbedUp = (TH1D *) histsEmbed[0]->Clone("EmbedZTT_CMS_ttbar_embeded_13TeVUp");
   TH1D * histEmbedDown = (TH1D *) histsEmbed[0]->Clone("EmbedZTT_CMS_ttbar_embeded_13TeVDown");
 
-  params paramUp = param;
-  params paramDown = param;
+  params paramShift = param;
+  //get 10% of TT and VV true taus contributions
+  paramShift.weights += "0.1*";
+  paramShift.cuts += "&&(gen_match_1==4&&gen_match_2==5)";
 
-  paramUp.weights += "1.1*";
-  paramDown.weights += "0.9*";
-  vector<TH1D*> histsTTTUp = CreateCardsSample("TTT", paramUp, false);
-  vector<TH1D*> histsVVTUp = CreateCardsSample("VVT", paramUp, false);
-  vector<TH1D*> histsTTTDown = CreateCardsSample("TTT", paramDown, false);
-  vector<TH1D*> histsVVTDown = CreateCardsSample("VVT", paramDown, false);
+  vector<TH1D*> histsTTT = CreateCardsSample("TTT", paramShift, false);
+  vector<TH1D*> histsVVT = CreateCardsSample("VVT", paramShift, false);
 
-  histsTTTUp[0]->Add(histsVVTUp[0]);
-  histsTTTDown[0]->Add(histsVVTDown[0]);
+  histsTTT[0]->Add(histsVVT[0]);
 
-  histEmbedUp->Add(histEmbedUp,histsTTTUp[0],1,-1);
-  histEmbedDown->Add(histEmbedDown,histsTTTDown[0],1,-1);
+  histEmbedUp->Add(histEmbedUp,histsTTT[0],1,1);
+  histEmbedDown->Add(histEmbedDown,histsTTT[0],1,-1);
 
   histos.push_back(histEmbedUp);
   histos.push_back(histEmbedDown);
@@ -470,7 +467,7 @@ void DataCards::RunOnCategory(TString category) {
     parameters.xmax = xmax_;
     parameters.xDNN = xDNN_;
 
-    if (sampleName=="EmbedZTT" && runSystematics){ 
+    if (sampleName=="EmbedZTT" && runSystematics  && embedded_){ 
       vector<TH1D*> hists = CreateCardsEmbedSyst(parameters);
       for (auto hist : hists)
 	allHists.push_back(hist);
