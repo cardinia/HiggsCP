@@ -10,7 +10,9 @@ DataCards::DataCards(TString era,
 		     int nbins,
 		     double xmin,
 		     double xmax,
-		     std::vector<double> xDNN,
+		     std::vector<double> xDNNSig,
+		     std::vector<double> xDNNZtt,
+		     std::vector<double> xDNNFakes,
 		     bool useTH2forZtt,
 		     bool mvaDM,
 		     bool applyIPcut,
@@ -21,7 +23,9 @@ DataCards::DataCards(TString era,
   nbins_ = nbins;
   xmin_ = xmin;
   xmax_ = xmax;
-  xDNN_ = xDNN;
+  xDNNSig_ = xDNNSig;
+  xDNNZtt_ = xDNNZtt;
+  xDNNFakes_ = xDNNFakes;
   useTH2forZtt_ = useTH2forZtt;
   mvaDM_ = mvaDM;
   applyIPcut_ = applyIPcut;
@@ -452,20 +456,25 @@ void DataCards::RunOnCategory(TString category) {
     if (category.Contains("_sig")) {
       parameters.hist2D = true;
       parameters.varToPlot = "predicted_prob:"+acotautau;
+      parameters.xDNN = xDNNSig_;
     }
-    else if (category.Contains("_ztt")&&useTH2forZtt_) {
-      parameters.hist2D = true;
-      parameters.varToPlot = "predicted_prob:"+acotautau;      
+    else if (category.Contains("_ztt")) {
+      if(useTH2forZtt_){
+	parameters.hist2D = true;
+	parameters.varToPlot = "predicted_prob:"+acotautau;
+      }else parameters.varToPlot = "predicted_prob";
+      parameters.xDNN = xDNNZtt_; 
     }
     else {
       parameters.hist2D = false;
       parameters.varToPlot = "predicted_prob";
+      parameters.xDNN = xDNNFakes_; 
     }
 
     parameters.nbins = nbins_;
     parameters.xmin = xmin_;
     parameters.xmax = xmax_;
-    parameters.xDNN = xDNN_;
+
 
     if (sampleName=="EmbedZTT" && runSystematics  && embedded_){ 
       vector<TH1D*> hists = CreateCardsEmbedSyst(parameters);

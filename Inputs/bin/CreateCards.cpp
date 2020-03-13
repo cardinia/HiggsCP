@@ -23,6 +23,8 @@ int main(int argc, char * argv[]) {
 
   const int nbinsPhiCP = cfg.get<int>("NbinsPhiCP");
   const vector<double> DNNbins = cfg.get< vector<double> >("DNNbins");
+  const vector<double> DNNbinsZtt = cfg.get< vector<double> >("DNNbinsZtt");
+  const vector<double> DNNbinsFakes = cfg.get< vector<double> >("DNNbinsFakes");
 
   const bool useTH2forZtt = cfg.get<bool>("UseTH2ForZtt");
   const bool mvaDM = cfg.get<bool>("mvaDM");
@@ -57,7 +59,9 @@ int main(int argc, char * argv[]) {
   int nbins = nbinsPhiCP;
   double xmin = 0.0;
   double xmax = 2*TMath::Pi();
-  vector<double> xDNN = DNNbins;
+  vector<double> xDNNSig = DNNbins;
+  vector<double> xDNNZtt = DNNbinsZtt;
+  vector<double> xDNNFakes = DNNbinsFakes;
   
   DataCards * cards = new DataCards(Era,
 				    embedded,
@@ -65,7 +69,9 @@ int main(int argc, char * argv[]) {
 				    nbins,
 				    xmin,
 				    xmax,
-				    xDNN,
+				    xDNNSig,
+				    xDNNZtt,
+				    xDNNFakes,
 				    useTH2forZtt,
 				    mvaDM,
 				    applyIPcut,

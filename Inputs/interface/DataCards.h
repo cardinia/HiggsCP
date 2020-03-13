@@ -51,7 +51,9 @@ class DataCards {
 	    int nbins,
 	    double xmin,
 	    double xmax,
-	    vector<double> xDNN,
+	    vector<double> xDNNSig,
+	    vector<double> xDNNZtt,
+	    vector<double> xDNNFakes,
 	    bool useTH2forZtt,
 	    bool mvaDM,
 	    bool applyIPcut,
@@ -111,7 +113,9 @@ class DataCards {
   int nbins_;
   double xmin_;
   double xmax_;
-  vector<double> xDNN_;  
+  vector<double> xDNNSig_;  
+  vector<double> xDNNZtt_;  
+  vector<double> xDNNFakes_;  
 
   TString CutIP_muon_;
   TString CutIP_pion_;
@@ -159,6 +163,14 @@ class DataCards {
     "CMS_scale_met_boson_resolution_13TeVDown",
     "CMS_scale_met_boson_response_13TeVUp",
     "CMS_scale_met_boson_response_13TeVDown",
+    "CMS_htt_boson_reso_met_13TeVUp",
+    "CMS_htt_boson_reso_met_13TeVDown",
+    "CMS_htt_boson_scale_met_13TeVUp",
+    "CMS_htt_boson_scale_met_13TeVDown",
+    "CMS_htt_ZLShape_1prong_13TeVUp",
+    "CMS_htt_ZLShape_1prong_13TeVDown",
+    "CMS_htt_ZLShape_1prong1pi_13TeVUp",
+    "CMS_htt_ZLShape_1prong1pi_13TeVDown",
     "CMS_scale_j_FlavorQCD_13TeVUp",
     "CMS_scale_j_FlavorQCD_13TeVDown",
     "CMS_scale_j_RelativeBal_13TeVUp",
