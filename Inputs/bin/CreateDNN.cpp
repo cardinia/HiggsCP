@@ -93,7 +93,7 @@ int main(int argc, char * argv[]) {
     embedded_tracking_weight = 1.00;
     input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2018/";
     //     input_dir = "/nfs/dust/cms/user/rasp/Run/Run2018/CP/sys";
-    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN_v3";
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN_March14";
   }
   else if(era == "2017"){
     xsec_map    = &xsec_map_2017; 
@@ -104,7 +104,7 @@ int main(int argc, char * argv[]) {
     embedded_trigger_weight  = 1.00;
     embedded_tracking_weight = 0.99;
     input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2017/";
-    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN_v3";
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN_March14";
   }  
   else if(era == "2016"){
     xsec_map    = &xsec_map_2016;
@@ -115,7 +115,7 @@ int main(int argc, char * argv[]) {
     embedded_trigger_weight  = 1.03;
     embedded_tracking_weight = 0.98;
     input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2016/";
-    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN_v3";
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN_March14";
   }
   fs::path path(output_dir.Data());
   if (!(fs::exists(path))) {
@@ -378,192 +378,192 @@ int main(int argc, char * argv[]) {
 	//double TauSpinnerWeightsMix0p375;
 	
 	//Weights for top and Z pt reweighting
-	float weight_CMS_htt_dyShape_13TeVDown;
-	float weight_CMS_htt_dyShape_13TeVUp;
+	float weight_CMS_htt_dyShape_13TeVDown=1.;
+	float weight_CMS_htt_dyShape_13TeVUp=1.;
 
-	float weight_CMS_htt_ttbarShape_13TeVDown;
-	float weight_CMS_htt_ttbarShape_13TeVUp;
+	float weight_CMS_htt_ttbarShape_13TeVDown=1.;
+	float weight_CMS_htt_ttbarShape_13TeVUp=1.;
 
 
 	///Weights for FF
 	//Stat uncertainties
-	float weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltUp;
-	float weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltUp;
+	float weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltUp=1.;
+	float weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltUp=1.;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltUp;
-	float weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltUp;
+	float weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltUp=1.;
+	float weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltUp=1.;
 		
-	float weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltUp;
-	float weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltUp;
+	float weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltUp=1.;
+	float weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltUp=1.;
 	
 
-	float weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtUp;
-	float weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtUp;
+	float weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtUp=1.;
+	float weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtUp=1.;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtUp;
-	float weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtUp;
+	float weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtUp=1.;
+	float weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtUp=1.;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtUp;
-	float weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtUp;
+	float weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtUp=1.;
+	float weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtUp=1.;
 	
-	float weight_ff_mt_wjets_stat_njets0_mvadm1Up;
-	float weight_ff_mt_qcd_stat_njets0_mvadm1Up;
+	float weight_ff_mt_wjets_stat_njets0_mvadm1Up=1.;
+	float weight_ff_mt_qcd_stat_njets0_mvadm1Up=1.;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm1Up;
-	float weight_ff_mt_qcd_stat_njets1_mvadm1Up;
+	float weight_ff_mt_wjets_stat_njets1_mvadm1Up=1.;
+	float weight_ff_mt_qcd_stat_njets1_mvadm1Up=1.;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm1Up;
-	float weight_ff_mt_qcd_stat_njets2_mvadm1Up;
+	float weight_ff_mt_wjets_stat_njets2_mvadm1Up=1.;
+	float weight_ff_mt_qcd_stat_njets2_mvadm1Up=1.;
 	
 	
-	float weight_ff_mt_wjets_stat_njets0_mvadm2Up;
-	float weight_ff_mt_qcd_stat_njets0_mvadm2Up;
+	float weight_ff_mt_wjets_stat_njets0_mvadm2Up=1.;
+	float weight_ff_mt_qcd_stat_njets0_mvadm2Up=1.;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm2Up;
-	float weight_ff_mt_qcd_stat_njets1_mvadm2Up;
+	float weight_ff_mt_wjets_stat_njets1_mvadm2Up=1.;
+	float weight_ff_mt_qcd_stat_njets1_mvadm2Up=1.;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm2Up;
-	float weight_ff_mt_qcd_stat_njets2_mvadm2Up;
+	float weight_ff_mt_wjets_stat_njets2_mvadm2Up=1.;
+	float weight_ff_mt_qcd_stat_njets2_mvadm2Up=1.;
 
 
-	float weight_ff_mt_wjets_stat_njets0_mvadm10Up;
-	float weight_ff_mt_qcd_stat_njets0_mvadm10Up;
+	float weight_ff_mt_wjets_stat_njets0_mvadm10Up=1.;
+	float weight_ff_mt_qcd_stat_njets0_mvadm10Up=1.;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm10Up;
-	float weight_ff_mt_qcd_stat_njets1_mvadm10Up;
+	float weight_ff_mt_wjets_stat_njets1_mvadm10Up=1.;
+	float weight_ff_mt_qcd_stat_njets1_mvadm10Up=1.;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm10Up;
-	float weight_ff_mt_qcd_stat_njets2_mvadm10Up;
+	float weight_ff_mt_wjets_stat_njets2_mvadm10Up=1.;
+	float weight_ff_mt_qcd_stat_njets2_mvadm10Up=1.;
 
 
-	float weight_ff_mt_wjets_stat_njets0_mvadm11Up;
-	float weight_ff_mt_qcd_stat_njets0_mvadm11Up;
+	float weight_ff_mt_wjets_stat_njets0_mvadm11Up=1.;
+	float weight_ff_mt_qcd_stat_njets0_mvadm11Up=1.;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm11Up;
-	float weight_ff_mt_qcd_stat_njets1_mvadm11Up;
+	float weight_ff_mt_wjets_stat_njets1_mvadm11Up=1.;
+	float weight_ff_mt_qcd_stat_njets1_mvadm11Up=1.;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm11Up;
-	float weight_ff_mt_qcd_stat_njets2_mvadm11Up;
+	float weight_ff_mt_wjets_stat_njets2_mvadm11Up=1.;
+	float weight_ff_mt_qcd_stat_njets2_mvadm11Up=1.;
 
-	float weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltDown;
-	float weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltDown;
+	float weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltDown=1.;
+	float weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltDown=1.;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltDown;
-	float weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltDown;
+	float weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltDown=1.;
+	float weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltDown=1.;
 		
-	float weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltDown;
-	float weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltDown;
+	float weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltDown=1.;
+	float weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltDown=1.;
 	
 
-	float weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtDown;
-	float weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtDown;
+	float weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtDown=1.;
+	float weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtDown=1.;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtDown;
-	float weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtDown;
+	float weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtDown=1.;
+	float weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtDown=1.;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtDown;
-	float weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtDown;
+	float weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtDown=1.;
+	float weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtDown=1.;
 	
-	float weight_ff_mt_wjets_stat_njets0_mvadm1Down;
-	float weight_ff_mt_qcd_stat_njets0_mvadm1Down;
+	float weight_ff_mt_wjets_stat_njets0_mvadm1Down=1.;
+	float weight_ff_mt_qcd_stat_njets0_mvadm1Down=1.;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm1Down;
-	float weight_ff_mt_qcd_stat_njets1_mvadm1Down;
+	float weight_ff_mt_wjets_stat_njets1_mvadm1Down=1.;
+	float weight_ff_mt_qcd_stat_njets1_mvadm1Down=1.;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm1Down;
-	float weight_ff_mt_qcd_stat_njets2_mvadm1Down;
+	float weight_ff_mt_wjets_stat_njets2_mvadm1Down=1.;
+	float weight_ff_mt_qcd_stat_njets2_mvadm1Down=1.;
 	
 	
-	float weight_ff_mt_wjets_stat_njets0_mvadm2Down;
-	float weight_ff_mt_qcd_stat_njets0_mvadm2Down;
+	float weight_ff_mt_wjets_stat_njets0_mvadm2Down=1.;
+	float weight_ff_mt_qcd_stat_njets0_mvadm2Down=1.;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm2Down;
-	float weight_ff_mt_qcd_stat_njets1_mvadm2Down;
+	float weight_ff_mt_wjets_stat_njets1_mvadm2Down=1.;
+	float weight_ff_mt_qcd_stat_njets1_mvadm2Down=1.;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm2Down;
-	float weight_ff_mt_qcd_stat_njets2_mvadm2Down;
+	float weight_ff_mt_wjets_stat_njets2_mvadm2Down=1.;
+	float weight_ff_mt_qcd_stat_njets2_mvadm2Down=1.;
 
 
-	float weight_ff_mt_wjets_stat_njets0_mvadm10Down;
-	float weight_ff_mt_qcd_stat_njets0_mvadm10Down;
+	float weight_ff_mt_wjets_stat_njets0_mvadm10Down=1.;
+	float weight_ff_mt_qcd_stat_njets0_mvadm10Down=1.;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm10Down;
-	float weight_ff_mt_qcd_stat_njets1_mvadm10Down;
+	float weight_ff_mt_wjets_stat_njets1_mvadm10Down=1.;
+	float weight_ff_mt_qcd_stat_njets1_mvadm10Down=1.;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm10Down;
-	float weight_ff_mt_qcd_stat_njets2_mvadm10Down;
+	float weight_ff_mt_wjets_stat_njets2_mvadm10Down=1.;
+	float weight_ff_mt_qcd_stat_njets2_mvadm10Down=1.;
 
 
-	float weight_ff_mt_wjets_stat_njets0_mvadm11Down;
-	float weight_ff_mt_qcd_stat_njets0_mvadm11Down;
+	float weight_ff_mt_wjets_stat_njets0_mvadm11Down=1.;
+	float weight_ff_mt_qcd_stat_njets0_mvadm11Down=1.;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm11Down;
-	float weight_ff_mt_qcd_stat_njets1_mvadm11Down;
+	float weight_ff_mt_wjets_stat_njets1_mvadm11Down=1.;
+	float weight_ff_mt_qcd_stat_njets1_mvadm11Down=1.;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm11Down;
-	float weight_ff_mt_qcd_stat_njets2_mvadm11Down;
+	float weight_ff_mt_wjets_stat_njets2_mvadm11Down=1.;
+	float weight_ff_mt_qcd_stat_njets2_mvadm11Down=1.;
 
 
 	//met_var_qcd and met_var_w non-closure corrections
 
-	float weight_ff_mt_qcd_met_closure_systUp;
-	float weight_ff_mt_wjets_met_closure_systUp;
-	float weight_ff_mt_ttbar_met_closure_systUp;
-	float weight_ff_mt_qcd_met_closure_systDown;
-	float weight_ff_mt_wjets_met_closure_systDown;
-	float weight_ff_mt_ttbar_met_closure_systDown;
+	float weight_ff_mt_qcd_met_closure_systUp=1.;
+	float weight_ff_mt_wjets_met_closure_systUp=1.;
+	float weight_ff_mt_ttbar_met_closure_systUp=1.;
+	float weight_ff_mt_qcd_met_closure_systDown=1.;
+	float weight_ff_mt_wjets_met_closure_systDown=1.;
+	float weight_ff_mt_ttbar_met_closure_systDown=1.;
 
 	//m_pt non-closure corrections
 
-	float weight_ff_mt_qcd_l_pt_closure_systUp;
-	float weight_ff_mt_qcd_l_pt_closure_systDown;
-	float weight_ff_mt_wjets_l_pt_closure_systUp;
-	float weight_ff_mt_wjets_l_pt_closure_systDown;
+	float weight_ff_mt_qcd_l_pt_closure_systUp=1.;
+	float weight_ff_mt_qcd_l_pt_closure_systDown=1.;
+	float weight_ff_mt_wjets_l_pt_closure_systUp=1.;
+	float weight_ff_mt_wjets_l_pt_closure_systDown=1.;
 
 	//extrapolations from DR to SR
-	float weight_ff_mt_qcd_systUp;
-	float weight_ff_mt_qcd_systDown;
-	float weight_ff_mt_wjets_systUp;
-	float weight_ff_mt_wjets_systDown;
-	float weight_ff_mt_ttbar_systUp;
-	float weight_ff_mt_ttbar_systDown;
+	float weight_ff_mt_qcd_systUp=1.;
+	float weight_ff_mt_qcd_systDown=1.;
+	float weight_ff_mt_wjets_systUp=1.;
+	float weight_ff_mt_wjets_systDown=1.;
+	float weight_ff_mt_ttbar_systUp=1.;
+	float weight_ff_mt_ttbar_systDown=1.;
 
 	//Weights for Tau ES and ID
 
-	float weight_CMS_eff_Xtrigger_mt_MVADM0_13TeVUp;
-	float weight_CMS_eff_Xtrigger_mt_MVADM1_13TeVUp;
-	float weight_CMS_eff_Xtrigger_mt_MVADM2_13TeVUp;
-	float weight_CMS_eff_Xtrigger_mt_MVADM10_13TeVUp;
-	float weight_CMS_eff_Xtrigger_mt_MVADM11_13TeVUp;
-	float weight_CMS_eff_Xtrigger_mt_MVADM0_13TeVDown;
-	float weight_CMS_eff_Xtrigger_mt_MVADM1_13TeVDown;
-	float weight_CMS_eff_Xtrigger_mt_MVADM2_13TeVDown;
-	float weight_CMS_eff_Xtrigger_mt_MVADM10_13TeVDown;
-	float weight_CMS_eff_Xtrigger_mt_MVADM11_13TeVDown;
+	float weight_CMS_eff_Xtrigger_mt_MVADM0_13TeVUp=1.;
+	float weight_CMS_eff_Xtrigger_mt_MVADM1_13TeVUp=1.;
+	float weight_CMS_eff_Xtrigger_mt_MVADM2_13TeVUp=1.;
+	float weight_CMS_eff_Xtrigger_mt_MVADM10_13TeVUp=1.;
+	float weight_CMS_eff_Xtrigger_mt_MVADM11_13TeVUp=1.;
+	float weight_CMS_eff_Xtrigger_mt_MVADM0_13TeVDown=1.;
+	float weight_CMS_eff_Xtrigger_mt_MVADM1_13TeVDown=1.;
+	float weight_CMS_eff_Xtrigger_mt_MVADM2_13TeVDown=1.;
+	float weight_CMS_eff_Xtrigger_mt_MVADM10_13TeVDown=1.;
+	float weight_CMS_eff_Xtrigger_mt_MVADM11_13TeVDown=1.;
 
-	float weight_CMS_eff_t_pTlow_MVADM0_13TeVUp; 
-	float weight_CMS_eff_t_pTlow_MVADM1_13TeVUp; 
-	float weight_CMS_eff_t_pTlow_MVADM2_13TeVUp; 
-	float weight_CMS_eff_t_pTlow_MVADM10_13TeVUp;
-	float weight_CMS_eff_t_pTlow_MVADM11_13TeVUp;
-	float weight_CMS_eff_t_pThigh_MVADM0_13TeVUp;
-	float weight_CMS_eff_t_pThigh_MVADM1_13TeVUp;
-	float weight_CMS_eff_t_pThigh_MVADM2_13TeVUp;
-	float weight_CMS_eff_t_pThigh_MVADM10_13TeVUp; 
-	float weight_CMS_eff_t_pThigh_MVADM11_13TeVUp; 
-	float weight_CMS_eff_t_pTlow_MVADM0_13TeVDown; 
-	float weight_CMS_eff_t_pTlow_MVADM1_13TeVDown; 
-	float weight_CMS_eff_t_pTlow_MVADM2_13TeVDown; 
-	float weight_CMS_eff_t_pTlow_MVADM10_13TeVDown; 
-	float weight_CMS_eff_t_pTlow_MVADM11_13TeVDown; 
-	float weight_CMS_eff_t_pThigh_MVADM0_13TeVDown; 
-	float weight_CMS_eff_t_pThigh_MVADM1_13TeVDown; 
-	float weight_CMS_eff_t_pThigh_MVADM2_13TeVDown; 
-	float weight_CMS_eff_t_pThigh_MVADM10_13TeVDown;
-	float weight_CMS_eff_t_pThigh_MVADM11_13TeVDown;
+	float weight_CMS_eff_t_pTlow_MVADM0_13TeVUp=1.; 
+	float weight_CMS_eff_t_pTlow_MVADM1_13TeVUp=1.; 
+	float weight_CMS_eff_t_pTlow_MVADM2_13TeVUp=1.; 
+	float weight_CMS_eff_t_pTlow_MVADM10_13TeVUp=1.;
+	float weight_CMS_eff_t_pTlow_MVADM11_13TeVUp=1.;
+	float weight_CMS_eff_t_pThigh_MVADM0_13TeVUp=1.;
+	float weight_CMS_eff_t_pThigh_MVADM1_13TeVUp=1.;
+	float weight_CMS_eff_t_pThigh_MVADM2_13TeVUp=1.;
+	float weight_CMS_eff_t_pThigh_MVADM10_13TeVUp=1.; 
+	float weight_CMS_eff_t_pThigh_MVADM11_13TeVUp=1.; 
+	float weight_CMS_eff_t_pTlow_MVADM0_13TeVDown=1.; 
+	float weight_CMS_eff_t_pTlow_MVADM1_13TeVDown=1.; 
+	float weight_CMS_eff_t_pTlow_MVADM2_13TeVDown=1.; 
+	float weight_CMS_eff_t_pTlow_MVADM10_13TeVDown=1.; 
+	float weight_CMS_eff_t_pTlow_MVADM11_13TeVDown=1.; 
+	float weight_CMS_eff_t_pThigh_MVADM0_13TeVDown=1.; 
+	float weight_CMS_eff_t_pThigh_MVADM1_13TeVDown=1.; 
+	float weight_CMS_eff_t_pThigh_MVADM2_13TeVDown=1.; 
+	float weight_CMS_eff_t_pThigh_MVADM10_13TeVDown=1.;
+	float weight_CMS_eff_t_pThigh_MVADM11_13TeVDown=1.;
 
-	float weight_CMS_scale_gg_13TeVUp;
-	float weight_CMS_scale_gg_13TeVDown;
+	float weight_CMS_scale_gg_13TeVUp=1.;
+	float weight_CMS_scale_gg_13TeVDown=1.;
 
 
 
@@ -971,7 +971,7 @@ int main(int argc, char * argv[]) {
 	  inTree->SetBranchAddress("os",&os);      
 	  inTree->SetBranchAddress("nbtag",&nbtag);      
 	  
-	  //DeepTua branches
+	  //DeepTau branches
 	  inTree->SetBranchAddress("byTightDeepTau2017v2p1VSmu_2",&byTightDeepTau2017v2p1VSmu_2);      
 	  inTree->SetBranchAddress("byVLooseDeepTau2017v2p1VSe_2",&byVLooseDeepTau2017v2p1VSe_2);      
 	  inTree->SetBranchAddress("byVVLooseDeepTau2017v2p1VSe_2",&byVVLooseDeepTau2017v2p1VSe_2);
@@ -1124,7 +1124,6 @@ int main(int argc, char * argv[]) {
 
 	      //FF method
 	      if (byMediumDeepTau2017v2p1VSjet_2<0.5&&SystematicsName==""){
-
 		pt_1_ = pt_1;
 		pt_2_ = pt_2;
 		m_vis_ = m_vis;
@@ -1180,152 +1179,152 @@ int main(int argc, char * argv[]) {
 
 		///Weights for FF
 		//Stat uncertainties
-		weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltUp = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm0_sig_lt3_up"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltUp = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm0_sig_lt3_up"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltUp = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm0_sig_lt3_up"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltUp = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm0_sig_lt3_up"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltUp = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm0_sig_lt3_up"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltUp = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm0_sig_lt3_up"]->eval(args_mva.data());
-
-
-		weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtUp = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm0_sig_gt3_up"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtUp = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm0_sig_gt3_up"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtUp = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm0_sig_gt3_up"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtUp = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm0_sig_gt3_up"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtUp = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm0_sig_gt3_up"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtUp = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm0_sig_gt3_up"]->eval(args_mva.data());
-
-
-
-		weight_ff_mt_wjets_stat_njets0_mvadm1Up = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm1_up"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets0_mvadm1Up = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm1_up"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets1_mvadm1Up = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm1_up"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets1_mvadm1Up = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm1_up"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets2_mvadm1Up = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm1_up"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets2_mvadm1Up = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm1_up"]->eval(args_mva.data());
-
-
-		weight_ff_mt_wjets_stat_njets0_mvadm2Up = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm2_up"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets0_mvadm2Up = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm2_up"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets1_mvadm2Up = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm2_up"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets1_mvadm2Up = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm2_up"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets2_mvadm2Up = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm2_up"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets2_mvadm2Up = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm2_up"]->eval(args_mva.data());
-
-
-		weight_ff_mt_wjets_stat_njets0_mvadm10Up = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm10_up"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets0_mvadm10Up = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm10_up"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets1_mvadm10Up = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm10_up"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets1_mvadm10Up = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm10_up"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets2_mvadm10Up = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm10_up"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets2_mvadm10Up = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm10_up"]->eval(args_mva.data());
-
-
-		weight_ff_mt_wjets_stat_njets0_mvadm11Up = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm11_up"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets0_mvadm11Up = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm11_up"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets1_mvadm11Up = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm11_up"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets1_mvadm11Up = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm11_up"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets2_mvadm11Up = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm11_up"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets2_mvadm11Up = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm11_up"]->eval(args_mva.data());
+		weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltUp = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm0_sig_lt3_up"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm0_sig_lt3_up"]->eval(args_mva.data()) : 0;
+		weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltUp   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm0_sig_lt3_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm0_sig_lt3_up"]  ->eval(args_mva.data()) : 0;
+									                                                                                                                                                                                      
+		weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltUp = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm0_sig_lt3_up"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm0_sig_lt3_up"]->eval(args_mva.data()) : 0;
+		weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltUp   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm0_sig_lt3_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm0_sig_lt3_up"]  ->eval(args_mva.data()) : 0;
+									                                                                                                                                                                                      
+		weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltUp = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm0_sig_lt3_up"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm0_sig_lt3_up"]->eval(args_mva.data()) : 0;
+		weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltUp   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm0_sig_lt3_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm0_sig_lt3_up"]  ->eval(args_mva.data()) : 0;
+									                                                                                                                                                                                      
+									                                                                                                                                                                                      
+		weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtUp = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm0_sig_gt3_up"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm0_sig_gt3_up"]->eval(args_mva.data()) : 0;
+		weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtUp   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm0_sig_gt3_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm0_sig_gt3_up"]  ->eval(args_mva.data()) : 0;
+									                                                                                                                                                                                      
+		weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtUp = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm0_sig_gt3_up"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm0_sig_gt3_up"]->eval(args_mva.data()) : 0;
+		weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtUp   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm0_sig_gt3_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm0_sig_gt3_up"]  ->eval(args_mva.data()) : 0;
+									                                                                                                                                                                                      
+		weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtUp = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm0_sig_gt3_up"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm0_sig_gt3_up"]->eval(args_mva.data()) : 0;
+		weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtUp   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm0_sig_gt3_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm0_sig_gt3_up"]  ->eval(args_mva.data()) : 0;
 
 
 
-		weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltDown = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm0_sig_lt3_down"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltDown = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm0_sig_lt3_down"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltDown = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm0_sig_lt3_down"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltDown = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm0_sig_lt3_down"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltDown = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm0_sig_lt3_down"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltDown = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm0_sig_lt3_down"]->eval(args_mva.data());
+		weight_ff_mt_wjets_stat_njets0_mvadm1Up = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm1_up"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm1_up"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets0_mvadm1Up   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm1_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm1_up"]  ->eval(args_mva.data()) : 0.;
+								                                                                                                                                                                       
+		weight_ff_mt_wjets_stat_njets1_mvadm1Up = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm1_up"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm1_up"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets1_mvadm1Up   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm1_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm1_up"]  ->eval(args_mva.data()) : 0.;
+								                                                                                                                                                                       
+		weight_ff_mt_wjets_stat_njets2_mvadm1Up = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm1_up"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm1_up"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets2_mvadm1Up   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm1_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm1_up"]  ->eval(args_mva.data()) : 0.;
+								                                                                                                                                                                       
+								                                                                                                                                                                       
+		weight_ff_mt_wjets_stat_njets0_mvadm2Up = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm2_up"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm2_up"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets0_mvadm2Up   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm2_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm2_up"]  ->eval(args_mva.data()) : 0.;
+								                                                                                                                                                                       
+		weight_ff_mt_wjets_stat_njets1_mvadm2Up = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm2_up"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm2_up"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets1_mvadm2Up   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm2_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm2_up"]  ->eval(args_mva.data()) : 0.;
+								                                                                                                                                                                       
+		weight_ff_mt_wjets_stat_njets2_mvadm2Up = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm2_up"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm2_up"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets2_mvadm2Up   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm2_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm2_up"]  ->eval(args_mva.data()) : 0.;
 
 
-		weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtDown = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm0_sig_gt3_down"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtDown = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm0_sig_gt3_down"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtDown = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm0_sig_gt3_down"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtDown = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm0_sig_gt3_down"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtDown = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm0_sig_gt3_down"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtDown = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm0_sig_gt3_down"]->eval(args_mva.data());
+		weight_ff_mt_wjets_stat_njets0_mvadm10Up = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm10_up"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm10_up"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets0_mvadm10Up   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm10_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm10_up"]  ->eval(args_mva.data()) : 0.;
+								                                                                                     	                                                                                  
+		weight_ff_mt_wjets_stat_njets1_mvadm10Up = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm10_up"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm10_up"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets1_mvadm10Up   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm10_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm10_up"]  ->eval(args_mva.data()) : 0.;
+								                                                                                     	                                                                                  
+		weight_ff_mt_wjets_stat_njets2_mvadm10Up = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm10_up"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm10_up"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets2_mvadm10Up   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm10_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm10_up"]  ->eval(args_mva.data()) : 0.;
+								                                                                                     	                                                                                  
+								                                                                                     	                                                                                  
+		weight_ff_mt_wjets_stat_njets0_mvadm11Up = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm11_up"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm11_up"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets0_mvadm11Up   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm11_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm11_up"]  ->eval(args_mva.data()) : 0.;
+								                                                                                     	                                                                                  
+		weight_ff_mt_wjets_stat_njets1_mvadm11Up = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm11_up"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm11_up"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets1_mvadm11Up   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm11_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm11_up"]  ->eval(args_mva.data()) : 0.;
+								                                                                                     	                                                                                  
+		weight_ff_mt_wjets_stat_njets2_mvadm11Up = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm11_up"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm11_up"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets2_mvadm11Up   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm11_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm11_up"]  ->eval(args_mva.data()) : 0.;
 
 
 
-		weight_ff_mt_wjets_stat_njets0_mvadm1Down = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm1_down"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets0_mvadm1Down = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm1_down"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets1_mvadm1Down = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm1_down"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets1_mvadm1Down = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm1_down"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets2_mvadm1Down = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm1_down"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets2_mvadm1Down = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm1_down"]->eval(args_mva.data());
+		weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltDown = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm0_sig_lt3_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm0_sig_lt3_down"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltDown   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm0_sig_lt3_down"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm0_sig_lt3_down"]  ->eval(args_mva.data()) : 0.;
+									                                                                                              	                                                                                            
+		weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltDown = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm0_sig_lt3_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm0_sig_lt3_down"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltDown   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm0_sig_lt3_down"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm0_sig_lt3_down"]  ->eval(args_mva.data()) : 0.;
+									                                                                                              	                                                                                            
+		weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltDown = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm0_sig_lt3_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm0_sig_lt3_down"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltDown   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm0_sig_lt3_down"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm0_sig_lt3_down"]  ->eval(args_mva.data()) : 0.;
+									                                                                                              	                                                                                            
+									                                                                                              	                                                                                            
+		weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtDown = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm0_sig_gt3_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm0_sig_gt3_down"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtDown   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm0_sig_gt3_down"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm0_sig_gt3_down"]  ->eval(args_mva.data()) : 0.;
+									                                                                                              	                                                                                            
+		weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtDown = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm0_sig_gt3_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm0_sig_gt3_down"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtDown   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm0_sig_gt3_down"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm0_sig_gt3_down"]  ->eval(args_mva.data()) : 0.;
+									                                                                                              	                                                                                            
+		weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtDown = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm0_sig_gt3_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm0_sig_gt3_down"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtDown   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm0_sig_gt3_down"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm0_sig_gt3_down"]  ->eval(args_mva.data()) : 0.;
 
 
-		weight_ff_mt_wjets_stat_njets0_mvadm2Down = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm2_down"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets0_mvadm2Down = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm2_down"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets1_mvadm2Down = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm2_down"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets1_mvadm2Down = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm2_down"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets2_mvadm2Down = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm2_down"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets2_mvadm2Down = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm2_down"]->eval(args_mva.data());
+
+		weight_ff_mt_wjets_stat_njets0_mvadm1Down = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm1_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm1_down"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets0_mvadm1Down   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm1_down"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm1_down"]  ->eval(args_mva.data()) : 0.;
+								                                                                                       	                                                                                     
+		weight_ff_mt_wjets_stat_njets1_mvadm1Down = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm1_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm1_down"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets1_mvadm1Down   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm1_down"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm1_down"]  ->eval(args_mva.data()) : 0.;
+								                                                                                       	                                                                                     
+		weight_ff_mt_wjets_stat_njets2_mvadm1Down = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm1_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm1_down"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets2_mvadm1Down   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm1_down"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm1_down"]  ->eval(args_mva.data()) : 0.;
+								                                                                                       	                                                                                     
+								                                                                                       	                                                                                     
+		weight_ff_mt_wjets_stat_njets0_mvadm2Down = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm2_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm2_down"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets0_mvadm2Down   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm2_down"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm2_down"]  ->eval(args_mva.data()) : 0.;
+								                                                                                       	                                                                                     
+		weight_ff_mt_wjets_stat_njets1_mvadm2Down = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm2_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm2_down"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets1_mvadm2Down   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm2_down"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm2_down"]  ->eval(args_mva.data()) : 0.;
+								                                                                                       	                                                                                     
+		weight_ff_mt_wjets_stat_njets2_mvadm2Down = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm2_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm2_down"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets2_mvadm2Down   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm2_down"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm2_down"]  ->eval(args_mva.data()) : 0.;
 
 
-		weight_ff_mt_wjets_stat_njets0_mvadm10Down = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm10_down"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets0_mvadm10Down = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm10_down"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets1_mvadm10Down = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm10_down"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets1_mvadm10Down = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm10_down"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets2_mvadm10Down = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm10_down"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets2_mvadm10Down = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm10_down"]->eval(args_mva.data());
-
-
-		weight_ff_mt_wjets_stat_njets0_mvadm11Down = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm11_down"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets0_mvadm11Down = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm11_down"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets1_mvadm11Down = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm11_down"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets1_mvadm11Down = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm11_down"]->eval(args_mva.data());
-		
-		weight_ff_mt_wjets_stat_njets2_mvadm11Down = fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm11_down"]->eval(args_mva.data());
-		weight_ff_mt_qcd_stat_njets2_mvadm11Down = fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm11_down"]->eval(args_mva.data());
+		weight_ff_mt_wjets_stat_njets0_mvadm10Down = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm10_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm10_down"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets0_mvadm10Down   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm10_down"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm10_down"]  ->eval(args_mva.data()) : 0.;
+								                                                                                                                                                                                
+		weight_ff_mt_wjets_stat_njets1_mvadm10Down = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm10_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm10_down"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets1_mvadm10Down   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm10_down"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm10_down"]  ->eval(args_mva.data()) : 0.;
+								                                                                                                                                                                                
+		weight_ff_mt_wjets_stat_njets2_mvadm10Down = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm10_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm10_down"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets2_mvadm10Down   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm10_down"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm10_down"]  ->eval(args_mva.data()) : 0.;
+								                                                                                                                                                                                
+								                                                                                                                                                                                
+		weight_ff_mt_wjets_stat_njets0_mvadm11Down = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm11_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm11_down"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets0_mvadm11Down   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm11_down"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm11_down"]  ->eval(args_mva.data()) : 0.;
+								                                                                                                                                                                                
+		weight_ff_mt_wjets_stat_njets1_mvadm11Down = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm11_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm11_down"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets1_mvadm11Down   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm11_down"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm11_down"]  ->eval(args_mva.data()) : 0.;
+								                                                                                                                                                                                
+		weight_ff_mt_wjets_stat_njets2_mvadm11Down = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm11_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm11_down"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_stat_njets2_mvadm11Down   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm11_down"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm11_down"]  ->eval(args_mva.data()) : 0.;
 
 
 		//met_var_qcd and met_var_w non-closure corrections
 
-		weight_ff_mt_qcd_met_closure_systUp = fns_["ff_mt_medium_mvadmbins_qcd_met_up"]->eval(args_mva.data());
-		weight_ff_mt_wjets_met_closure_systUp = fns_["ff_mt_medium_mvadmbins_wjets_met_up"]->eval(args_mva.data());
-		weight_ff_mt_ttbar_met_closure_systUp = fns_["ff_mt_medium_mvadmbins_ttbar_met_up"]->eval(args_mva.data());
-		weight_ff_mt_qcd_met_closure_systDown = fns_["ff_mt_medium_mvadmbins_qcd_met_down"]->eval(args_mva.data());
-		weight_ff_mt_wjets_met_closure_systDown = fns_["ff_mt_medium_mvadmbins_wjets_met_down"]->eval(args_mva.data());
-		weight_ff_mt_ttbar_met_closure_systDown = fns_["ff_mt_medium_mvadmbins_ttbar_met_down"]->eval(args_mva.data());
+		weight_ff_mt_qcd_met_closure_systUp     = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_met_up"]    ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_met_up"]    ->eval(args_mva.data()) : 0.;
+		weight_ff_mt_wjets_met_closure_systUp   = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_met_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_met_up"]  ->eval(args_mva.data()) : 0.;
+		weight_ff_mt_ttbar_met_closure_systUp   = isfinite(fns_["ff_mt_medium_mvadmbins_ttbar_met_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_ttbar_met_up"]  ->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_met_closure_systDown   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_met_down"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_met_down"]  ->eval(args_mva.data()) : 0.;
+		weight_ff_mt_wjets_met_closure_systDown = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_met_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_met_down"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_ttbar_met_closure_systDown = isfinite(fns_["ff_mt_medium_mvadmbins_ttbar_met_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_ttbar_met_down"]->eval(args_mva.data()) : 0.;
 
 		//m_pt non-closure corrections
 
-		weight_ff_mt_qcd_l_pt_closure_systUp = fns_["ff_mt_medium_mvadmbins_qcd_l_pt_up"]->eval(args_mva.data());
-		weight_ff_mt_qcd_l_pt_closure_systDown = fns_["ff_mt_medium_mvadmbins_qcd_l_pt_down"]->eval(args_mva.data());
-		weight_ff_mt_wjets_l_pt_closure_systUp = fns_["ff_mt_medium_mvadmbins_wjets_l_pt_up"]->eval(args_mva.data());
-		weight_ff_mt_wjets_l_pt_closure_systDown = fns_["ff_mt_medium_mvadmbins_wjets_l_pt_down"]->eval(args_mva.data());
+		weight_ff_mt_qcd_l_pt_closure_systUp     = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_l_pt_up"]    ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_l_pt_up"]    ->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_l_pt_closure_systDown   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_l_pt_down"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_l_pt_down"]  ->eval(args_mva.data()) : 0.;
+		weight_ff_mt_wjets_l_pt_closure_systUp   = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_l_pt_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_l_pt_up"]  ->eval(args_mva.data()) : 0.;
+		weight_ff_mt_wjets_l_pt_closure_systDown = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_l_pt_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_l_pt_down"]->eval(args_mva.data()) : 0.;
 
 		//extrapolations from DR to SR
-		weight_ff_mt_qcd_systUp = fns_["ff_mt_medium_mvadmbins_qcd_syst_up"]->eval(args_mva.data());
-		weight_ff_mt_qcd_systDown = fns_["ff_mt_medium_mvadmbins_qcd_syst_down"]->eval(args_mva.data());
-		weight_ff_mt_wjets_systUp = fns_["ff_mt_medium_mvadmbins_wjets_syst_up"]->eval(args_mva.data());
-		weight_ff_mt_wjets_systDown = fns_["ff_mt_medium_mvadmbins_wjets_syst_down"]->eval(args_mva.data());
-		weight_ff_mt_ttbar_systUp = fns_["ff_mt_medium_mvadmbins_ttbar_syst_up"]->eval(args_mva.data());
-		weight_ff_mt_ttbar_systDown = fns_["ff_mt_medium_mvadmbins_ttbar_syst_down"]->eval(args_mva.data());
+		weight_ff_mt_qcd_systUp     = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_syst_up"]    ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_syst_up"]    ->eval(args_mva.data()) : 0.;
+		weight_ff_mt_qcd_systDown   = isfinite(fns_["ff_mt_medium_mvadmbins_qcd_syst_down"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_qcd_syst_down"]  ->eval(args_mva.data()) : 0.;
+		weight_ff_mt_wjets_systUp   = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_syst_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_syst_up"]  ->eval(args_mva.data()) : 0.;
+		weight_ff_mt_wjets_systDown = isfinite(fns_["ff_mt_medium_mvadmbins_wjets_syst_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_wjets_syst_down"]->eval(args_mva.data()) : 0.;
+		weight_ff_mt_ttbar_systUp   = isfinite(fns_["ff_mt_medium_mvadmbins_ttbar_syst_up"]  ->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_ttbar_syst_up"]  ->eval(args_mva.data()) : 0.;
+		weight_ff_mt_ttbar_systDown = isfinite(fns_["ff_mt_medium_mvadmbins_ttbar_syst_down"]->eval(args_mva.data())) ? fns_["ff_mt_medium_mvadmbins_ttbar_syst_down"]->eval(args_mva.data()) : 0.;
 
 		//		cout << "ff_nom : " << ff_nom << "   ff_mva : " << ff_mva << endl;
 
@@ -1334,6 +1333,153 @@ int main(int argc, char * argv[]) {
 	      }else { 
 		ff_nom = 1.;
 		ff_mva = 1.;
+		//Stat uncertainties
+		weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltUp = 1.;
+		weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltUp   = 1.;
+								 
+		weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltUp = 1.;
+		weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltUp   = 1.;
+								 
+		weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltUp = 1.;
+		weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltUp   = 1.;
+								 
+								 
+		weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtUp = 1.;
+		weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtUp   = 1.;
+								 
+		weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtUp = 1.;
+		weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtUp   = 1.;
+								 
+		weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtUp = 1.;
+		weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtUp   = 1.;
+
+
+
+		weight_ff_mt_wjets_stat_njets0_mvadm1Up = 1.;
+		weight_ff_mt_qcd_stat_njets0_mvadm1Up   = 1.;
+							  
+		weight_ff_mt_wjets_stat_njets1_mvadm1Up = 1.;
+		weight_ff_mt_qcd_stat_njets1_mvadm1Up   = 1.;
+							  
+		weight_ff_mt_wjets_stat_njets2_mvadm1Up = 1.;
+		weight_ff_mt_qcd_stat_njets2_mvadm1Up   = 1.;
+							  
+							  
+		weight_ff_mt_wjets_stat_njets0_mvadm2Up = 1.;
+		weight_ff_mt_qcd_stat_njets0_mvadm2Up   = 1.;
+							  
+		weight_ff_mt_wjets_stat_njets1_mvadm2Up = 1.;
+		weight_ff_mt_qcd_stat_njets1_mvadm2Up   = 1.;
+							  
+		weight_ff_mt_wjets_stat_njets2_mvadm2Up = 1.;
+		weight_ff_mt_qcd_stat_njets2_mvadm2Up   = 1.;
+
+
+		weight_ff_mt_wjets_stat_njets0_mvadm10Up = 1.;
+		weight_ff_mt_qcd_stat_njets0_mvadm10Up   = 1.;
+							   
+		weight_ff_mt_wjets_stat_njets1_mvadm10Up = 1.;
+		weight_ff_mt_qcd_stat_njets1_mvadm10Up   = 1.;
+							   
+		weight_ff_mt_wjets_stat_njets2_mvadm10Up = 1.;
+		weight_ff_mt_qcd_stat_njets2_mvadm10Up   = 1.;
+							   
+							   
+		weight_ff_mt_wjets_stat_njets0_mvadm11Up = 1.;
+		weight_ff_mt_qcd_stat_njets0_mvadm11Up   = 1.;
+							   
+		weight_ff_mt_wjets_stat_njets1_mvadm11Up = 1.;
+		weight_ff_mt_qcd_stat_njets1_mvadm11Up   = 1.;
+							   
+		weight_ff_mt_wjets_stat_njets2_mvadm11Up = 1.;
+		weight_ff_mt_qcd_stat_njets2_mvadm11Up   = 1.;
+
+
+
+		weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltDown = 1.;
+		weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltDown   = 1.;
+								   
+		weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltDown = 1.;
+		weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltDown   = 1.;
+								   
+		weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltDown = 1.;
+		weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltDown   = 1.;
+								   
+								   
+		weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtDown = 1.;
+		weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtDown   = 1.;
+								   
+		weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtDown = 1.;
+		weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtDown   = 1.;
+								   
+		weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtDown = 1.;
+		weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtDown   = 1.;
+
+
+
+		weight_ff_mt_wjets_stat_njets0_mvadm1Down = 1.;
+		weight_ff_mt_qcd_stat_njets0_mvadm1Down   = 1.;
+							    
+		weight_ff_mt_wjets_stat_njets1_mvadm1Down = 1.;
+		weight_ff_mt_qcd_stat_njets1_mvadm1Down   = 1.;
+							    
+		weight_ff_mt_wjets_stat_njets2_mvadm1Down = 1.;
+		weight_ff_mt_qcd_stat_njets2_mvadm1Down   = 1.;
+							    
+							    
+		weight_ff_mt_wjets_stat_njets0_mvadm2Down = 1.;
+		weight_ff_mt_qcd_stat_njets0_mvadm2Down   = 1.;
+							    
+		weight_ff_mt_wjets_stat_njets1_mvadm2Down = 1.;
+		weight_ff_mt_qcd_stat_njets1_mvadm2Down   = 1.;
+							    
+		weight_ff_mt_wjets_stat_njets2_mvadm2Down = 1.;
+		weight_ff_mt_qcd_stat_njets2_mvadm2Down   = 1.;
+
+
+		weight_ff_mt_wjets_stat_njets0_mvadm10Down = 1.;
+		weight_ff_mt_qcd_stat_njets0_mvadm10Down   = 1.;
+							     
+		weight_ff_mt_wjets_stat_njets1_mvadm10Down = 1.;
+		weight_ff_mt_qcd_stat_njets1_mvadm10Down   = 1.;
+							     
+		weight_ff_mt_wjets_stat_njets2_mvadm10Down = 1.;
+		weight_ff_mt_qcd_stat_njets2_mvadm10Down   = 1.;
+							     
+							     
+		weight_ff_mt_wjets_stat_njets0_mvadm11Down = 1.;
+		weight_ff_mt_qcd_stat_njets0_mvadm11Down   = 1.;
+							     
+		weight_ff_mt_wjets_stat_njets1_mvadm11Down = 1.;
+		weight_ff_mt_qcd_stat_njets1_mvadm11Down   = 1.;
+							     
+		weight_ff_mt_wjets_stat_njets2_mvadm11Down = 1.;
+		weight_ff_mt_qcd_stat_njets2_mvadm11Down   = 1.;
+
+
+		//met_var_qcd and met_var_w non-closure corrections
+
+		weight_ff_mt_qcd_met_closure_systUp     = 1.;
+		weight_ff_mt_wjets_met_closure_systUp   = 1.;
+		weight_ff_mt_ttbar_met_closure_systUp   = 1.;
+		weight_ff_mt_qcd_met_closure_systDown   = 1.;
+		weight_ff_mt_wjets_met_closure_systDown = 1.;
+		weight_ff_mt_ttbar_met_closure_systDown = 1.;
+
+		//m_pt non-closure corrections
+
+		weight_ff_mt_qcd_l_pt_closure_systUp     = 1.;
+		weight_ff_mt_qcd_l_pt_closure_systDown   = 1.;
+		weight_ff_mt_wjets_l_pt_closure_systUp   = 1.;
+		weight_ff_mt_wjets_l_pt_closure_systDown = 1.;
+
+		//extrapolations from DR to SR
+		weight_ff_mt_qcd_systUp     = 1.;
+		weight_ff_mt_qcd_systDown   = 1.;
+		weight_ff_mt_wjets_systUp   = 1.;
+		weight_ff_mt_wjets_systDown = 1.;
+		weight_ff_mt_ttbar_systUp   = 1.;
+		weight_ff_mt_ttbar_systDown = 1.;
 	      }
 	      
 	      ff_sys = ff_nom; // TO DO: fix systematics
