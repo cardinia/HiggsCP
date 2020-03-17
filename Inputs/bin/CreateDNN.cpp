@@ -24,7 +24,7 @@ int main(int argc, char * argv[]) {
 
   TString FFlocation = "/nfs/dust/cms/user/cardinia/public/FF_from_IC_1p5cut_v2/";
 
-  bool TEST = false;
+  bool TEST = true;
 
   TString process(argv[1]);
   TString era(argv[2]);
@@ -115,7 +115,7 @@ int main(int argc, char * argv[]) {
     embedded_trigger_weight  = 1.03;
     embedded_tracking_weight = 0.98;
     input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2016/";
-    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN_March14";
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN_March15";
   }
   fs::path path(output_dir.Data());
   if (!(fs::exists(path))) {
@@ -378,192 +378,192 @@ int main(int argc, char * argv[]) {
 	//double TauSpinnerWeightsMix0p375;
 	
 	//Weights for top and Z pt reweighting
-	float weight_CMS_htt_dyShape_13TeVDown=1.;
-	float weight_CMS_htt_dyShape_13TeVUp=1.;
+	float weight_CMS_htt_dyShape_13TeVDown;
+	float weight_CMS_htt_dyShape_13TeVUp;
 
-	float weight_CMS_htt_ttbarShape_13TeVDown=1.;
-	float weight_CMS_htt_ttbarShape_13TeVUp=1.;
+	float weight_CMS_htt_ttbarShape_13TeVDown;
+	float weight_CMS_htt_ttbarShape_13TeVUp;
 
 
 	///Weights for FF
 	//Stat uncertainties
-	float weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltUp=1.;
-	float weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltUp=1.;
+	float weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltUp;
+	float weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltUp;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltUp=1.;
-	float weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltUp=1.;
+	float weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltUp;
+	float weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltUp;
 		
-	float weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltUp=1.;
-	float weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltUp=1.;
+	float weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltUp;
+	float weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltUp;
 	
 
-	float weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtUp=1.;
-	float weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtUp=1.;
+	float weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtUp;
+	float weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtUp;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtUp=1.;
-	float weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtUp=1.;
+	float weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtUp;
+	float weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtUp;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtUp=1.;
-	float weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtUp=1.;
+	float weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtUp;
+	float weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtUp;
 	
-	float weight_ff_mt_wjets_stat_njets0_mvadm1Up=1.;
-	float weight_ff_mt_qcd_stat_njets0_mvadm1Up=1.;
+	float weight_ff_mt_wjets_stat_njets0_mvadm1Up;
+	float weight_ff_mt_qcd_stat_njets0_mvadm1Up;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm1Up=1.;
-	float weight_ff_mt_qcd_stat_njets1_mvadm1Up=1.;
+	float weight_ff_mt_wjets_stat_njets1_mvadm1Up;
+	float weight_ff_mt_qcd_stat_njets1_mvadm1Up;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm1Up=1.;
-	float weight_ff_mt_qcd_stat_njets2_mvadm1Up=1.;
+	float weight_ff_mt_wjets_stat_njets2_mvadm1Up;
+	float weight_ff_mt_qcd_stat_njets2_mvadm1Up;
 	
 	
-	float weight_ff_mt_wjets_stat_njets0_mvadm2Up=1.;
-	float weight_ff_mt_qcd_stat_njets0_mvadm2Up=1.;
+	float weight_ff_mt_wjets_stat_njets0_mvadm2Up;
+	float weight_ff_mt_qcd_stat_njets0_mvadm2Up;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm2Up=1.;
-	float weight_ff_mt_qcd_stat_njets1_mvadm2Up=1.;
+	float weight_ff_mt_wjets_stat_njets1_mvadm2Up;
+	float weight_ff_mt_qcd_stat_njets1_mvadm2Up;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm2Up=1.;
-	float weight_ff_mt_qcd_stat_njets2_mvadm2Up=1.;
+	float weight_ff_mt_wjets_stat_njets2_mvadm2Up;
+	float weight_ff_mt_qcd_stat_njets2_mvadm2Up;
 
 
-	float weight_ff_mt_wjets_stat_njets0_mvadm10Up=1.;
-	float weight_ff_mt_qcd_stat_njets0_mvadm10Up=1.;
+	float weight_ff_mt_wjets_stat_njets0_mvadm10Up;
+	float weight_ff_mt_qcd_stat_njets0_mvadm10Up;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm10Up=1.;
-	float weight_ff_mt_qcd_stat_njets1_mvadm10Up=1.;
+	float weight_ff_mt_wjets_stat_njets1_mvadm10Up;
+	float weight_ff_mt_qcd_stat_njets1_mvadm10Up;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm10Up=1.;
-	float weight_ff_mt_qcd_stat_njets2_mvadm10Up=1.;
+	float weight_ff_mt_wjets_stat_njets2_mvadm10Up;
+	float weight_ff_mt_qcd_stat_njets2_mvadm10Up;
 
 
-	float weight_ff_mt_wjets_stat_njets0_mvadm11Up=1.;
-	float weight_ff_mt_qcd_stat_njets0_mvadm11Up=1.;
+	float weight_ff_mt_wjets_stat_njets0_mvadm11Up;
+	float weight_ff_mt_qcd_stat_njets0_mvadm11Up;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm11Up=1.;
-	float weight_ff_mt_qcd_stat_njets1_mvadm11Up=1.;
+	float weight_ff_mt_wjets_stat_njets1_mvadm11Up;
+	float weight_ff_mt_qcd_stat_njets1_mvadm11Up;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm11Up=1.;
-	float weight_ff_mt_qcd_stat_njets2_mvadm11Up=1.;
+	float weight_ff_mt_wjets_stat_njets2_mvadm11Up;
+	float weight_ff_mt_qcd_stat_njets2_mvadm11Up;
 
-	float weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltDown=1.;
-	float weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltDown=1.;
+	float weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltDown;
+	float weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltDown;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltDown=1.;
-	float weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltDown=1.;
+	float weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltDown;
+	float weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltDown;
 		
-	float weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltDown=1.;
-	float weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltDown=1.;
+	float weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltDown;
+	float weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltDown;
 	
 
-	float weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtDown=1.;
-	float weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtDown=1.;
+	float weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtDown;
+	float weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtDown;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtDown=1.;
-	float weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtDown=1.;
+	float weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtDown;
+	float weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtDown;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtDown=1.;
-	float weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtDown=1.;
+	float weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtDown;
+	float weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtDown;
 	
-	float weight_ff_mt_wjets_stat_njets0_mvadm1Down=1.;
-	float weight_ff_mt_qcd_stat_njets0_mvadm1Down=1.;
+	float weight_ff_mt_wjets_stat_njets0_mvadm1Down;
+	float weight_ff_mt_qcd_stat_njets0_mvadm1Down;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm1Down=1.;
-	float weight_ff_mt_qcd_stat_njets1_mvadm1Down=1.;
+	float weight_ff_mt_wjets_stat_njets1_mvadm1Down;
+	float weight_ff_mt_qcd_stat_njets1_mvadm1Down;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm1Down=1.;
-	float weight_ff_mt_qcd_stat_njets2_mvadm1Down=1.;
+	float weight_ff_mt_wjets_stat_njets2_mvadm1Down;
+	float weight_ff_mt_qcd_stat_njets2_mvadm1Down;
 	
 	
-	float weight_ff_mt_wjets_stat_njets0_mvadm2Down=1.;
-	float weight_ff_mt_qcd_stat_njets0_mvadm2Down=1.;
+	float weight_ff_mt_wjets_stat_njets0_mvadm2Down;
+	float weight_ff_mt_qcd_stat_njets0_mvadm2Down;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm2Down=1.;
-	float weight_ff_mt_qcd_stat_njets1_mvadm2Down=1.;
+	float weight_ff_mt_wjets_stat_njets1_mvadm2Down;
+	float weight_ff_mt_qcd_stat_njets1_mvadm2Down;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm2Down=1.;
-	float weight_ff_mt_qcd_stat_njets2_mvadm2Down=1.;
+	float weight_ff_mt_wjets_stat_njets2_mvadm2Down;
+	float weight_ff_mt_qcd_stat_njets2_mvadm2Down;
 
 
-	float weight_ff_mt_wjets_stat_njets0_mvadm10Down=1.;
-	float weight_ff_mt_qcd_stat_njets0_mvadm10Down=1.;
+	float weight_ff_mt_wjets_stat_njets0_mvadm10Down;
+	float weight_ff_mt_qcd_stat_njets0_mvadm10Down;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm10Down=1.;
-	float weight_ff_mt_qcd_stat_njets1_mvadm10Down=1.;
+	float weight_ff_mt_wjets_stat_njets1_mvadm10Down;
+	float weight_ff_mt_qcd_stat_njets1_mvadm10Down;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm10Down=1.;
-	float weight_ff_mt_qcd_stat_njets2_mvadm10Down=1.;
+	float weight_ff_mt_wjets_stat_njets2_mvadm10Down;
+	float weight_ff_mt_qcd_stat_njets2_mvadm10Down;
 
 
-	float weight_ff_mt_wjets_stat_njets0_mvadm11Down=1.;
-	float weight_ff_mt_qcd_stat_njets0_mvadm11Down=1.;
+	float weight_ff_mt_wjets_stat_njets0_mvadm11Down;
+	float weight_ff_mt_qcd_stat_njets0_mvadm11Down;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm11Down=1.;
-	float weight_ff_mt_qcd_stat_njets1_mvadm11Down=1.;
+	float weight_ff_mt_wjets_stat_njets1_mvadm11Down;
+	float weight_ff_mt_qcd_stat_njets1_mvadm11Down;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm11Down=1.;
-	float weight_ff_mt_qcd_stat_njets2_mvadm11Down=1.;
+	float weight_ff_mt_wjets_stat_njets2_mvadm11Down;
+	float weight_ff_mt_qcd_stat_njets2_mvadm11Down;
 
 
 	//met_var_qcd and met_var_w non-closure corrections
 
-	float weight_ff_mt_qcd_met_closure_systUp=1.;
-	float weight_ff_mt_wjets_met_closure_systUp=1.;
-	float weight_ff_mt_ttbar_met_closure_systUp=1.;
-	float weight_ff_mt_qcd_met_closure_systDown=1.;
-	float weight_ff_mt_wjets_met_closure_systDown=1.;
-	float weight_ff_mt_ttbar_met_closure_systDown=1.;
+	float weight_ff_mt_qcd_met_closure_systUp;
+	float weight_ff_mt_wjets_met_closure_systUp;
+	float weight_ff_mt_ttbar_met_closure_systUp;
+	float weight_ff_mt_qcd_met_closure_systDown;
+	float weight_ff_mt_wjets_met_closure_systDown;
+	float weight_ff_mt_ttbar_met_closure_systDown;
 
 	//m_pt non-closure corrections
 
-	float weight_ff_mt_qcd_l_pt_closure_systUp=1.;
-	float weight_ff_mt_qcd_l_pt_closure_systDown=1.;
-	float weight_ff_mt_wjets_l_pt_closure_systUp=1.;
-	float weight_ff_mt_wjets_l_pt_closure_systDown=1.;
+	float weight_ff_mt_qcd_l_pt_closure_systUp;
+	float weight_ff_mt_qcd_l_pt_closure_systDown;
+	float weight_ff_mt_wjets_l_pt_closure_systUp;
+	float weight_ff_mt_wjets_l_pt_closure_systDown;
 
 	//extrapolations from DR to SR
-	float weight_ff_mt_qcd_systUp=1.;
-	float weight_ff_mt_qcd_systDown=1.;
-	float weight_ff_mt_wjets_systUp=1.;
-	float weight_ff_mt_wjets_systDown=1.;
-	float weight_ff_mt_ttbar_systUp=1.;
-	float weight_ff_mt_ttbar_systDown=1.;
+	float weight_ff_mt_qcd_systUp;
+	float weight_ff_mt_qcd_systDown;
+	float weight_ff_mt_wjets_systUp;
+	float weight_ff_mt_wjets_systDown;
+	float weight_ff_mt_ttbar_systUp;
+	float weight_ff_mt_ttbar_systDown;
 
 	//Weights for Tau ES and ID
 
-	float weight_CMS_eff_Xtrigger_mt_MVADM0_13TeVUp=1.;
-	float weight_CMS_eff_Xtrigger_mt_MVADM1_13TeVUp=1.;
-	float weight_CMS_eff_Xtrigger_mt_MVADM2_13TeVUp=1.;
-	float weight_CMS_eff_Xtrigger_mt_MVADM10_13TeVUp=1.;
-	float weight_CMS_eff_Xtrigger_mt_MVADM11_13TeVUp=1.;
-	float weight_CMS_eff_Xtrigger_mt_MVADM0_13TeVDown=1.;
-	float weight_CMS_eff_Xtrigger_mt_MVADM1_13TeVDown=1.;
-	float weight_CMS_eff_Xtrigger_mt_MVADM2_13TeVDown=1.;
-	float weight_CMS_eff_Xtrigger_mt_MVADM10_13TeVDown=1.;
-	float weight_CMS_eff_Xtrigger_mt_MVADM11_13TeVDown=1.;
+	float weight_CMS_eff_Xtrigger_mt_MVADM0_13TeVUp;
+	float weight_CMS_eff_Xtrigger_mt_MVADM1_13TeVUp;
+	float weight_CMS_eff_Xtrigger_mt_MVADM2_13TeVUp;
+	float weight_CMS_eff_Xtrigger_mt_MVADM10_13TeVUp;
+	float weight_CMS_eff_Xtrigger_mt_MVADM11_13TeVUp;
+	float weight_CMS_eff_Xtrigger_mt_MVADM0_13TeVDown;
+	float weight_CMS_eff_Xtrigger_mt_MVADM1_13TeVDown;
+	float weight_CMS_eff_Xtrigger_mt_MVADM2_13TeVDown;
+	float weight_CMS_eff_Xtrigger_mt_MVADM10_13TeVDown;
+	float weight_CMS_eff_Xtrigger_mt_MVADM11_13TeVDown;
 
-	float weight_CMS_eff_t_pTlow_MVADM0_13TeVUp=1.; 
-	float weight_CMS_eff_t_pTlow_MVADM1_13TeVUp=1.; 
-	float weight_CMS_eff_t_pTlow_MVADM2_13TeVUp=1.; 
-	float weight_CMS_eff_t_pTlow_MVADM10_13TeVUp=1.;
-	float weight_CMS_eff_t_pTlow_MVADM11_13TeVUp=1.;
-	float weight_CMS_eff_t_pThigh_MVADM0_13TeVUp=1.;
-	float weight_CMS_eff_t_pThigh_MVADM1_13TeVUp=1.;
-	float weight_CMS_eff_t_pThigh_MVADM2_13TeVUp=1.;
-	float weight_CMS_eff_t_pThigh_MVADM10_13TeVUp=1.; 
-	float weight_CMS_eff_t_pThigh_MVADM11_13TeVUp=1.; 
-	float weight_CMS_eff_t_pTlow_MVADM0_13TeVDown=1.; 
-	float weight_CMS_eff_t_pTlow_MVADM1_13TeVDown=1.; 
-	float weight_CMS_eff_t_pTlow_MVADM2_13TeVDown=1.; 
-	float weight_CMS_eff_t_pTlow_MVADM10_13TeVDown=1.; 
-	float weight_CMS_eff_t_pTlow_MVADM11_13TeVDown=1.; 
-	float weight_CMS_eff_t_pThigh_MVADM0_13TeVDown=1.; 
-	float weight_CMS_eff_t_pThigh_MVADM1_13TeVDown=1.; 
-	float weight_CMS_eff_t_pThigh_MVADM2_13TeVDown=1.; 
-	float weight_CMS_eff_t_pThigh_MVADM10_13TeVDown=1.;
-	float weight_CMS_eff_t_pThigh_MVADM11_13TeVDown=1.;
+	float weight_CMS_eff_t_pTlow_MVADM0_13TeVUp; 
+	float weight_CMS_eff_t_pTlow_MVADM1_13TeVUp; 
+	float weight_CMS_eff_t_pTlow_MVADM2_13TeVUp; 
+	float weight_CMS_eff_t_pTlow_MVADM10_13TeVUp;
+	float weight_CMS_eff_t_pTlow_MVADM11_13TeVUp;
+	float weight_CMS_eff_t_pThigh_MVADM0_13TeVUp;
+	float weight_CMS_eff_t_pThigh_MVADM1_13TeVUp;
+	float weight_CMS_eff_t_pThigh_MVADM2_13TeVUp;
+	float weight_CMS_eff_t_pThigh_MVADM10_13TeVUp; 
+	float weight_CMS_eff_t_pThigh_MVADM11_13TeVUp; 
+	float weight_CMS_eff_t_pTlow_MVADM0_13TeVDown; 
+	float weight_CMS_eff_t_pTlow_MVADM1_13TeVDown; 
+	float weight_CMS_eff_t_pTlow_MVADM2_13TeVDown; 
+	float weight_CMS_eff_t_pTlow_MVADM10_13TeVDown; 
+	float weight_CMS_eff_t_pTlow_MVADM11_13TeVDown; 
+	float weight_CMS_eff_t_pThigh_MVADM0_13TeVDown; 
+	float weight_CMS_eff_t_pThigh_MVADM1_13TeVDown; 
+	float weight_CMS_eff_t_pThigh_MVADM2_13TeVDown; 
+	float weight_CMS_eff_t_pThigh_MVADM10_13TeVDown;
+	float weight_CMS_eff_t_pThigh_MVADM11_13TeVDown;
 
-	float weight_CMS_scale_gg_13TeVUp=1.;
-	float weight_CMS_scale_gg_13TeVDown=1.;
+	float weight_CMS_scale_gg_13TeVUp;
+	float weight_CMS_scale_gg_13TeVDown;
 
 
 
@@ -1529,17 +1529,8 @@ int main(int argc, char * argv[]) {
 		xsec_lumi_weight = 1.;
 		trigger_filter_weight = 1.;
 	      }
-	      if( isEmbedded && era == "2016"){
-		embedded_stitching_weight = 
-		  ((run >= 272007) && (run < 275657))*(1.0/0.891)
-		  +((run >= 275657) && (run < 276315))*(1.0/0.910)
-		  +((run >= 276315) && (run < 276831))*(1.0/0.953)
-		  +((run >= 276831) && (run < 277772))*(1.0/0.947)
-		  +((run >= 277772) && (run < 278820))*(1.0/0.942)
-		  +((run >= 278820) && (run < 280919))*(1.0/0.906)
-		  +((run >= 280919) && (run < 284045))*(1.0/0.950);
-	      }
-	      else embedded_stitching_weight = 1.;
+	      
+	      embedded_stitching_weight = 1.;
 	      
 	      if (isData)
 		weight = 1;
