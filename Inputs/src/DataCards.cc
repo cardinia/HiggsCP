@@ -7,12 +7,13 @@ using namespace std;
 DataCards::DataCards(TString era,
 		     bool embedded,
 		     TString variableCP,
-		     int nbins,
+		     map<TString,int> binsperchannel,
 		     double xmin,
 		     double xmax,
 		     std::vector<double> xDNNSig,
 		     std::vector<double> xDNNZtt,
 		     std::vector<double> xDNNFakes,
+		     bool splitBkgCat,
 		     bool useTH2forZtt,
 		     bool mvaDM,
 		     bool applyIPcut,
@@ -20,12 +21,13 @@ DataCards::DataCards(TString era,
 
   era_ = era;
   embedded_ = embedded;
-  nbins_ = nbins;
+  binsperchannel_ = binsperchannel;
   xmin_ = xmin;
   xmax_ = xmax;
   xDNNSig_ = xDNNSig;
   xDNNZtt_ = xDNNZtt;
   xDNNFakes_ = xDNNFakes;
+  splitBkg_ = splitBkgCat;
   useTH2forZtt_ = useTH2forZtt;
   mvaDM_ = mvaDM;
   applyIPcut_ = applyIPcut;
@@ -78,6 +80,7 @@ bool DataCards::loadFiles() {
 
 void DataCards::createOutputFile(int classIndex=-1, TString channel="") {
   if (classIndex==-1&&channel=="") outputFile_ = new TFile(output_dir_+"/"+output_filename_+".root","recreate");
+  else if(channel=="") outputFile_ = new TFile(output_dir_+"/"+output_filename_+"_"+classNames[classIndex].second+".root","recreate");
   else outputFile_ = new TFile(output_dir_+"/"+output_filename_+"_"+channel+"_"+classNames[classIndex].second+".root","recreate");
   for (auto category : categories) {
     outputFile_->mkdir(category);
@@ -97,13 +100,14 @@ void DataCards::createCategoryList(int classIndex=-1, TString channel="") {
   TString catNamePrefix = "mt";
   vector<int> classIndices;
   vector<TString> channels;
-  if (channel=="") channels = channelNames;
+  if (channel==""&&((splitBkg_&&classIndex!=0)||classIndex<=0)) channels = channelNames;
   else channels.push_back(channel);
   if (classIndex==-1) classIndices = extract_first(classNames);
   else classIndices.push_back(classIndex);
-  for (auto ch : channels){
-    for (auto cl : classIndices){
-      categories.push_back(catNamePrefix+"_"+ch+"_"+classNames[cl].second+"_"+era_);
+  for (auto cl : classIndices){
+      for (auto ch : channels){
+	if(ch!="") categories.push_back(catNamePrefix+"_"+ch+"_"+classNames[cl].second+"_"+era_);
+	else categories.push_back(catNamePrefix+"_"+classNames[cl].second+"_"+era_);
     }
   }
   cout << "***************************************" << endl << "Running on the following categories: " <<endl;
@@ -131,20 +135,27 @@ void DataCards::setCategoryCuts() {
     //    else 
     //      catString = "DNN==3";
     */
+
+    TString cut = catString;
+
     TString DM("tau_decay_mode_2");
     if (mvaDM_) 
       DM = "dmMVA_2";
-    if (category.Contains("_mupi"))
-      dmString = DM+"==0";
-    else if (category.Contains("_murho"))
+    if(category.Contains("sig")||(splitBkg_&&(category.Contains("ztt")||category.Contains("fakes")))){
+      if (category.Contains("_mupi"))
+	dmString = DM+"==0";
+      else if (category.Contains("_murho"))
       dmString = DM+"==1";
-    else 
-      dmString = DM+"==10";
-
-    TString cut = catString + "&&" + dmString;
+      else if (category.Contains("_mu0a1")&&mvaDM_)
+	dmString = DM+"==2";
+      else 
+	dmString = DM+"==10";
+    
+      cut = cut + "&&" + dmString;
+    }
     mapCategoryCut[category] = cut;
   }
-
+  
 }
 
 
@@ -215,15 +226,21 @@ vector<TH1D*> DataCards::CreateCardsSample(TString sampleName, params param, boo
     if (tree==NULL) continue;
     TH2D * hist2D;
     TH1D * hist1D;
-    double xbins[10];
-    double ybins[10];
+    double xbins[20];
+    double ybins[20];
     int nbinsx = parameterSystematic.nbins;
     double widthx = (parameterSystematic.xmax-parameterSystematic.xmin)/double(nbinsx);
     for (int i=0; i<=nbinsx; ++i)
       xbins[i] = parameterSystematic.xmin + double(i)*widthx;
     int nbinsy = parameterSystematic.xDNN.size() - 1;
-    for (int i=0; i<=nbinsy; ++i)
+    //cout << parameterSystematic.hist2D << endl;
+    for (int i=0; i<=nbinsy; ++i){
       ybins[i] = parameterSystematic.xDNN.at(i);
+      //cout << ybins[i] << " ";
+    }//cout << endl;
+    //for (int i=0; i<=nbinsx; ++i){
+    //  cout << xbins[i] << " ";
+    //}cout << endl;
     if (parameterSystematic.hist2D) {      
       hist2D = new TH2D("hist","",
 			nbinsx,xbins,nbinsy,ybins);
@@ -232,7 +249,7 @@ vector<TH1D*> DataCards::CreateCardsSample(TString sampleName, params param, boo
       hist1D = new TH1D("hist","",
                         nbinsy,ybins); 
     }
-    //    cout << "      plot : " << parameterSystematic.varToPlot << endl;
+    //cout << "      plot : " << parameterSystematic.varToPlot << endl;
     //    cout << "       cut : " << parameterSystematic.cuts << endl;
     tree->Draw(parameterSystematic.varToPlot+">>hist",parameterSystematic.weights+"("+parameterSystematic.cuts+")");
     //cout << parameterSystematic.weights << "(" << parameterSystematic.cuts << ")" << endl;
@@ -268,21 +285,22 @@ vector<TH1D*> DataCards::CreateCardsSample(TString sampleName, params param, TSt
     //if systematic corresponds to a shift in event weight the histogram should be renamed, but not the tree
     if (systematicName!="") {
       HistName = sampleName + "_" + systematicName;
-      if(!systematicName.Contains("jetFakes_ff_mt_sub_syst"))parameterSystematic.weights = param.weights + "weight_" +systematicName+"*";
-      else if(sampleName=="fakes")parameterSystematic.weights = param.weights; // small exception: for jetFakes_ff_mt_sub_syst we want the fake bkg to not be scaled, but just the contribution coming from genuine taus
-      else if(systematicName=="jetFakes_ff_mt_sub_systUp")parameterSystematic.weights = param.weights + "1.1*";
-      else if(systematicName=="jetFakes_ff_mt_sub_systDown")parameterSystematic.weights = param.weights + "0.9*";
+      if(!systematicName.Contains("ff_mt_sub_syst"))parameterSystematic.weights = param.weights + "weight_" +systematicName+"*";
+      else if(sampleName=="jetFakes")parameterSystematic.weights = param.weights; // small exception: for jetFakes_ff_mt_sub_syst we want the fake bkg to not be scaled, but just the contribution coming from genuine taus
+      else if(systematicName=="ff_mt_sub_systUp")parameterSystematic.weights = param.weights + "1.1*";
+      else if(systematicName=="ff_mt_sub_systDown")parameterSystematic.weights = param.weights + "0.9*";
     }
     TTree * tree = (TTree*)fileSample->Get(TreeName);
     TH2D * hist2D;
     TH1D * hist1D;
-    double xbins[10];
-    double ybins[10];
+    double xbins[20];
+    double ybins[20];
     int nbinsx = parameterSystematic.nbins;
     double widthx = (parameterSystematic.xmax-parameterSystematic.xmin)/double(nbinsx);
     for (int i=0; i<=nbinsx; ++i)
       xbins[i] = parameterSystematic.xmin + double(i)*widthx;
     int nbinsy = parameterSystematic.xDNN.size() - 1;
+    
     for (int i=0; i<=nbinsy; ++i)
       ybins[i] = parameterSystematic.xDNN.at(i);
     if (parameterSystematic.hist2D) {      
@@ -292,10 +310,18 @@ vector<TH1D*> DataCards::CreateCardsSample(TString sampleName, params param, TSt
     else {
       hist1D = new TH1D("hist","",
                         nbinsy,ybins); 
+      //for(int i=0; i<=nbinsy; ++i)cout <<ybins[i]<<" ";
+      //cout<<endl;
+    
     }
-    //    cout << "      plot : " << parameterSystematic.varToPlot << endl;
-    //    cout << "       cut : " << parameterSystematic.cuts << endl;
-    tree->Draw(parameterSystematic.varToPlot+">>hist","("+parameterSystematic.weights+parameterSystematic.cuts+")");
+    //cout << "      plot : " << parameterSystematic.varToPlot << endl;
+    //cout << "        2D : " <<  parameterSystematic.hist2D << endl;
+    //cout << tree << endl;
+	//    cout << "       cut : " << parameterSystematic.cuts << endl;
+    //cout << sampleName << ":      " << TreeName << "   " << (parameterSystematic.weights+"("+parameterSystematic.cuts+")") << endl;
+
+    tree->Draw(parameterSystematic.varToPlot+">>hist",parameterSystematic.weights+"("+parameterSystematic.cuts+")");
+    //cout << hist1D->Integral() <<endl;
     if (parameterSystematic.hist2D) {
       TH1D * hist = Unfold(hist2D);
       histos.push_back((TH1D*)hist->Clone(HistName));
@@ -336,7 +362,7 @@ TH1D* DataCards::CreateCardsFakesOrQCD(TString FakeOrQCD, params parameters, TSt
     else if (embedded_)
       cutsSample += "&&!(gen_match_1==4&&gen_match_2==5)";
 
-    if (sample=="EmbedZTT" && era_=="2016") cuts += "&&(weight<1000)";
+    if (sample=="EmbedZTT" && era_=="2016") cutsSample += "&&(weight<1000)";
 
     cutsSample += "&&gen_match_2!=6";
 
@@ -346,7 +372,6 @@ TH1D* DataCards::CreateCardsFakesOrQCD(TString FakeOrQCD, params parameters, TSt
     cout << "  Subtracting " << sample << " for data-driven estimation" << endl;
     vector<TH1D*> histos = CreateCardsSample(sample,parametersSample,runSystematics);
     histFF[0]->Add(histFF[0],histos[0],1,-1);
-
   }
 
   return histFF[0];
@@ -361,8 +386,9 @@ vector<TH1D*> DataCards::CreateCardsFakes(TString FakeOrQCD, params parameters, 
   */
   vector<TH1D*> all_histFF;
   TString cuts = parameters.cuts;
+  //runSystematics=false;
   for (auto systematicName : FFSystematics ) {
-    parameters.weights = "weight*"+weightFForQCD;
+    if (systematicName==""||systematicName.Contains("ff_mt_sub_syst")) parameters.weights = "weight*"+weightFForQCD;
     if (!runSystematics && systematicName!="") continue;
     if (systematicName!="") cout << "     Running on systematics " << systematicName << std::endl;
 
@@ -381,14 +407,16 @@ vector<TH1D*> DataCards::CreateCardsFakes(TString FakeOrQCD, params parameters, 
       else if (embedded_)
 	cutsSample += "&&!(gen_match_1==4&&gen_match_2==5)";
       
-      if (sample=="EmbedZTT" && era_=="2016") cuts += "&&(weight<1000)";
+      if (sample=="EmbedZTT" && era_=="2016") cutsSample += "&&(weight<1000)";
 
       cutsSample += "&&gen_match_2!=6";
       
-      //parametersSampleUp.cuts = weight + "(" + cutsSample + ")";
-      cout << "  Subtracting " << sample << " for data-driven estimation" << endl;
+      parametersSample.cuts = cutsSample;
+      cout << "      Subtracting " << sample << " for data-driven estimation" << endl << "         ";
       vector<TH1D*> histos = CreateCardsSample(sample,parametersSample,systematicName);
+      //cout << histFF[0]->Integral() << " -----> ";
       histFF[0]->Add(histFF[0],histos[0],1,-1);
+      //cout << histFF[0]->Integral() <<endl;
       
     }
     all_histFF.push_back(histFF[0]);
@@ -405,17 +433,18 @@ void DataCards::RunOnCategory(TString category) {
   vector<TH1D*> allHists; allHists.clear();
 
   for (auto sampleName : sampleNames) {
+    //if(sampleName!="jetFakes")continue;
     params parameters;
     TString cuts = "";
     TString weight = "weight*"; 
     TString acotautau = variableCP_+"_00";
     bool runSystematics = true;
 
-    cuts = mapCategoryCut[category] + "&&pt_1>21&&pt_2>20&&TMath::Abs(eta_1)<2.1&&os>0.5&&puppimt_1<50&&byMediumDeepTau2017v2p1VSjet_2>0.5";    
+    cuts = mapCategoryCut[category] + "&&pt_1>21&&pt_2>20&&m_vis>40&&TMath::Abs(eta_1)<2.1&&os>0.5&&puppimt_1<50&&byMediumDeepTau2017v2p1VSjet_2>0.5";    
 
 
-    TString cutsFF = mapCategoryCut[category]  + "&&pt_1>21&&pt_2>20&&TMath::Abs(eta_1)<2.1&&os>0.5&&puppimt_1<50&&byMediumDeepTau2017v2p1VSjet_2<0.5&&byVVVLooseDeepTau2017v2p1VSjet_2>0.5";
-    TString cutsQCD = mapCategoryCut[category] + "&&pt_1>21&&pt_2>20&&TMath::Abs(eta_1)<2.1&&os<0.5&&puppimt_1<50&&byMediumDeepTau2017v2p1VSjet_2>0.5";
+    TString cutsFF = mapCategoryCut[category]  + "&&pt_1>21&&pt_2>20&&m_vis>40&&TMath::Abs(eta_1)<2.1&&os>0.5&&puppimt_1<50&&byMediumDeepTau2017v2p1VSjet_2<0.5&&byVVVLooseDeepTau2017v2p1VSjet_2>0.5";
+    TString cutsQCD = mapCategoryCut[category] + "&&pt_1>21&&pt_2>20&&m_vis>40&&TMath::Abs(eta_1)<2.1&&os<0.5&&puppimt_1<50&&byMediumDeepTau2017v2p1VSjet_2>0.5";
 
     TString IPCut("");
     if (applyIPcut_) {
@@ -453,6 +482,19 @@ void DataCards::RunOnCategory(TString category) {
     if (category.Contains("_murho_")||category.Contains("_mua1_"))
       acotautau = variableCP_+"_01";    
 
+    if (category.Contains("_mupi")){
+	nbins_=binsperchannel_.at("mupi");
+    }
+    else if(category.Contains("_murho")){
+	nbins_=binsperchannel_.at("murho");
+    }
+    else if(category.Contains("_mua1")){
+	nbins_=binsperchannel_.at("mua1");
+    }
+    else if(category.Contains("_mu0a1")){
+	nbins_=binsperchannel_.at("mu0a1");
+    } else nbins_= 7;
+
     if (category.Contains("_sig")) {
       parameters.hist2D = true;
       parameters.varToPlot = "predicted_prob:"+acotautau;
@@ -462,7 +504,10 @@ void DataCards::RunOnCategory(TString category) {
       if(useTH2forZtt_){
 	parameters.hist2D = true;
 	parameters.varToPlot = "predicted_prob:"+acotautau;
-      }else parameters.varToPlot = "predicted_prob";
+      }else{
+	parameters.varToPlot = "predicted_prob";
+	parameters.hist2D = false;
+      }
       parameters.xDNN = xDNNZtt_; 
     }
     else {
@@ -470,6 +515,7 @@ void DataCards::RunOnCategory(TString category) {
       parameters.varToPlot = "predicted_prob";
       parameters.xDNN = xDNNFakes_; 
     }
+
 
     parameters.nbins = nbins_;
     parameters.xmin = xmin_;
@@ -481,10 +527,10 @@ void DataCards::RunOnCategory(TString category) {
       for (auto hist : hists)
 	allHists.push_back(hist);
     }
-    if (sampleName=="fakes") {
+    if (sampleName=="jetFakes") {
       params parametersFF = parameters;
       parametersFF.cuts = cutsFF;
-      TString weightFF("ff_nom*");
+      TString weightFF("ff_mva*");
       vector<TH1D*> hists = CreateCardsFakes(sampleName,parametersFF,weightFF, 
 					      runSystematics);
       for (auto hist : hists)

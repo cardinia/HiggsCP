@@ -48,12 +48,13 @@ class DataCards {
   DataCards(TString era,
 	    bool embedded, 
 	    TString variableCP,
-	    int nbins,
+	    map<TString,int> binsperchannel,
 	    double xmin,
 	    double xmax,
 	    vector<double> xDNNSig,
 	    vector<double> xDNNZtt,
 	    vector<double> xDNNFakes,
+	    bool splitBkg,
 	    bool useTH2forZtt,
 	    bool mvaDM,
 	    bool applyIPcut,
@@ -105,6 +106,7 @@ class DataCards {
   bool embedded_;
   bool fakeFactor_;
   bool useTH2forZtt_;
+  bool splitBkg_;
   bool mvaDM_;
   bool applyIPcut_;
   bool runSystematics_;
@@ -116,6 +118,7 @@ class DataCards {
   vector<double> xDNNSig_;  
   vector<double> xDNNZtt_;  
   vector<double> xDNNFakes_;  
+  map<TString,int> binsperchannel_;
 
   TString CutIP_muon_;
   TString CutIP_pion_;
@@ -155,14 +158,8 @@ class DataCards {
     "CMS_scale_t_3prong_13TeVDown",
     "CMS_shape_dyShape_13TeVUp",
     "CMS_shape_dyShape_13TeVDown",
-    "topPtWeightUp",
-    "topPtWeightDown",
     "CMS_scale_met_unclustered_13TeVUp",
     "CMS_scale_met_unclustered_13TeVDown",
-    "CMS_scale_met_boson_resolution_13TeVUp",
-    "CMS_scale_met_boson_resolution_13TeVDown",
-    "CMS_scale_met_boson_response_13TeVUp",
-    "CMS_scale_met_boson_response_13TeVDown",
     "CMS_htt_boson_reso_met_13TeVUp",
     "CMS_htt_boson_reso_met_13TeVDown",
     "CMS_htt_boson_scale_met_13TeVUp",
@@ -408,7 +405,7 @@ class DataCards {
     //"ST",
     "VVT",
     "TTT",
-    "QCD",
+    //"QCD",
     "jetFakes",
     "W",
     "qqH_sm_htt125",
@@ -485,7 +482,7 @@ class DataCards {
     {1,"ztt"},
     {2,"fakes"},
   };
-  vector<TString> channelNames = {"mupi","murho","mua1"};
+  vector<TString> channelNames = {"mupi","murho","mua1","mu0a1"};
 
   map<TString,TString> mapCategoryCut;
 
