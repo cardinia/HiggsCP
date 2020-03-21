@@ -37,6 +37,7 @@ int main(int argc, char * argv[]) {
   const bool useTH2forZtt = cfg.get<bool>("UseTH2ForZtt");
   const bool mvaDM = cfg.get<bool>("mvaDM");
   const bool applyIPcut = cfg.get<bool>("ApplyIPcut");
+  const bool applyIPcutOnBkg = cfg.get<bool>("ApplyIPcutOnBkg");
   const bool runSystematics = cfg.get<bool>("RunSystematics");
 
   const string variableCP = cfg.get<string>("CPvariables");
@@ -94,6 +95,7 @@ int main(int argc, char * argv[]) {
 				    useTH2forZtt,
 				    mvaDM,
 				    applyIPcut,
+				    applyIPcutOnBkg,
 				    runSystematics);
 
   cards->SetCutIPmuon(CutIpMuon);

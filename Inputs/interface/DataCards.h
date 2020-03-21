@@ -58,6 +58,7 @@ class DataCards {
 	    bool useTH2forZtt,
 	    bool mvaDM,
 	    bool applyIPcut,
+	    bool applyIPcutOnBkg,
 	    bool runSystematic); 
 
   void SetInputDirectory(TString input_dir);
@@ -109,6 +110,7 @@ class DataCards {
   bool splitBkg_;
   bool mvaDM_;
   bool applyIPcut_;
+  bool applyIPcutOnBkg_;
   bool runSystematics_;
   TString era_;
   TString variableCP_;

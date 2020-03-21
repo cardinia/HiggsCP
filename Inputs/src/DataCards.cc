@@ -1,4 +1,4 @@
-#define DataCards_ccx
+ #define DataCards_ccx
 
 #include "HiggsCP/Inputs/interface/DataCards.h"
 
@@ -17,6 +17,7 @@ DataCards::DataCards(TString era,
 		     bool useTH2forZtt,
 		     bool mvaDM,
 		     bool applyIPcut,
+		     bool applyIPcutOnBkg,
 		     bool runSystematic) {
 
   era_ = era;
@@ -31,6 +32,7 @@ DataCards::DataCards(TString era,
   useTH2forZtt_ = useTH2forZtt;
   mvaDM_ = mvaDM;
   applyIPcut_ = applyIPcut;
+  applyIPcutOnBkg_ = applyIPcutOnBkg;
   runSystematics_ = runSystematic;
   variableCP_ = variableCP;
 
@@ -447,7 +449,7 @@ void DataCards::RunOnCategory(TString category) {
     TString cutsQCD = mapCategoryCut[category] + "&&pt_1>21&&pt_2>20&&m_vis>40&&TMath::Abs(eta_1)<2.1&&os<0.5&&puppimt_1<50&&byMediumDeepTau2017v2p1VSjet_2>0.5";
 
     TString IPCut("");
-    if (applyIPcut_) {
+    if (applyIPcut_&&(applyIPcutOnBkg_&&category!=0)) {
       if (category.Contains("_mupi_"))
 	IPCut = "&&"+CutIP_muon_+"&&"+CutIP_pion_;
       else
