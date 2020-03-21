@@ -11,8 +11,8 @@
 // mt_2017_fakes_murho_DP
 
 void PlotDatacards(TString dir = "/.",
-		   bool do_fakes = false,
-		   TString cat = "mt_murho_sig",
+		   bool do_fakes = true,
+		   TString cat = "mt_ztt_2017",
 		   bool blindData = false) {
 
   SetStyle();
@@ -20,7 +20,8 @@ void PlotDatacards(TString dir = "/.",
 
   TString xtitle = "bins";
   TString ytitle = "Events";
-  TString inputFileName = "output_oleg_ip.root";
+	TString outputFolder = "./2017";
+  TString inputFileName = "htt_mt.inputs-sm-13TeV_2017.root";
 
   TFile * inputs = new TFile(inputFileName);
 
@@ -29,13 +30,12 @@ void PlotDatacards(TString dir = "/.",
   TH1F * histData = (TH1F*)inputs->Get(cat+"/data_obs");
   TH1F * Fakes    = (TH1F*)inputs->Get(cat+"/QCD");
   if (do_fakes)
-    Fakes    = (TH1F*)inputs->Get(cat+"/fakes");
+    Fakes    = (TH1F*)inputs->Get(cat+"/jetFakes");
   TH1F * W        = (TH1F*)inputs->Get(cat+"/W");
-  TH1F * VV       = (TH1F*)inputs->Get(cat+"/VV");
-  TH1F * ST       = (TH1F*)inputs->Get(cat+"/ST");
-  TH1F * EMB      = (TH1F*)inputs->Get(cat+"/EMB");
-  TH1F * Zll      = (TH1F*)inputs->Get(cat+"/ZLL");
-  TH1F * TT       = (TH1F*)inputs->Get(cat+"/TT");
+  TH1F * VV       = (TH1F*)inputs->Get(cat+"/VVT");
+  TH1F * EMB      = (TH1F*)inputs->Get(cat+"/EmbedZTT");
+  TH1F * Zll      = (TH1F*)inputs->Get(cat+"/ZL");
+  TH1F * TT       = (TH1F*)inputs->Get(cat+"/TTT");
 
   TH1F * hSM      = (TH1F*)inputs->Get(cat+"/ggH_sm_htt125");
   TH1F * hPS      = (TH1F*)inputs->Get(cat+"/ggH_ps_htt125");
@@ -55,11 +55,10 @@ void PlotDatacards(TString dir = "/.",
   float nFakes = Fakes->GetSumOfWeights();
   float nW     = W->GetSumOfWeights();
   float nZll   = Zll->GetSumOfWeights();
-  float nST    = ST->GetSumOfWeights();
   float nVV    = VV->GetSumOfWeights();
   float nTT    = TT->GetSumOfWeights();
   float nData = histData->GetSumOfWeights();
-  float nRest = nZll + nST + nVV + nTT;
+  float nRest = nZll + nVV + nTT;
   if (!do_fakes) nFakes += nW;
   
   float nBkgd = nEMB + nFakes + nRest;
@@ -117,7 +116,6 @@ void PlotDatacards(TString dir = "/.",
   }
 
   TT->Add(TT,Zll);
-  TT->Add(TT,ST);
   TT->Add(TT,VV);
   
   Fakes->Add(Fakes,TT);
@@ -350,6 +348,6 @@ void PlotDatacards(TString dir = "/.",
   canv1->cd();
   canv1->SetSelected(canv1);
   canv1->Update();
-  canv1->Print(cat+".png");
+  canv1->Print(outputFolder+"/"+cat+".png");
   
 }
