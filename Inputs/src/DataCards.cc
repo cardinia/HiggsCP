@@ -449,11 +449,11 @@ void DataCards::RunOnCategory(TString category) {
     TString cutsQCD = mapCategoryCut[category] + "&&pt_1>21&&pt_2>20&&m_vis>40&&TMath::Abs(eta_1)<2.1&&os<0.5&&puppimt_1<50&&byMediumDeepTau2017v2p1VSjet_2>0.5";
 
     TString IPCut("");
-    if (applyIPcut_&&(applyIPcutOnBkg_&&category!=0)) {
+    if (applyIPcut_ && ((applyIPcutOnBkg_ && !category.Contains("sig")) || category.Contains("sig"))) {
       if (category.Contains("_mupi_"))
-	IPCut = "&&"+CutIP_muon_+"&&"+CutIP_pion_;
+      	IPCut = "&&"+CutIP_muon_+"&&"+CutIP_pion_;
       else
-	IPCut = "&&"+CutIP_muon_;
+      	IPCut = "&&"+CutIP_muon_;
     }
     cuts += IPCut;
     cutsFF += IPCut;
