@@ -83,7 +83,7 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   TString FFweight="ff_nom";
   if(DeepTau)FFweight="ff_mva";
   TString IsoCut=Cut+"("+TauIso+">0.5)*";
-  TString AntiIsoCut=Cut+"("+TauIso+"<0.5)*";
+  TString AntiIsoCut=Cut+"("+TauIso+"<0.5&&byVVVLooseDeepTau2017v2p1VSjet_2>0.5)*";
   // directory="$CMSSW_BASE/src/"+directory;
   TH1::SetDefaultSumw2();
   SetStyle();
@@ -94,10 +94,13 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   }
 
   // weights
-  TString topweight("*1");
-  TString Wjets_weight("*0.96");
+  TString topweight("1.0*");
   TString qcdweight("1.06*");
-  TString zptmassweight="*1.0";                  //TO DO: CHANGE WEIGHTs
+  TString zptmassweight="1.0*";                  //TO DO: CHANGE WEIGHTs
+	TString Wjets_weight("1.0*");
+	if (!FFmethod)
+		Wjets_weight = "0.96*";
+
  
   vector<TString> sampleNames;
   if(directory.Contains("Out")){
@@ -107,12 +110,11 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
       "mt-NOMINAL_ntuple_DY", // (2)Drell-Yan Z->LL
       "mt-NOMINAL_ntuple_W",// (3)WJets
       "mt-NOMINAL_ntuple_TT",//(4)TTbar leptonic, hadronic, + semileptonic
-      "mt-NOMINAL_ntuple_ST", // (5) SingleTop tW tbar, SingleTop tW t, SingleTop t antitop, SingleTop t top
-      "mt-NOMINAL_ntuple_VV",// (6) WW, WZ, ZZ
-      "mt-NOMINAL_ntuple_ggH125", // (7) Scalar ggH
-      "mt-NOMINAL_ntuple_qqH125", // (8) Scalar VBF H
-      "mt-NOMINAL_ntuple_ggH125", // (9) Pseudoscalar ggH
-      "mt-NOMINAL_ntuple_qqH125" // (10) Pseudoscalar VBF
+      "mt-NOMINAL_ntuple_VV",// (5) WW, WZ, ZZ, ST (VV+ST implemented in CreateDNN as of 18 March 2020)
+      "mt-NOMINAL_ntuple_ggH125", // (6) Scalar ggH
+      "mt-NOMINAL_ntuple_qqH125", // (7) Scalar VBF H
+      "mt-NOMINAL_ntuple_ggH125", // (8) Pseudoscalar ggH
+      "mt-NOMINAL_ntuple_qqH125" // (9) Pseudoscalar VBF
     };
   }else{
     sampleNames = {
@@ -121,12 +123,11 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
       "mt-NOMINAL_ntuple_DYJets", // (2)Drell-Yan Z->LL
       "mt-NOMINAL_ntuple_WJets",// (3)WJets
       "mt-NOMINAL_ntuple_TTbar",//(4)TTbar leptonic, hadronic, + semileptonic
-      "mt-NOMINAL_ntuple_SingleTop", // (5) SingleTop tW tbar, SingleTop tW t, SingleTop t antitop, SingleTop t top
-      "mt-NOMINAL_ntuple_Diboson",// (6) WW, WZ, ZZ
-      "mt-NOMINAL_ntuple_GluGluHToUncorrTauTau", // (7) Scalar ggH
-      "mt-NOMINAL_ntuple_VBFHToUncorrTauTau", // (8) Scalar VBF H
-      "mt-NOMINAL_ntuple_GluGluHToUncorrTauTau", // (9) Pseudoscalar 
-      "mt-NOMINAL_ntuple_VBFHToUncorrTauTau" // (10) Scalar VBF H
+      "mt-NOMINAL_ntuple_Diboson",// (5) WW, WZ, ZZ, ST (VV+ST implemented in CreateDNN as of 18 March 2020)
+      "mt-NOMINAL_ntuple_GluGluHToUncorrTauTau", // (6) Scalar ggH
+      "mt-NOMINAL_ntuple_VBFHToUncorrTauTau", // (7) Scalar VBF H
+      "mt-NOMINAL_ntuple_GluGluHToUncorrTauTau", // (8) Pseudoscalar 
+      "mt-NOMINAL_ntuple_VBFHToUncorrTauTau" // (9) Scalar VBF H
     }; 
   }
   if(useEmbedded&&!directory.Contains("Out"))sampleNames[1]="mt-NOMINAL_ntuple_EmbeddedMuTau";
@@ -151,87 +152,91 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   TString cutsaIso[nSamples];
 
   // MC specific cuts to select certain type of particle
-  TString isZTT="*(gen_match_2==5&&gen_match_1==4)";
-  TString isZLL="*!(gen_match_2==5&&gen_match_1==4)";
+  TString isGenMuTau="(gen_match_2==5&&gen_match_1==4)*";
+	TString isZLL="!(gen_match_2==5&&gen_match_1==4)*";
+  TString isNotGenMuTau="!(gen_match_2==5&&gen_match_1==4)*";
+  TString isNotGenJet="(gen_match_2!=6)*";
+	if (!useEmbedded) isNotGenMuTau = "*";
+	if (!FFmethod) isNotGenJet = "*";
 
   // Selection cuts applied to all samples
   for (int i=1; i<nSamples; ++i){
-    cuts[i]   = IsoCut+Weight+"(os>0.5)";
-    cutsSS[i] = IsoCut+Weight+qcdweight+"(os<0.5)";
-    cutsaIso[i] = AntiIsoCut+Weight+"(os>0.5)*"+FFweight+"*(gen_match_2!=6)";
+    cuts[i]   = IsoCut+Weight+"(os>0.5)*";
+    cutsSS[i] = IsoCut+Weight+"(os<0.5)*"+qcdweight;
+    cutsaIso[i] = AntiIsoCut+Weight+"(os>0.5)*"+FFweight + "*";
   }
 
   //specific selection weights for data, DY and top
   cuts[0] = IsoCut+"(os>0.5)"; //DATA
-  if(useEmbedded){
-    cuts[1] = IsoCut+"(os>0.5)*weight*(weight<1000)"; //Embedded, i.e. data
-    cuts[2] += zptmassweight;
-
-  }else{
-    cuts[1] += zptmassweight+isZTT;
-    cuts[2] += zptmassweight+isZLL;
-  }
-  cuts[3] += Wjets_weight;
-  cuts[4] += topweight; 
+  if(useEmbedded)
+    cuts[1] += "(weight<1000)*" + isGenMuTau + isNotGenJet; //Embedded, i.e. data
+  else
+    cuts[1] += zptmassweight + isGenMuTau + isNotGenJet;
+  
+	cuts[2] += zptmassweight + isZLL + isNotGenJet;
+  cuts[3] += Wjets_weight + isNotGenMuTau + isNotGenJet;
+  cuts[4] += topweight + isNotGenMuTau + isNotGenJet; 
+  cuts[5] += isNotGenMuTau + isNotGenJet; 
+	cuts[6] += "*"+TString::Itoa(scaleSignal,10);
   cuts[7] += "*"+TString::Itoa(scaleSignal,10);
   cuts[8] += "*"+TString::Itoa(scaleSignal,10);
   cuts[9] += "*"+TString::Itoa(scaleSignal,10);
-  cuts[10]+= "*"+TString::Itoa(scaleSignal,10);
   if(compareCP){
+		cuts[6] +="*gen_sm_htt125*(gen_sm_htt125>=0)";
     cuts[7] +="*gen_sm_htt125*(gen_sm_htt125>=0)";
-    cuts[8] +="*gen_sm_htt125*(gen_sm_htt125>=0)";
+    cuts[8] +="*gen_ps_htt125*(gen_ps_htt125>=0)";
     cuts[9] +="*gen_ps_htt125*(gen_ps_htt125>=0)";
-    cuts[10] +="*gen_ps_htt125*(gen_ps_htt125>=0)";
   }    
-  if(FFmethod) for(int i=2; i<7; ++i) cuts[i] += "*(gen_match_2!=6)";
-  if(useEmbedded) for(int i=2; i<7; ++i) cuts[i] += "*!(gen_match_2==5 &&gen_match_1==4)";
-
    
-  cutsSS[0] = IsoCut+qcdweight+"(os<0.5)";
-  if(useEmbedded){
-    cutsSS[1] = IsoCut+qcdweight+"(os<0.5)*weight*(weight<1000)";
-    cutsSS[2] += zptmassweight;
-  }else{
-    cutsSS[1] += zptmassweight+isZTT;
-    cutsSS[2] += zptmassweight+isZLL;
-  }
-  cutsSS[2] += zptmassweight+isZLL;
-  cutsSS[3] += Wjets_weight; 
-  cutsSS[4] += topweight; 
+  cutsSS[0] = IsoCut+"(os<0.5)*"+qcdweight;
+  if(useEmbedded)
+    cutsSS[1] += "(weight<1000)*" + isGenMuTau + isNotGenJet;
+  else
+    cutsSS[1] += zptmassweight + isGenMuTau + isNotGenJet;
+  
+  cutsSS[2] += zptmassweight + isZLL + isNotGenJet;
+  cutsSS[3] += Wjets_weight + isNotGenMuTau + isNotGenJet; 
+  cutsSS[4] += topweight + isNotGenMuTau + isNotGenJet; 
+	cutsSS[5] += isNotGenMuTau + isNotGenJet; 
+	cutsSS[6] += "*"+TString::Itoa(scaleSignal,10);
   cutsSS[7] += "*"+TString::Itoa(scaleSignal,10);
   cutsSS[8] += "*"+TString::Itoa(scaleSignal,10);
   cutsSS[9] += "*"+TString::Itoa(scaleSignal,10);
-  cutsSS[10]+= "*"+TString::Itoa(scaleSignal,10);
  if(compareCP){
+    cutsSS[6] +="*gen_sm_htt125*(gen_sm_htt125>=0)";
     cutsSS[7] +="*gen_sm_htt125*(gen_sm_htt125>=0)";
-    cutsSS[8] +="*gen_sm_htt125*(gen_sm_htt125>=0)";
+    cutsSS[8] +="*gen_ps_htt125*(gen_ps_htt125>=0)";
     cutsSS[9] +="*gen_ps_htt125*(gen_ps_htt125>=0)";
-    cutsSS[10] +="*gen_ps_htt125*(gen_ps_htt125>=0)";
   }  
-  if(useEmbedded) for(int i=2; i<7; ++i)cutsSS[i] += "*!(gen_match_2==5 &&gen_match_1==4)";
 
-  cutsaIso[0] = AntiIsoCut+"(os>0.5)*"+FFweight;
-  if(useEmbedded){
-    cutsaIso[1] = AntiIsoCut+"(os>0.5)*weight*(weight<1000)*"+FFweight;
-    cutsaIso[2] += zptmassweight;
- }else{
-    cutsaIso[1] += zptmassweight+isZTT;
-    cutsaIso[2] += zptmassweight+isZLL;
-  }
-  cutsaIso[2] += zptmassweight+isZLL;
-  cutsaIso[3] += Wjets_weight; 
-  cutsaIso[4] += topweight; 
+  cutsaIso[0] = AntiIsoCut+"(os>0.5)*"+FFweight + "*";
+	if(useEmbedded)
+    cutsaIso[1] += "(weight<1000)*" + isGenMuTau + isNotGenJet; //Embedded, i.e. data
+  else
+    cutsaIso[1] += zptmassweight + isGenMuTau + isNotGenJet;
+  
+	cutsaIso[2] += zptmassweight + isZLL + isNotGenJet;
+  cutsaIso[3] += Wjets_weight + isNotGenMuTau + isNotGenJet;
+  cutsaIso[4] += topweight + isNotGenMuTau + isNotGenJet; 
+  cutsaIso[5] += isNotGenMuTau + isNotGenJet; 
+	cutsaIso[6] += "*"+TString::Itoa(scaleSignal,10);
   cutsaIso[7] += "*"+TString::Itoa(scaleSignal,10);
   cutsaIso[8] += "*"+TString::Itoa(scaleSignal,10);
   cutsaIso[9] += "*"+TString::Itoa(scaleSignal,10);
-  cutsaIso[10]+= "*"+TString::Itoa(scaleSignal,10);
   if(compareCP){
-    cutsaIso[7] +="*gen_sm_htt125*(gen_sm_htt125>=0&&gen_sm_htt125<7)";
-    cutsaIso[8] +="*gen_sm_htt125*(gen_sm_htt125>=0)";
+    cutsaIso[6] +="*gen_sm_htt125*(gen_sm_htt125>=0&&gen_sm_htt125<7)";
+    cutsaIso[7] +="*gen_sm_htt125*(gen_sm_htt125>=0)";
+    cutsaIso[8] +="*gen_ps_htt125*(gen_ps_htt125>=0)";
     cutsaIso[9] +="*gen_ps_htt125*(gen_ps_htt125>=0)";
-    cutsaIso[10] +="*gen_ps_htt125*(gen_ps_htt125>=0)";
   }  
-  if(useEmbedded) for(int i=2; i<7; ++i)cutsaIso[i] += "*!(gen_match_2==5 && gen_match_1==4)";
+
+for (size_t i = 0; i < nSamples; i++) 
+	cuts[i] = cuts[i].Strip(TString::kTrailing, '*');
+for (size_t i = 0; i < nSamples; i++) 
+	cutsSS[i] = cutsSS[i].Strip(TString::kTrailing, '*');
+for (size_t i = 0; i < nSamples; i++) 
+	cutsaIso[i] = cutsaIso[i].Strip(TString::kTrailing, '*');
+
   // *******************************
   // ***** Filling Histograms ******
   // *******************************
@@ -274,9 +279,6 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   // ********************************************
   // ***** Adding similar backgrounds     *******
   // ********************************************
-
-  // Adding up single top and VV backgrounds
-  hist[5]->Add(hist[5],hist[6]);
   
   // Adding SS backgrounds
   for (int iH=2; iH<6; iH++) histSS[1]->Add(histSS[iH]);
@@ -321,13 +323,13 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   TH1D * W          = (TH1D*)hist[3]         -> Clone("W");
   TH1D * TT         = (TH1D*)hist[4]         -> Clone("TT"); 
   TH1D * VV         = (TH1D*)hist[5]         -> Clone("VV"); 
-  TH1D * ggH        = (TH1D*)hist[7]         -> Clone("ggH");
-  TH1D * qqH        = (TH1D*)hist[8]         -> Clone("qqH");
+  TH1D * ggH        = (TH1D*)hist[6]         -> Clone("ggH");
+  TH1D * qqH        = (TH1D*)hist[7]         -> Clone("qqH");
   TH1D * CPoddH     = NULL;
   TH1D * CPoddqqH   = NULL;
   if(compareCP){
-    CPoddH     = (TH1D*)hist[9]         -> Clone("CPoddH");
-    CPoddqqH   = (TH1D*)hist[10]        -> Clone("CPoddqqH");
+    CPoddH     = (TH1D*)hist[8]         -> Clone("CPoddH");
+    CPoddqqH   = (TH1D*)hist[9]        -> Clone("CPoddqqH");
   }
   TH1D * Fakes      = (TH1D*)hist_AntiIso[0] -> Clone("Fakes");
   

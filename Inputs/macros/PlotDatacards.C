@@ -44,7 +44,6 @@ void PlotDatacards(TString dir = "/.",
   TH1F * qqPS      = (TH1F*)inputs->Get(cat+"/qqH_ps_htt125");
   TH1F * qqMM      = (TH1F*)inputs->Get(cat+"/qqH_mm_htt125");
 
-  Fakes->Scale(0.95);
   hSM->Add(hSM,qqSM,1.,1.);
   hPS->Add(hPS,qqPS,1.,1.);
   hMM->Add(hMM,qqMM,1.,1.);
@@ -65,9 +64,12 @@ void PlotDatacards(TString dir = "/.",
   float nSM   = hSM->GetSumOfWeights();
   float nPS   = hPS->GetSumOfWeights();
   
-  std::cout << "W+Jets : " << nW << std::endl;    
+  std::cout << "W : " << nW << std::endl;    
   std::cout << "Fakes  : " << nFakes << std::endl;
   std::cout << "ZTT    : " << nEMB << std::endl;
+  std::cout << "ZLL    : " << nZll << std::endl;
+  std::cout << "VV    : " << nVV << std::endl;
+  std::cout << "TT    : " << nTT << std::endl;
   std::cout << "Rest   : " << nRest << std::endl;
   std::cout << "Bkgd   : " << nBkgd << std::endl;
   std::cout << "Data   : " << nData << std::endl;

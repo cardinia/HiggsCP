@@ -173,7 +173,6 @@ vector<TH1D*> DataCards::CreateCardsEmbedSyst(params param) {
   params paramShift = param;
   //get 10% of TT and VV true taus contributions
   paramShift.weights += "0.1*";
-  paramShift.cuts += "&&(gen_match_1==4&&gen_match_2==5)";
 
   vector<TH1D*> histsTTT = CreateCardsSample("TTT", paramShift, false);
   vector<TH1D*> histsVVT = CreateCardsSample("VVT", paramShift, false);
@@ -402,16 +401,17 @@ vector<TH1D*> DataCards::CreateCardsFakes(TString FakeOrQCD, params parameters, 
       TString cutsSample = cuts;
       params parametersSample = parameters;
       
-      if (sample=="ZTT")
-	cutsSample += "&&gen_match_1==4&&gen_match_2==5";
+      if (sample=="ZTT" || sample=="EmbedZTT") 
+        cutsSample += "&&gen_match_1==4&&gen_match_2==5&&gen_match_2!=6";
       else if (sample=="ZL")
-	cutsSample += "&&!(gen_match_1==4&&gen_match_2==5)";
-      else if (embedded_)
-	cutsSample += "&&!(gen_match_1==4&&gen_match_2==5)";
+        cutsSample += "&&!(gen_match_1==4&&gen_match_2==5)&&gen_match_2!=6";
+      else if (sample=="TTT"||sample=="ST"||sample=="W"||sample=="VVT"){
+        cutsSample += "&&gen_match_2!=6";
+        if (embedded_) cutsSample += "&&!(gen_match_1==4&&gen_match_2==5)";
+      } 
       
-      if (sample=="EmbedZTT" && era_=="2016") cutsSample += "&&(weight<1000)";
-
-      cutsSample += "&&gen_match_2!=6";
+      if (sample=="EmbedZTT" && era_=="2016")
+          cutsSample += "&&(weight<1000)";
       
       parametersSample.cuts = cutsSample;
       cout << "      Subtracting " << sample << " for data-driven estimation" << endl << "         ";
@@ -442,11 +442,11 @@ void DataCards::RunOnCategory(TString category) {
     TString acotautau = variableCP_+"_00";
     bool runSystematics = true;
 
-    cuts = mapCategoryCut[category] + "&&pt_1>21&&pt_2>20&&m_vis>40&&TMath::Abs(eta_1)<2.1&&os>0.5&&puppimt_1<50&&byMediumDeepTau2017v2p1VSjet_2>0.5";    
-
-
-    TString cutsFF = mapCategoryCut[category]  + "&&pt_1>21&&pt_2>20&&m_vis>40&&TMath::Abs(eta_1)<2.1&&os>0.5&&puppimt_1<50&&byMediumDeepTau2017v2p1VSjet_2<0.5&&byVVVLooseDeepTau2017v2p1VSjet_2>0.5";
-    TString cutsQCD = mapCategoryCut[category] + "&&pt_1>21&&pt_2>20&&m_vis>40&&TMath::Abs(eta_1)<2.1&&os<0.5&&puppimt_1<50&&byMediumDeepTau2017v2p1VSjet_2>0.5";
+    cuts = mapCategoryCut[category] + "&&pt_1>21&&pt_2>20&&m_vis>40&&TMath::Abs(eta_1)<2.1&&puppimt_1<50";    
+    
+    TString cut_FF_AR = "&&os>0.5&&byMediumDeepTau2017v2p1VSjet_2<0.5&&byVVVLooseDeepTau2017v2p1VSjet_2>0.5";
+    TString cut_FF_SR = "&&os>0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5";
+    TString cut_QCD_SS = "&&os<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5";
 
     TString IPCut("");
     if (applyIPcut_ && ((applyIPcutOnBkg_ && !category.Contains("sig")) || category.Contains("sig"))) {
@@ -456,17 +456,18 @@ void DataCards::RunOnCategory(TString category) {
       	IPCut = "&&"+CutIP_muon_;
     }
     cuts += IPCut;
-    cutsFF += IPCut;
-    cutsQCD += IPCut;
     
-    if (sampleName=="ZTT") 
-      cuts += "&&gen_match_1==4&&gen_match_2==5";
+    if (sampleName=="ZTT" || sampleName=="EmbedZTT") 
+      cuts += "&&gen_match_1==4&&gen_match_2==5&&gen_match_2!=6";
     else if (sampleName=="ZL")
-      cuts += "&&!(gen_match_1==4&&gen_match_2==5)";
-    else if ((sampleName=="TTT"||sampleName=="ST"||sampleName=="W"||sampleName=="VVT") && embedded_) 
-      cuts += "&&!(gen_match_1==4&&gen_match_2==5)";
+      cuts += "&&!(gen_match_1==4&&gen_match_2==5)&&gen_match_2!=6";
+    else if (sampleName=="TTT"||sampleName=="ST"||sampleName=="W"||sampleName=="VVT"){
+      cuts += "&&gen_match_2!=6";
+      if (embedded_) cuts += "&&!(gen_match_1==4&&gen_match_2==5)";
+    } 
     
-    if (sampleName=="EmbedZTT" && era_=="2016") cuts += "&&(weight<1000)";
+    if (sampleName=="EmbedZTT" && era_=="2016")
+        cuts += "&&(weight<1000)";
 
 
     if (sampleName.Contains("_sm_htt125"))
@@ -478,7 +479,7 @@ void DataCards::RunOnCategory(TString category) {
 
 
     parameters.weights = weight ; 
-    parameters.cuts = cuts ; 
+    parameters.cuts = cuts + cut_FF_SR; // default approach, overwriten for QCD and jetFakes samples
    
     
     if (category.Contains("_murho_")||category.Contains("_mua1_"))
@@ -531,7 +532,7 @@ void DataCards::RunOnCategory(TString category) {
     }
     if (sampleName=="jetFakes") {
       params parametersFF = parameters;
-      parametersFF.cuts = cutsFF;
+      parametersFF.cuts = cuts + cut_FF_AR;
       TString weightFF("ff_mva*");
       vector<TH1D*> hists = CreateCardsFakes(sampleName,parametersFF,weightFF, 
 					      runSystematics);
@@ -540,7 +541,7 @@ void DataCards::RunOnCategory(TString category) {
     }
     else if (sampleName=="QCD") {
       params parametersQCD = parameters;
-      parametersQCD.cuts = cutsQCD;
+      parametersQCD.cuts = cuts + cut_QCD_SS;
       TString weightQCD("1.2*");
       TH1D * hist = CreateCardsFakesOrQCD(sampleName,parametersQCD,weightQCD);
       allHists.push_back(hist); 
