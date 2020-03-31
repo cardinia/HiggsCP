@@ -1,4 +1,4 @@
- #define DataCards_ccx
+#define DataCards_ccx
 
 #include "HiggsCP/Inputs/interface/DataCards.h"
 
@@ -360,7 +360,7 @@ TH1D* DataCards::CreateCardsFakesOrQCD(TString FakeOrQCD, params parameters, TSt
       cutsSample += "&&gen_match_1==4&&gen_match_2==5";
     else if (sample=="ZL")
       cutsSample += "&&!(gen_match_1==4&&gen_match_2==5)";
-    else if (embedded_)
+    else if (embedded_&&sample!="EmbedZTT")
       cutsSample += "&&!(gen_match_1==4&&gen_match_2==5)";
 
     if (sample=="EmbedZTT" && era_=="2016") cutsSample += "&&(weight<1000)";
@@ -387,19 +387,27 @@ vector<TH1D*> DataCards::CreateCardsFakes(TString FakeOrQCD, params parameters, 
   */
   vector<TH1D*> all_histFF;
   TString cuts = parameters.cuts;
+  TString weights = parameters.weights;
   //runSystematics=false;
   for (auto systematicName : FFSystematics ) {
-    if (systematicName==""||systematicName.Contains("ff_mt_sub_syst")) parameters.weights = "weight*"+weightFForQCD;
+    params parametersSyst = parameters;
+    TString weightsSyst = weights;
+    if (systematicName==""||systematicName.Contains("ff_mt_sub_syst")) weightsSyst = weights+weightFForQCD;
     if (!runSystematics && systematicName!="") continue;
     if (systematicName!="") cout << "     Running on systematics " << systematicName << std::endl;
 
-    vector<TH1D*> histFF = CreateCardsSample(FakeOrQCD,parameters,systematicName);
+    parametersSyst.weights = weightsSyst;
+
+    vector<TH1D*> histFF = CreateCardsSample(FakeOrQCD,parametersSyst,systematicName);
+
     for (auto sample : samplesToSubtract) {
-      if (sample=="ZTT"&&embedded_) continue;
-      if (sample=="EmbedZTT"&&!embedded_) continue;
       
       TString cutsSample = cuts;
-      params parametersSample = parameters;
+
+      params parametersSample = parametersSyst;    
+
+      if (sample=="ZTT"&&embedded_) continue;
+      if (sample=="EmbedZTT"&&!embedded_) continue;
       
       if (sample=="ZTT" || sample=="EmbedZTT") 
         cutsSample += "&&gen_match_1==4&&gen_match_2==5&&gen_match_2!=6";
