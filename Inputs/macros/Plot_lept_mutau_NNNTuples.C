@@ -346,11 +346,11 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   TH1D * VV         = (TH1D*)hist[5]         -> Clone("VV"); 
   TH1D * ggH        = (TH1D*)hist[6]         -> Clone("ggH");
   TH1D * qqH        = (TH1D*)hist[7]         -> Clone("qqH");
-  TH1D * CPoddH     = NULL;
-  TH1D * CPoddqqH   = NULL;
+  TH1D * ggHPS     = NULL;
+  TH1D * qqHPS   = NULL;
   if(compareCP){
-    CPoddH     = (TH1D*)hist[8]         -> Clone("CPoddH");
-    CPoddqqH   = (TH1D*)hist[9]        -> Clone("CPoddqqH");
+    ggHPS     = (TH1D*)hist[8]         -> Clone("ggHPS");
+    qqHPS   = (TH1D*)hist[9]        -> Clone("qqHPS");
   }
   TH1D * Fakes      = (TH1D*)hist_AntiIso[0] -> Clone("Fakes");
   
@@ -446,7 +446,8 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
 
   pads[1] -> cd();
   h[1]    -> Draw();
-  SetupTwoPadSplitAsRatio(pads, "Obs/Exp", true, 0.65, 1.35);
+  if(categoryIndex==0)  SetupTwoPadSplitAsRatio(pads, "(s+b)/b", true, 0.5, 1.8);
+  else  SetupTwoPadSplitAsRatio(pads, "Obs/Exp", true, 0.65, 1.35);
   StandardAxes(h[1]->GetXaxis(), h[0]->GetYaxis(),xtitle_ ,units);
   h[1] -> GetYaxis()->SetNdivisions(4);
   h[1] -> GetXaxis()->SetTitleOffset(0.95);
@@ -464,7 +465,7 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   // Setup legend
   TLegend *legend;
   if(categoryIndex==5)legend = PositionedLegend(0.35, 0.20, 2, 0.03);
-  else legend = PositionedLegend(0.35, 0.20, 3, 0.03);
+  else legend = PositionedLegend(0.35, 0.25, 1, 0.03);
   legend -> SetTextFont(42);
   legend->SetNColumns(2);
   histData -> SetMarkerColor(1);
@@ -522,22 +523,22 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   canv1->Update();
 
   InitSignal(ggH ,2);
-  InitSignal(qqH ,3);
+  InitSignal(qqH ,4);
   if(compareCP){
-    InitSignal(CPoddH,4); 
-    InitSignal(CPoddqqH,5); 
+    InitSignal(ggHPS,3); 
+    InitSignal(qqHPS,5); 
   }
   if (showSignal){
     if(compareCP){
+      legend->AddEntry(ggHPS,"PS ggH H(125) #times "+TString::Itoa(scaleSignal,10),"f");
+      ggHPS->Draw("hist same");
       legend->AddEntry(ggH,"SM ggH H(125) #times "+TString::Itoa(scaleSignal,10),"f");
       ggH->Draw("hist same");
-      legend->AddEntry(CPoddH,"PS ggH H(125) #times "+TString::Itoa(scaleSignal,10),"f");
-      CPoddH->Draw("hist same");
       if(nSamples==10){
+	legend->AddEntry(qqHPS,"PS qqH H(125) #times "+TString::Itoa(scaleSignal,10),"f");
+	qqHPS->Draw("hist same");
 	legend->AddEntry(qqH,"SM qqH H(125) #times "+TString::Itoa(scaleSignal,10),"f");
 	qqH->Draw("hist same");
-	legend->AddEntry(CPoddqqH,"PS qqH H(125) #times "+TString::Itoa(scaleSignal,10),"f");
-	CPoddqqH->Draw("hist same");
       
       }
     }else{
@@ -608,7 +609,7 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
     ZLL->SetBinError(iB,0);
     ZTT->SetBinError(iB,0);
 
-    if(compareCP)CPoddH  -> SetBinError(iB,0);
+    if(compareCP)ggHPS  -> SetBinError(iB,0);
   }
   cout << endl;
 
@@ -642,6 +643,8 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   TH1D * ratioErrH = (TH1D*)bkgdErr  -> Clone("ratioErrH");
   TH1D * ratioggH = (TH1D*)ggH  -> Clone("ratioggH");
   TH1D * ratioqqH = (TH1D*)qqH  -> Clone("ratioqqH");
+  TH1D * ratioggHPS = (TH1D*)ggHPS  -> Clone("ratioggHPS");
+  TH1D * ratioqqHPS = (TH1D*)qqHPS  -> Clone("ratioqqHPS");
   ratioH -> Divide((TH1D*)stack->GetStack()->Last()); // Divide by the sum of the THStack
 
   // Set error of MC bkg correctly in ratio
@@ -652,15 +655,23 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
     float errBkg = bkgdErr -> GetBinError(iB);
     float xggH = ratioggH->GetBinContent(iB)/scaleSignal;
     float xqqH = ratioqqH->GetBinContent(iB)/scaleSignal;
+    float xggHPS = ratioggHPS->GetBinContent(iB)/scaleSignal;
+    float xqqHPS = ratioqqHPS->GetBinContent(iB)/scaleSignal;
     ratioggH->SetBinContent(iB,1.0);
     ratioggH->SetBinError(iB,0.0);
     ratioqqH->SetBinContent(iB,1.0);
     ratioqqH->SetBinError(iB,0.0);
+    ratioggHPS->SetBinContent(iB,1.0);
+    ratioggHPS->SetBinError(iB,0.0);
+    ratioqqHPS->SetBinContent(iB,1.0);
+    ratioqqHPS->SetBinError(iB,0.0);
     if (xBkg>0) {
       float relErr = errBkg/xBkg;
       ratioErrH->SetBinError(iB,relErr);
       ratioggH->SetBinContent(iB,1+(xggH/xBkg));
       ratioqqH->SetBinContent(iB,1+(xqqH/xBkg));
+      ratioggHPS->SetBinContent(iB,1+(xggHPS/xBkg));
+      ratioqqHPS->SetBinContent(iB,1+(xqqHPS/xBkg));
     }
 
   }
@@ -669,6 +680,8 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   ratioErrH->Draw("e2same");
   ratioH->Draw("pe0same");
   if(showSignal){
+    ratioggHPS->Draw("hist same");
+    ratioqqHPS->Draw("hist same");
     ratioggH->Draw("hist same");
     ratioqqH->Draw("hist same");
   }
@@ -684,7 +697,7 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   if(VariableName.Contains("IP_sig")){
     FixTopRange(pads[0], GetPadYMax(pads[0])*1.2, 0.115);
   }else if(categoryIndex==2){
-    FixTopRange(pads[0], GetPadYMax(pads[0])*1.1, 0.115);
+    FixTopRange(pads[0], GetPadYMax(pads[0])*2.1, 0.115);
   }else{
     FixTopRange(pads[0], GetPadYMax(pads[0]), 0.115);
   }

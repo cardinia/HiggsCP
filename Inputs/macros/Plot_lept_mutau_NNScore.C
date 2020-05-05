@@ -6,11 +6,11 @@
 
 
 void   Plot_lept_mutau_NNScore(TString directory = "/nfs/dust/cms/user/rasp/storage/cardinia/2016/OutputDNN/March28/predictions_2016/",
-			       TString outputDir = "./figures_March30/2016/categories/",
+			       TString outputDir = "./figures_April27/2016/",
 			       int year=2016,
 			       bool FFmethod = true,  
-			       bool useEmbedded = false,
-			       bool LargeScale = false,  
+			       bool useEmbedded = true,
+			       bool LargeScale = true,  
 			       bool logY = false,
 			       bool showSignal = true,
 			       bool compareCP = true,
@@ -22,7 +22,7 @@ void   Plot_lept_mutau_NNScore(TString directory = "/nfs/dust/cms/user/rasp/stor
   
   const int nCategories = 3;
   const int nSigCategories = 1;
-  
+  /*
   for(int categoryIndex=0;categoryIndex<nCategories;categoryIndex++){
     Plot_lept_mutau_NNNTuples("predicted_prob:acotautau_refitbs_00",
 			      "#phi_{CP} vs DNN score",
@@ -140,7 +140,7 @@ void   Plot_lept_mutau_NNScore(TString directory = "/nfs/dust/cms/user/rasp/stor
 			      FORCE
 			      );
   }
-  
+  */
   bool _logY = false;
   bool _largeScale = false;
   for(int categoryIndex=0;categoryIndex<nCategories;categoryIndex++){
@@ -156,7 +156,7 @@ void   Plot_lept_mutau_NNScore(TString directory = "/nfs/dust/cms/user/rasp/stor
     TString cuts = "(pt_1>21&&puppimt_1<50&&byVVVLooseDeepTau2017v2p1VSjet_2>0.5&&abs(eta_1)<2.1&&m_vis>40)*";
     if (categoryIndex==0) cuts+= "(IP_signif_RefitV_with_BS_1>1.5)*";
     Plot_lept_mutau_NNNTuples("predicted_prob",
-			      "DNN Score",
+			      "NN Score",
 			      50,0.,1.,
 			      "weight*",
 			      cuts,
@@ -183,7 +183,7 @@ void   Plot_lept_mutau_NNScore(TString directory = "/nfs/dust/cms/user/rasp/stor
 			      "DNN Score",
 			      50,0.,1.,
 			      "weight*",
-			      "(pt_1>21&&puppimt_1<50&&byVVVLooseDeepTau2017v2p1VSjet_2>0.5&&abs(eta_1)<2.1&&m_vis>40&&dmMVA_2==0&&IP_signif_RefitV_with_BS_1>1.5&&IP_signif_RefitV_with_BS_2>1.5)*",
+			      cuts,
 			      "Events",
 			      categoryIndex,
 			      directory,
@@ -199,7 +199,7 @@ void   Plot_lept_mutau_NNScore(TString directory = "/nfs/dust/cms/user/rasp/stor
 			      compareCP,
 			      scaleSignal,
 			      blindData,
-			      "_dmMVA0_IPcutTau",
+			      "",
 			      FORCE
 			      );
   
@@ -207,7 +207,7 @@ void   Plot_lept_mutau_NNScore(TString directory = "/nfs/dust/cms/user/rasp/stor
 			      "DNN Score",
 			      50,0.,1.,
 			      "weight*",
-			      "(pt_1>21&&puppimt_1<50&&byVVVLooseDeepTau2017v2p1VSjet_2>0.5&&abs(eta_1)<2.1&&m_vis>40&&dmMVA_2==0&&IP_signif_RefitV_with_BS_1>1.5&&IP_signif_RefitV_with_BS_2>1.5)*",
+			      cuts,
 			      "Events",
 			      categoryIndex,
 			      directory,
@@ -223,7 +223,7 @@ void   Plot_lept_mutau_NNScore(TString directory = "/nfs/dust/cms/user/rasp/stor
 			      compareCP,
 			      scaleSignal,
 			      blindData,
-			      "_dmMVA0_IPcutTau",
+			      "",
 			      FORCE
 			      );
   
@@ -231,7 +231,7 @@ void   Plot_lept_mutau_NNScore(TString directory = "/nfs/dust/cms/user/rasp/stor
 			      "DNN Score",
 			      50,0.,1.,
 			      "weight*",
-			      "(pt_1>21&&puppimt_1<50&&byVVVLooseDeepTau2017v2p1VSjet_2>0.5&&abs(eta_1)<2.1&&m_vis>40&&dmMVA_2==0&&IP_signif_RefitV_with_BS_1>1.5&&IP_signif_RefitV_with_BS_2>1.5)*",
+			      cuts,
 			      "Events",
 			      categoryIndex,
 			      directory,
@@ -247,7 +247,7 @@ void   Plot_lept_mutau_NNScore(TString directory = "/nfs/dust/cms/user/rasp/stor
 			      compareCP,
 			      scaleSignal,
 			      blindData,
-			      "_dmMVA0_IPcutTau",
+			      "",
 			      FORCE
 			      );*/
   }
