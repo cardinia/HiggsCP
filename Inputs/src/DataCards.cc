@@ -6,6 +6,7 @@ using namespace std;
 
 DataCards::DataCards(TString era,
 		     bool embedded,
+		     bool FFmethod,
 		     TString variableCP,
 		     map<TString,int> binsperchannel,
 		     double xmin,
@@ -14,7 +15,9 @@ DataCards::DataCards(TString era,
 		     std::vector<double> xDNNZtt,
 		     std::vector<double> xDNNFakes,
 		     bool splitBkgCat,
+		     bool useTH1forHiggs,
 		     bool useTH2forZtt,
+		     bool useTH2forFakes,
 		     bool mvaDM,
 		     bool applyIPcut,
 		     bool applyIPcutOnBkg,
@@ -22,6 +25,7 @@ DataCards::DataCards(TString era,
 
   era_ = era;
   embedded_ = embedded;
+  fakeFactor_ = FFmethod;
   binsperchannel_ = binsperchannel;
   xmin_ = xmin;
   xmax_ = xmax;
@@ -29,7 +33,9 @@ DataCards::DataCards(TString era,
   xDNNZtt_ = xDNNZtt;
   xDNNFakes_ = xDNNFakes;
   splitBkg_ = splitBkgCat;
+  useTH1forHiggs_ = useTH1forHiggs;
   useTH2forZtt_ = useTH2forZtt;
+  useTH2forFakes_ = useTH2forFakes;
   mvaDM_ = mvaDM;
   applyIPcut_ = applyIPcut;
   applyIPcutOnBkg_ = applyIPcutOnBkg;
@@ -102,7 +108,7 @@ void DataCards::createCategoryList(int classIndex=-1, TString channel="") {
   TString catNamePrefix = "mt";
   vector<int> classIndices;
   vector<TString> channels;
-  if (channel==""&&((splitBkg_&&classIndex!=0)||classIndex<=0)) channels = channelNames;
+  if (channel==""&&((splitBkg_&&classIndex!=0)||classIndex<0||(classIndex==0&&!useTH1forHiggs_))) channels = channelNames;
   else channels.push_back(channel);
   if (classIndex==-1) classIndices = extract_first(classNames);
   else classIndices.push_back(classIndex);
@@ -208,6 +214,11 @@ vector<TH1D*> DataCards::CreateCardsSample(TString sampleName, params param, boo
     SystematicsPerSample.push_back("CMS_htt_dyShape_13TeVUp");
     SystematicsPerSample.push_back("CMS_htt_dyShape_13TeVDown");
   }
+  else if(sampleName=="TTT"){
+    cout << "Adding ttbar shape systematics" <<endl;
+    SystematicsPerSample.push_back("CMS_htt_ttbarShape_13TeVUp");
+    SystematicsPerSample.push_back("CMS_htt_ttbarShape_13TeVDown");
+  }
 
   for (auto systematicName : SystematicsPerSample ) {
     if (!runSystematics && systematicName!="") continue;
@@ -217,7 +228,7 @@ vector<TH1D*> DataCards::CreateCardsSample(TString sampleName, params param, boo
     TString HistName = sampleName;
     params parameterSystematic = param;
     if (systematicName!="") {
-      if(find(WeightSystematics.begin(),WeightSystematics.end(),systematicName)==WeightSystematics.end()&&(!(systematicName.Contains("CMS_scale_gg_13TeV")))&&(!(systematicName.Contains("CMS_htt_dyShape_13TeV"))))TreeName = "TauCheck_" + systematicName; 
+      if(find(WeightSystematics.begin(),WeightSystematics.end(),systematicName)==WeightSystematics.end()&&(!(systematicName.Contains("CMS_scale_gg_13TeV")))&&(!(systematicName.Contains("CMS_htt_dyShape_13TeV")))&&(!(systematicName.Contains("CMS_htt_ttbarShape_13TeV"))))TreeName = "TauCheck_" + systematicName; 
       else parameterSystematic.weights = param.weights + "weight_" +systematicName+"*";
       HistName = sampleName + "_" + systematicName;
     }
@@ -365,7 +376,7 @@ TH1D* DataCards::CreateCardsFakesOrQCD(TString FakeOrQCD, params parameters, TSt
 
     if (sample=="EmbedZTT" && era_=="2016") cutsSample += "&&(weight<1000)";
 
-    cutsSample += "&&gen_match_2!=6";
+    if(fakeFactor_) cutsSample += "&&gen_match_2!=6";
 
     //parametersSample.cuts = weight + "(" + cutsSample + ")";
     parametersSample.cuts = cutsSample;
@@ -411,10 +422,12 @@ vector<TH1D*> DataCards::CreateCardsFakes(TString FakeOrQCD, params parameters, 
       
       if (sample=="ZTT" || sample=="EmbedZTT") 
         cutsSample += "&&gen_match_1==4&&gen_match_2==5&&gen_match_2!=6";
-      else if (sample=="ZL")
-        cutsSample += "&&!(gen_match_1==4&&gen_match_2==5)&&gen_match_2!=6";
+      else if (sample=="ZL"){
+        cutsSample += "&&!(gen_match_1==4&&gen_match_2==5)";
+	if(fakeFactor_) cutsSample += "&&gen_match_2!=6";
+      }
       else if (sample=="TTT"||sample=="ST"||sample=="W"||sample=="VVT"){
-        cutsSample += "&&gen_match_2!=6";
+	if (fakeFactor_) cutsSample += "&&gen_match_2!=6";
         if (embedded_) cutsSample += "&&!(gen_match_1==4&&gen_match_2==5)";
       } 
       
@@ -444,11 +457,15 @@ void DataCards::RunOnCategory(TString category) {
 
   for (auto sampleName : sampleNames) {
     //if(sampleName!="jetFakes")continue;
+    if(sampleName=="QCD"&&fakeFactor_==true)continue;
+    else if(sampleName=="jetFakes"&&fakeFactor_==false)continue;
     params parameters;
     TString cuts = "";
     TString weight = "weight*"; 
-    TString acotautau = variableCP_+"_00";
-    bool runSystematics = true;
+    TString acotautau = variableCP_+"_01"; //We use 00 for mupi, and 01 for murho, mu0a1 and mua1. The s
+    if (category.Contains("_mupi_"))
+      acotautau = variableCP_+"_00";  
+    bool runSystematics = runSystematics_;
 
     cuts = mapCategoryCut[category] + "&&pt_1>21&&pt_2>20&&m_vis>40&&TMath::Abs(eta_1)<2.1&&puppimt_1<50";    
     
@@ -470,7 +487,7 @@ void DataCards::RunOnCategory(TString category) {
     else if (sampleName=="ZL")
       cuts += "&&!(gen_match_1==4&&gen_match_2==5)&&gen_match_2!=6";
     else if (sampleName=="TTT"||sampleName=="ST"||sampleName=="W"||sampleName=="VVT"){
-      cuts += "&&gen_match_2!=6";
+      if(fakeFactor_) cuts += "&&gen_match_2!=6";
       if (embedded_) cuts += "&&!(gen_match_1==4&&gen_match_2==5)";
     } 
     
@@ -488,10 +505,7 @@ void DataCards::RunOnCategory(TString category) {
 
     parameters.weights = weight ; 
     parameters.cuts = cuts + cut_FF_SR; // default approach, overwriten for QCD and jetFakes samples
-   
-    
-    if (category.Contains("_murho_")||category.Contains("_mua1_"))
-      acotautau = variableCP_+"_01";    
+     
 
     if (category.Contains("_mupi")){
 	nbins_=binsperchannel_.at("mupi");
@@ -504,11 +518,18 @@ void DataCards::RunOnCategory(TString category) {
     }
     else if(category.Contains("_mu0a1")){
 	nbins_=binsperchannel_.at("mu0a1");
+	xDNNSig_={0.0, 0.45, 0.6, 0.8, 1.0};
     } else nbins_= 7;
 
     if (category.Contains("_sig")) {
-      parameters.hist2D = true;
-      parameters.varToPlot = "predicted_prob:"+acotautau;
+      if(!useTH1forHiggs_){
+	parameters.hist2D = true;
+	parameters.varToPlot = "predicted_prob:"+acotautau;
+      }else{
+	parameters.varToPlot = "predicted_prob";
+	parameters.hist2D = false;
+	xDNNSig_={0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};
+      }
       parameters.xDNN = xDNNSig_;
     }
     else if (category.Contains("_ztt")) {
@@ -521,9 +542,14 @@ void DataCards::RunOnCategory(TString category) {
       }
       parameters.xDNN = xDNNZtt_; 
     }
-    else {
-      parameters.hist2D = false;
-      parameters.varToPlot = "predicted_prob";
+    else if (category.Contains("_fakes")) {
+      if(useTH2forFakes_){
+	parameters.hist2D = true;
+	parameters.varToPlot = "predicted_prob:"+acotautau;
+      }else{
+	parameters.varToPlot = "predicted_prob";
+	parameters.hist2D = false;
+      }
       parameters.xDNN = xDNNFakes_; 
     }
 
