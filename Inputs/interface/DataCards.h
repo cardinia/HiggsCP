@@ -47,6 +47,7 @@ class DataCards {
 
   DataCards(TString era,
 	    bool embedded, 
+	    bool FFmethod, 
 	    TString variableCP,
 	    map<TString,int> binsperchannel,
 	    double xmin,
@@ -55,7 +56,9 @@ class DataCards {
 	    vector<double> xDNNZtt,
 	    vector<double> xDNNFakes,
 	    bool splitBkg,
+	    bool useTH1forHiggs,
 	    bool useTH2forZtt,
+	    bool useTH2forFakes,
 	    bool mvaDM,
 	    bool applyIPcut,
 	    bool applyIPcutOnBkg,
@@ -107,6 +110,8 @@ class DataCards {
   bool embedded_;
   bool fakeFactor_;
   bool useTH2forZtt_;
+  bool useTH1forHiggs_;
+  bool useTH2forFakes_;
   bool splitBkg_;
   bool mvaDM_;
   bool applyIPcut_;
@@ -158,6 +163,8 @@ class DataCards {
     "CMS_scale_t_1prong1pizero_13TeVDown",
     "CMS_scale_t_3prong_13TeVUp",
     "CMS_scale_t_3prong_13TeVDown",
+    "CMS_scale_t_3prong1pizero_13TeVUp",
+    "CMS_scale_t_3prong1pizero_13TeVDown",
     "CMS_shape_dyShape_13TeVUp",
     "CMS_shape_dyShape_13TeVDown",
     "CMS_scale_met_unclustered_13TeVUp",
@@ -215,7 +222,9 @@ class DataCards {
     "CMS_scale_mu_13TeVUp",
     "CMS_scale_mu_13TeVDown",
     "CMS_res_j_13TeVUp",
-    "CMS_res_j_13TeVDown"
+    "CMS_res_j_13TeVDown",
+    "CMS_eff_b_13TeVUp",
+    "CMS_eff_b_13TeVDown",
   };
 
   vector<TString> FFSystematics = {
@@ -407,15 +416,17 @@ class DataCards {
     //"ST",
     "VVT",
     "TTT",
-    //"QCD",
+    "QCD",
     "jetFakes",
     "W",
     "qqH_sm_htt125",
     "qqH_ps_htt125",
     "qqH_mm_htt125",
+    "qqH_flat_htt125",
     "ggH_sm_htt125",
     "ggH_ps_htt125",
-    "ggH_mm_htt125"
+    "ggH_mm_htt125",
+    "ggH_flat_htt125"
   };
 
   vector<TString> samplesToSubtract = {
@@ -456,9 +467,11 @@ class DataCards {
     {"ggH_sm_htt125","ggH125"},
     {"ggH_ps_htt125","ggH125"},
     {"ggH_mm_htt125","ggH125"},
+    {"ggH_flat_htt125","ggH125"},
     {"qqH_sm_htt125","qqH125"},
     {"qqH_ps_htt125","qqH125"},
-    {"qqH_mm_htt125","qqH125"}
+    {"qqH_mm_htt125","qqH125"},
+    {"qqH_flat_htt125","qqH125"}
   };
 
   map<TString, TFile*> mapSampleFile;

@@ -24,6 +24,7 @@ int main(int argc, char * argv[]) {
   const string era = cfg.get<string>("Era");
   TString Era(era);
   const bool embedded = cfg.get<bool>("IsEmbedded");
+  const bool fakeFactor = cfg.get<bool>("FFmethod");
 
   const int nbinsMuPi = cfg.get<int>("NbinsPhiCPmupi");
   const int nbinsMuRho = cfg.get<int>("NbinsPhiCPmurho");
@@ -34,7 +35,9 @@ int main(int argc, char * argv[]) {
   const vector<double> DNNbinsFakes = cfg.get< vector<double> >("DNNbinsFakes");
   const bool splitBkg= cfg.get<bool>("SplitBkg");
 
+  const bool useTH1forHiggs = cfg.get<bool>("UseTH1ForHiggs");
   const bool useTH2forZtt = cfg.get<bool>("UseTH2ForZtt");
+  const bool useTH2forFakes = cfg.get<bool>("UseTH2ForFakes");
   const bool mvaDM = cfg.get<bool>("mvaDM");
   const bool applyIPcut = cfg.get<bool>("ApplyIPcut");
   const bool applyIPcutOnBkg = cfg.get<bool>("ApplyIPcutOnBkg");
@@ -75,15 +78,24 @@ int main(int argc, char * argv[]) {
   vector<double> xDNNSig = DNNbins;
   vector<double> xDNNZtt = DNNbinsZtt;
   vector<double> xDNNFakes = DNNbinsFakes;
+  bool SplitBkg = splitBkg;
+  bool UseTH1forHiggs = useTH1forHiggs;
+  bool UseTH2forZtt = useTH2forZtt;
+  bool UseTH2forFakes = useTH2forFakes;
+  if(argc==3&&classIndex!=0){
+    SplitBkg=false;
+    UseTH2forZtt=false;
+    UseTH2forFakes=false;
+  }else if(argc==4&&classIndex==0) UseTH1forHiggs=false;
   
-
-  if(!splitBkg&&argc==4&&classIndex!=0){
+  if(!SplitBkg&&argc==4){
     cout << "When bkg are not splitted by decay channel, the code cannot run for separate decay channels" << endl << "Please run the code for Signal category as" <<endl << "CreateCards config classIndex decay-channel" << endl << "and Bkg categories as" << endl << "CreateCards config classIndex" <<endl;
     exit(EXIT_FAILURE);
   }
 
   DataCards * cards = new DataCards(Era,
 				    embedded,
+				    fakeFactor,
 				    VariableCP,
 				    binsperchannel,
 				    xmin,
@@ -91,8 +103,10 @@ int main(int argc, char * argv[]) {
 				    xDNNSig,
 				    xDNNZtt,
 				    xDNNFakes,
-				    splitBkg,
-				    useTH2forZtt,
+				    SplitBkg,
+				    UseTH1forHiggs,
+				    UseTH2forZtt,
+				    UseTH2forFakes,
 				    mvaDM,
 				    applyIPcut,
 				    applyIPcutOnBkg,
