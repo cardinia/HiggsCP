@@ -17,6 +17,7 @@ map<TString, double> xsecs = {
   {"DY2JetsToLL_M-50"      , 304.4*1.079}, // NNLO (20b)
   {"DY3JetsToLL_M-50"      , 111.5*1.079}, // NNLO (20c)
   {"DY4JetsToLL_M-50"      , 44.03*1.079}, // NNLO (20d)
+  {"TT"               , 831.76}, // NNLO (21 inclusive)
   {"TTTo2L2Nu"        , 88.29},  // NNLO (21)
   {"TTToHadronic"     , 377.96}, // NNLO (22)
   {"TTToSemiLeptonic" , 365.35}, // NNLO (23)
@@ -39,6 +40,7 @@ map<TString, double> n_events_per_sample = {
   {"ZZ" , 1949768},
   {"WW" , 7791498},
   {"WZ" , 3928630},
+  {"TT"               , 76915549},
   {"TTTo2L2Nu"        , 5.05414e+09},
   {"TTToHadronic"     , 4.09177e+10},
   {"TTToSemiLeptonic" , 4.54904e+10},
