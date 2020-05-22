@@ -2,7 +2,7 @@
 #include "CMS_lumi.C"
 #include "settings.h"
 void Plot_etau( bool embedded = true,
-		TString era = "2018") {
+		TString era = "2016") {
 
   // ****************************************
   // ****** Variable to plot ****************
@@ -32,6 +32,8 @@ void Plot_etau( bool embedded = true,
     dir = "/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/2016";
 
   double qcd_scale = 1.0;
+  if (era=="2016")
+    qcd_scale = 1.3;
 
   lumi_13TeV = "2018, 59.7 fb^{-1}";
   if (era=="2017")
@@ -48,14 +50,13 @@ void Plot_etau( bool embedded = true,
   TString Weight("puweight*mcweight*effweight*");
   TString WeightEmb("mcweight*embweight*effweight*");
 
-  TString Cuts("((trg_singleelectron>0.5&&pt_1>33)||(trg_etaucross&&pt_1>25&&pt_2>35&&abs(eta_1)<2.1&&abs(eta_2)<2.1))&&iso_1<0.1&&pt_1>25&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.5&&abs(eta_2)<2.3");
+  TString Cuts("((trg_singleelectron>0.5&&pt_1>33)||(trg_etaucross&&pt_1>25&&pt_2>35&&abs(eta_1)<2.1&&abs(eta_2)<2.1))&&iso_1<0.1&&pt_1>25&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.1&&abs(eta_2)<2.3");
 
   if (era=="2017")
-    Cuts = "((trg_singleelectron>0.5&&pt_1>28)||(trg_etaucross&&pt_1>25&&pt_2>35&&abs(eta_1)<2.1&&abs(eta_2)<2.1))&&iso_1<0.1&&pt_1>25&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.5&&abs(eta_2)<2.3";
+    Cuts = "((trg_singleelectron>0.5&&pt_1>28)||(trg_etaucross&&pt_1>25&&pt_2>35&&abs(eta_1)<2.1&&abs(eta_2)<2.1))&&iso_1<0.1&&pt_1>25&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.1&&abs(eta_2)<2.3";
 
   if (era=="2016")
-    Cuts = "(trg_singleelectron>0.5&&pt_1>26)&&iso_1<0.1&&pt_1>26&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.5&&abs(eta_2)<2.3";
-
+    Cuts = "(trg_singleelectron>0.5&&pt_1>26)&&iso_1<0.1&&pt_1>26&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.1&&abs(eta_2)<2.3&&mcweight<1e+3";
 
   TString CutsOS = Cuts + TString("&&os>0.5");
   TString CutsSS = Cuts + TString("&&os<0.5");
@@ -65,7 +66,6 @@ void Plot_etau( bool embedded = true,
   TString CutsZLL_SS  = CutsSS + TString("&&!(gen_match_1==3&&gen_match_2==5)");
 
   SetStyle();
-
 
   double lumi = 41900;
   if (era=="2018")
