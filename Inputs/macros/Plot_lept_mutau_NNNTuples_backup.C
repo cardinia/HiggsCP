@@ -31,18 +31,17 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
 			       TString Cut="(pt_1>21&&os>0.5&&puppimt_1<50&&byVVVLooseDeepTau2017v2p1VSjet_2>0.5&&abs(eta_1)<2.1&&((trg_singlemuon&&pt_1>25)))*",
 			       TString ytitle = "Events",
 			       int categoryIndex=-1,
-			       TString directory = "/nfs/dust/cms/user/rasp/storage/cardinia/2018/OutputDNN/March7/predictions_2018/",
-			       TString outputDir = "./figures_March10/",
+			       TString directory = "/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/HiggsCP/Inputs/test/NTuples_mt_2018_v2/",
+			       TString outputDir = "./figures_March5/",
 			       int era=2018,
 			       bool FFmethod = true,
 			       bool useEmbedded = true,
 			       bool LargeScale = false,  
 			       bool logY = false,
 			       bool showSignal = true,
-			       bool compareCP = true,
+			       bool compareCP = false,
 			       int scaleSignal = 100.,
 			       bool blindData = true,
-			       TString suffix="",
 			       bool FORCE = false
 			       )
 {
@@ -60,18 +59,14 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
     yVar=array->At(0)->GetName();
     xVar=array->At(1)->GetName();
     TString range=to_string(xmax-xmin).c_str();
-    if(categoryIndex==0){
-      nBins=nBins*6;
-      xmax+=5*(xmax-xmin);
-      Variable=xVar+"*("+yVar+"<0.45)+(("+range+"+"+xVar+")*("+yVar+">=0.45&&"+yVar+"<0.6))+((2*"+range+"+"+xVar+")*("+yVar+">=0.6&&"+yVar+"<0.7))+((3*"+range+"+"+xVar+")*("+yVar+">=0.7&&"+yVar+"<0.8))+((4*"+range+"+"+xVar+")*("+yVar+">=0.8&&"+yVar+"<0.9))+((5*"+range+"+"+xVar+")*("+yVar+">=0.9))";
-    }else if (categoryIndex==1){
-      nBins=nBins*7;
-      xmax+=6*(xmax-xmin);
-      Variable=xVar+"*("+yVar+"<0.45)+(("+range+"+"+xVar+")*("+yVar+">=0.45&&"+yVar+"<0.55))+((2*"+range+"+"+xVar+")*("+yVar+">=0.55&&"+yVar+"<0.6))+((3*"+range+"+"+xVar+")*("+yVar+">=0.6&&"+yVar+"<0.65))+((4*"+range+"+"+xVar+")*("+yVar+">=0.65&&"+yVar+"<0.7))+((5*"+range+"+"+xVar+")*("+yVar+">=0.7&&"+yVar+"<0.75))+((6*"+range+"+"+xVar+")*("+yVar+">=0.75))";
+    if(categoryIndex==1){
+      nBins=nBins*5;
+      xmax+=4*(xmax-xmin);
+      Variable=xVar+"*("+yVar+"<0.3)+(("+range+"+"+xVar+")*("+yVar+">=0.3&&"+yVar+"<0.5))+((2*"+range+"+"+xVar+")*("+yVar+">=0.5&&"+yVar+"<0.65))+((3*"+range+"+"+xVar+")*("+yVar+">=0.65&&"+yVar+"<0.85))+((4*"+range+"+"+xVar+")*("+yVar+">=0.85))";
     }else{
-      nBins=nBins*11;
-      xmax+=10*(xmax-xmin);
-      Variable=xVar+"*("+yVar+"<0.45)+(("+range+"+"+xVar+")*("+yVar+">=0.45&&"+yVar+"<0.55))+((2*"+range+"+"+xVar+")*("+yVar+">=0.55&&"+yVar+"<0.6))+((3*"+range+"+"+xVar+")*("+yVar+">=0.6&&"+yVar+"<0.65))+((4*"+range+"+"+xVar+")*("+yVar+">=0.65&&"+yVar+"<0.7))+((5*"+range+"+"+xVar+")*("+yVar+">=0.7&&"+yVar+"<0.75))+((6*"+range+"+"+xVar+")*("+yVar+">=0.75&&"+yVar+"<0.8))+((7*"+range+"+"+xVar+")*("+yVar+">=0.8&&"+yVar+"<0.85))+((8*"+range+"+"+xVar+")*("+yVar+">=0.85&&"+yVar+"<0.9))+((9*"+range+"+"+xVar+")*("+yVar+">=0.9&&"+yVar+"<0.95))+((10*"+range+"+"+xVar+")*("+yVar+">=0.95))";
+      nBins=nBins*3;
+      xmax+=2*(xmax-xmin);
+      Variable=xVar+"*("+yVar+"<0.3)+(("+range+"+"+xVar+")*("+yVar+">=0.3&&"+yVar+"<0.5))+((2*"+range+"+"+xVar+")*("+yVar+">=0.5))";//&&"+yVar+"<0.6))+((3*"+range+"+"+xVar+")*("+yVar+">=0.6))";
     }
     VariableName="Unrolled_"+xVar;
     var2D=true;
@@ -84,24 +79,21 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   TString FFweight="ff_nom";
   if(DeepTau)FFweight="ff_mva";
   TString IsoCut=Cut+"("+TauIso+">0.5)*";
-  TString AntiIsoCut=Cut+"("+TauIso+"<0.5&&byVVVLooseDeepTau2017v2p1VSjet_2>0.5)*";
+  TString AntiIsoCut=Cut+"("+TauIso+"<0.5)*";
   // directory="$CMSSW_BASE/src/"+directory;
   TH1::SetDefaultSumw2();
   SetStyle();
 
   // Simple check to prevent accidental unblinding in SR, to unblind set FORCE to True
-  if(!FORCE&&(categoryIndex==0)){
+  if(!FORCE&&(categoryIndex==0||categoryIndex==1)){
     blindData=true;
   }
 
   // weights
-  TString topweight("1.0*");
+  TString topweight("*1");
+  TString Wjets_weight("*0.96");
   TString qcdweight("1.06*");
-  TString zptmassweight="1.0*";                  //TO DO: CHANGE WEIGHTs
-	TString Wjets_weight("1.0*");
-	if (!FFmethod)
-		Wjets_weight = "0.96*";
-
+  TString zptmassweight="*1.0";                  //TO DO: CHANGE WEIGHTs
  
   vector<TString> sampleNames;
   if(directory.Contains("Out")){
@@ -111,12 +103,12 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
       "mt-NOMINAL_ntuple_DY", // (2)Drell-Yan Z->LL
       "mt-NOMINAL_ntuple_W",// (3)WJets
       "mt-NOMINAL_ntuple_TT",//(4)TTbar leptonic, hadronic, + semileptonic
-      //"mt-NOMINAL_ntuple_ST", // (5) SingleTop tW tbar, SingleTop tW t, SingleTop t antitop, SingleTop t top
-      "mt-NOMINAL_ntuple_VV",// (5) WW, WZ, ZZ, SingleTop tW tbar, SingleTop tW t, SingleTop t antitop, SingleTop t top
-      "mt-NOMINAL_ntuple_ggH125", // (6) Scalar ggH
-      "mt-NOMINAL_ntuple_qqH125", // (7) Scalar VBF H
-      "mt-NOMINAL_ntuple_ggH125", // (8) Pseudoscalar ggH
-      "mt-NOMINAL_ntuple_qqH125" // (9) Pseudoscalar VBF
+      "mt-NOMINAL_ntuple_ST", // (5) SingleTop tW tbar, SingleTop tW t, SingleTop t antitop, SingleTop t top
+      "mt-NOMINAL_ntuple_VV",// (6) WW, WZ, ZZ
+      "mt-NOMINAL_ntuple_ggH125", // (7) Scalar ggH
+      "mt-NOMINAL_ntuple_qqH125", // (8) Scalar VBF H
+      "mt-NOMINAL_ntuple_ggH125", // (9) Pseudoscalar ggH
+      "mt-NOMINAL_ntuple_qqH125" // (10) Pseudoscalar VBF
     };
   }else{
     sampleNames = {
@@ -125,26 +117,22 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
       "mt-NOMINAL_ntuple_DYJets", // (2)Drell-Yan Z->LL
       "mt-NOMINAL_ntuple_WJets",// (3)WJets
       "mt-NOMINAL_ntuple_TTbar",//(4)TTbar leptonic, hadronic, + semileptonic
-      //"mt-NOMINAL_ntuple_SingleTop", // (5) SingleTop tW tbar, SingleTop tW t, SingleTop t antitop, SingleTop t top
-      "mt-NOMINAL_ntuple_Diboson",// (5) WW, WZ, ZZ, ST (VV+ST implemented in CreateDNN as of 18 March 2020)
-      "mt-NOMINAL_ntuple_GluGluHToUncorrTauTau", // (6) Scalar ggH
-      "mt-NOMINAL_ntuple_VBFHToUncorrTauTau", // (7) Scalar VBF H
-      "mt-NOMINAL_ntuple_GluGluHToUncorrTauTau", // (8) Pseudoscalar 
-      "mt-NOMINAL_ntuple_VBFHToUncorrTauTau" // (9) Scalar VBF H
+      "mt-NOMINAL_ntuple_SingleTop", // (5) SingleTop tW tbar, SingleTop tW t, SingleTop t antitop, SingleTop t top
+      "mt-NOMINAL_ntuple_Diboson",// (6) WW, WZ, ZZ
+      "mt-NOMINAL_ntuple_GluGluHToUncorrTauTau", // (7) Scalar ggH
+      "mt-NOMINAL_ntuple_VBFHToUncorrTauTau", // (8) Scalar VBF H
+      "mt-NOMINAL_ntuple_GluGluHToUncorrTauTau", // (9) Pseudoscalar 
+      "mt-NOMINAL_ntuple_VBFHToUncorrTauTau" // (10) Scalar VBF H
     }; 
   }
   if(useEmbedded&&!directory.Contains("Out"))sampleNames[1]="mt-NOMINAL_ntuple_EmbeddedMuTau";
   else if(useEmbedded&&directory.Contains("Out"))sampleNames[1]="mt-NOMINAL_ntuple_EMB";
-  const unsigned int nSamples = sampleNames.size(); //DY is used twice, for Zll and Ztt
-  if(!directory.Contains("Out")){ 
-		for (size_t i=0; i<nSamples; ++i) {
-	      sampleNames[i]+="_";
-	      sampleNames[i]+=era;
-	  }
-  }
+  const int nSamples = sampleNames.size(); //DY is used twice, for Zll and Ztt
   cout<<"this are the samples"<<endl;
-	for (size_t i = 0; i < nSamples; i++)
-		cout << endl << sampleNames[i] << ":" << endl;
+  if(!directory.Contains("Out")) for (int i=0; i<nSamples; ++i) {
+      sampleNames[i]+="_";
+      sampleNames[i]+=era;
+      cout << endl << sampleNames[i] << ":" << endl;}
 
   // *******************************
   // ***** Selection Cuts    *******
@@ -155,98 +143,87 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   TString cutsaIso[nSamples];
 
   // MC specific cuts to select certain type of particle
-  TString isGenMuTau="(gen_match_2==5&&gen_match_1==4)*";
-  TString isZLL="!(gen_match_2==5&&gen_match_1==4)*";
-  TString isNotGenMuTau="!(gen_match_2==5&&gen_match_1==4)*";
-  TString isNotGenJet="(gen_match_2!=6)*";
-	if (!useEmbedded) isNotGenMuTau = "*";
-	if (!FFmethod) isNotGenJet = "*";
+  TString isZTT="*(gen_match_2==5&&gen_match_1==4)";
+  TString isZLL="*!(gen_match_2==5&&gen_match_1==4)";
 
   // Selection cuts applied to all samples
-  for (size_t i=1; i<nSamples; ++i){
-    cuts[i]   = IsoCut+Weight+"(os>0.5)*";
-    cutsSS[i] = IsoCut+Weight+"(os<0.5)*"+qcdweight;
-    cutsaIso[i] = AntiIsoCut+Weight+"(os>0.5)*"+FFweight + "*";
+  for (int i=1; i<nSamples; ++i){
+    cuts[i]   = IsoCut+Weight+"(os>0.5)";
+    cutsSS[i] = IsoCut+Weight+qcdweight+"(os<0.5)";
+    cutsaIso[i] = AntiIsoCut+Weight+"(os>0.5)*"+FFweight+"*(gen_match_2!=6)";
   }
 
   //specific selection weights for data, DY and top
   cuts[0] = IsoCut+"(os>0.5)"; //DATA
-  if(useEmbedded)
-    cuts[1] += "(weight<1000)*" + isGenMuTau + isNotGenJet; //Embedded, i.e. data
-  else
-    cuts[1] += zptmassweight + isGenMuTau + isNotGenJet;
-  
-  cuts[2] += zptmassweight + isZLL + isNotGenJet;
-  cuts[3] += Wjets_weight + isNotGenMuTau + isNotGenJet;
-  cuts[4] += topweight + isNotGenMuTau + isNotGenJet; 
-  cuts[5] += isNotGenMuTau + isNotGenJet; 
-  cuts[6] += "*"+TString::Itoa(scaleSignal,10);
+  if(useEmbedded){
+    cuts[1] = IsoCut+"(os>0.5)*weight*(weight<1000)"; //Embedded, i.e. data
+    cuts[2] += zptmassweight;
+
+  }else{
+    cuts[1] += zptmassweight+isZTT;
+    cuts[2] += zptmassweight+isZLL;
+  }
+  cuts[3] += Wjets_weight;
+  cuts[4] += topweight; 
   cuts[7] += "*"+TString::Itoa(scaleSignal,10);
   cuts[8] += "*"+TString::Itoa(scaleSignal,10);
   cuts[9] += "*"+TString::Itoa(scaleSignal,10);
+  cuts[10]+= "*"+TString::Itoa(scaleSignal,10);
   if(compareCP){
-    cuts[6] +="*gen_sm_htt125";
-    cuts[7] +="*gen_sm_htt125";
-    cuts[8] +="*gen_ps_htt125";
-    cuts[9] +="*gen_ps_htt125";
+    cuts[7] +="*gen_sm_htt125*(gen_sm_htt125>=0)";
+    cuts[8] +="*gen_sm_htt125*(gen_sm_htt125>=0)";
+    cuts[9] +="*gen_ps_htt125*(gen_ps_htt125>=0)";
+    cuts[10] +="*gen_ps_htt125*(gen_ps_htt125>=0)";
   }    
+  if(FFmethod) for(int i=2; i<7; ++i) cuts[i] += "*(gen_match_2!=6)";
+  if(useEmbedded) for(int i=2; i<7; ++i) cuts[i] += "*!(gen_match_2==5 &&gen_match_1==4)";
+
    
-  cutsSS[0] = IsoCut+"(os<0.5)*"+qcdweight;
-  if(useEmbedded)
-    cutsSS[1] += "(weight<1000)*" + isGenMuTau + isNotGenJet;
-  else
-    cutsSS[1] += zptmassweight + isGenMuTau + isNotGenJet;
-  
-  cutsSS[2] += zptmassweight + isZLL + isNotGenJet;
-  cutsSS[3] += Wjets_weight + isNotGenMuTau + isNotGenJet; 
-  cutsSS[4] += topweight + isNotGenMuTau + isNotGenJet; 
-  cutsSS[5] += isNotGenMuTau + isNotGenJet; 
-  cutsSS[6] += "*"+TString::Itoa(scaleSignal,10);
+  cutsSS[0] = IsoCut+qcdweight+"(os<0.5)";
+  if(useEmbedded){
+    cutsSS[1] = IsoCut+qcdweight+"(os<0.5)*weight*(weight<1000)";
+    cutsSS[2] += zptmassweight;
+  }else{
+    cutsSS[1] += zptmassweight+isZTT;
+    cutsSS[2] += zptmassweight+isZLL;
+  }
+  cutsSS[2] += zptmassweight+isZLL;
+  cutsSS[3] += Wjets_weight; 
+  cutsSS[4] += topweight; 
   cutsSS[7] += "*"+TString::Itoa(scaleSignal,10);
   cutsSS[8] += "*"+TString::Itoa(scaleSignal,10);
   cutsSS[9] += "*"+TString::Itoa(scaleSignal,10);
-  if(compareCP){
-    cutsSS[6] +="*gen_sm_htt125";
-    cutsSS[7] +="*gen_sm_htt125";
-    cutsSS[8] +="*gen_ps_htt125";
-    cutsSS[9] +="*gen_ps_htt125";
+  cutsSS[10]+= "*"+TString::Itoa(scaleSignal,10);
+ if(compareCP){
+    cutsSS[7] +="*gen_sm_htt125*(gen_sm_htt125>=0)";
+    cutsSS[8] +="*gen_sm_htt125*(gen_sm_htt125>=0)";
+    cutsSS[9] +="*gen_ps_htt125*(gen_ps_htt125>=0)";
+    cutsSS[10] +="*gen_ps_htt125*(gen_ps_htt125>=0)";
   }  
-  
-  cutsaIso[0] = AntiIsoCut+"(os>0.5)*"+FFweight + "*";
-  if(useEmbedded)
-    cutsaIso[1] += "(weight<1000)*" + isGenMuTau + isNotGenJet; //Embedded, i.e. data
-  else
-    cutsaIso[1] += zptmassweight + isGenMuTau + isNotGenJet;
-  
-  cutsaIso[2] += zptmassweight + isZLL + isNotGenJet;
-  cutsaIso[3] += Wjets_weight + isNotGenMuTau + isNotGenJet;
-  cutsaIso[4] += topweight + isNotGenMuTau + isNotGenJet; 
-  cutsaIso[5] += isNotGenMuTau + isNotGenJet; 
-  cutsaIso[6] += "*"+TString::Itoa(scaleSignal,10);
+  if(useEmbedded) for(int i=2; i<7; ++i)cutsSS[i] += "*!(gen_match_2==5 &&gen_match_1==4)";
+
+  cutsaIso[0] = AntiIsoCut+"(os>0.5)*"+FFweight;
+  if(useEmbedded){
+    cutsaIso[1] = AntiIsoCut+"(os>0.5)*weight*(weight<1000)*"+FFweight;
+    cutsaIso[2] += zptmassweight;
+ }else{
+    cutsaIso[1] += zptmassweight+isZTT;
+    cutsaIso[2] += zptmassweight+isZLL;
+  }
+  cutsaIso[2] += zptmassweight+isZLL;
+  cutsaIso[3] += Wjets_weight; 
+  cutsaIso[4] += topweight; 
   cutsaIso[7] += "*"+TString::Itoa(scaleSignal,10);
   cutsaIso[8] += "*"+TString::Itoa(scaleSignal,10);
   cutsaIso[9] += "*"+TString::Itoa(scaleSignal,10);
+  cutsaIso[10]+= "*"+TString::Itoa(scaleSignal,10);
   if(compareCP){
-    cutsaIso[6] +="*gen_sm_htt125";
-    cutsaIso[7] +="*gen_sm_htt125";
-    cutsaIso[8] +="*gen_ps_htt125";
-    cutsaIso[9] +="*gen_ps_htt125";
+    cutsaIso[7] +="*gen_sm_htt125*(gen_sm_htt125>=0&&gen_sm_htt125<7)";
+    cutsaIso[8] +="*gen_sm_htt125*(gen_sm_htt125>=0)";
+    cutsaIso[9] +="*gen_ps_htt125*(gen_ps_htt125>=0)";
+    cutsaIso[10] +="*gen_ps_htt125*(gen_ps_htt125>=0)";
   }  
-
-  for (size_t i = 0; i < nSamples; i++) 
-    cuts[i] = cuts[i].Strip(TString::kTrailing, '*');
-  for (size_t i = 0; i < nSamples; i++) 
-    cutsSS[i] = cutsSS[i].Strip(TString::kTrailing, '*');
-  for (size_t i = 0; i < nSamples; i++) 
-    cutsaIso[i] = cutsaIso[i].Strip(TString::kTrailing, '*');
-
-  for (size_t i = 0; i < nSamples; i++) 
-    cuts[i] = cuts[i].ReplaceAll("**","*");
-  for (size_t i = 0; i < nSamples; i++) 
-    cutsSS[i] = cutsSS[i].ReplaceAll("**","*");
-  for (size_t i = 0; i < nSamples; i++) 
-    cutsaIso[i] = cutsaIso[i].ReplaceAll("**","*"); 
-
+  if(useEmbedded) for(int i=2; i<7; ++i)cutsaIso[i] += "*!(gen_match_2==5 && gen_match_1==4)";
   // *******************************
   // ***** Filling Histograms ******
   // *******************************
@@ -257,7 +234,7 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   TCanvas * dummyCanv = new TCanvas("dummy","",500,500);
 
   // Draw main selection for all histograms in sampleNames
-  for (size_t i=0; i<nSamples; ++i) {
+  for (int i=0; i<nSamples; ++i) {
     //if(!compareCP||i>=9)continue;		
     // Reading input file
     TFile * file = new TFile( directory + sampleNames[i] + ".root");
@@ -267,20 +244,11 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
     TString histName   = sampleNames[i] + VariableName + "_os";
     TString histNameSS = sampleNames[i] + VariableName + "_ss";
     TString histNameaIso   = sampleNames[i] + VariableName + "_aIso";
-    /*
-    if(VariableName.Contains("IP_signif")){
-      Double_t binning[3] = {0.,1.5,10.};
-      hist[i]   = new TH1D(histName,"",2,binning);
-      histSS[i] = new TH1D(histNameSS,"",2,binning);
-      hist_AntiIso[i] = new TH1D(histNameaIso,"",2,binning);
-      nBins=2;
-      xmin=0;
-      xmax=10;
-      }else{*/
-      hist[i]   = new TH1D(histName,"",nBins,xmin,xmax);
-      histSS[i] = new TH1D(histNameSS,"",nBins,xmin,xmax);
-      hist_AntiIso[i] = new TH1D(histNameaIso,"",nBins,xmin,xmax);
-      //}
+		
+    hist[i]   = new TH1D(histName,"",nBins,xmin,xmax);
+    histSS[i] = new TH1D(histNameSS,"",nBins,xmin,xmax);
+    hist_AntiIso[i] = new TH1D(histNameaIso,"",nBins,xmin,xmax);
+		
     cout << "Drawing ..." << endl;
     tree->Draw(Variable+">>"+histName,cuts[i]);
     cout << cuts[i] <<endl;
@@ -298,14 +266,15 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   // ********************************************
   // ***** Adding similar backgrounds     *******
   // ********************************************
+
   // Adding up single top and VV backgrounds
-  //hist[5]->Add(hist[5],hist[6]);
+  hist[5]->Add(hist[5],hist[6]);
   
   // Adding SS backgrounds
-  for (size_t iH=2; iH<6; iH++) histSS[1]->Add(histSS[iH]);
+  for (int iH=2; iH<6; iH++) histSS[1]->Add(histSS[iH]);
 
   // Adding antiIso backgrounds
-  for (size_t iH=2; iH<6; iH++) hist_AntiIso[1]->Add(hist_AntiIso[iH]);
+  for (int iH=2; iH<6; iH++) hist_AntiIso[1]->Add(hist_AntiIso[iH]);
   
   // ********************************************
   // ***** QCD background estimation      *******
@@ -344,41 +313,36 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   TH1D * W          = (TH1D*)hist[3]         -> Clone("W");
   TH1D * TT         = (TH1D*)hist[4]         -> Clone("TT"); 
   TH1D * VV         = (TH1D*)hist[5]         -> Clone("VV"); 
-  TH1D * ggH        = (TH1D*)hist[6]         -> Clone("ggH");
-  TH1D * qqH        = (TH1D*)hist[7]         -> Clone("qqH");
-  TH1D * ggHPS     = NULL;
-  TH1D * qqHPS   = NULL;
+  TH1D * ggH        = (TH1D*)hist[7]         -> Clone("ggH");
+  TH1D * qqH        = (TH1D*)hist[8]         -> Clone("qqH");
+  TH1D * CPoddH     = NULL;
+  TH1D * CPoddqqH   = NULL;
   if(compareCP){
-    ggHPS     = (TH1D*)hist[8]         -> Clone("ggHPS");
-    qqHPS   = (TH1D*)hist[9]        -> Clone("qqHPS");
+    CPoddH     = (TH1D*)hist[9]         -> Clone("CPoddH");
+    CPoddqqH   = (TH1D*)hist[10]        -> Clone("CPoddqqH");
   }
   TH1D * Fakes      = (TH1D*)hist_AntiIso[0] -> Clone("Fakes");
   
-  for(size_t i=0;i<nSamples;i++){
+  for(int i=0;i<nSamples;i++){
     //if(!compareCP&&i>=9)continue;
-    cout << setw(nSamples) << sampleNames[i] << " : Entries = " << hist[i]->GetEntries() << " : Integral = " << hist[i]->Integral(1,nBins) << endl;
+    cout << setw(nSamples) << sampleNames[i] << " : Entries = " << hist[i]->GetEntries() << " : Integral = " << hist[i]->Integral(0,nBins+1) << endl;
   }
 
   cout << endl;
-  cout << "QCD : Sum of weights = " << QCD->GetSumOfWeights() << " : Integral = " << QCD->Integral(0,nBins+1) << endl;
-  cout << "VV  : Sum of weights = " << VV->GetSumOfWeights()  << " : Integral = " << VV->Integral(0,nBins+1)  << endl;
-  cout << "W   : Sum of weights = " << W->GetSumOfWeights()   << " : Integral = " << W->Integral(0,nBins+1)   << endl;
-  cout << "TT  : Sum of weights = " << TT->GetSumOfWeights()  << " : Integral = " << TT->Integral(0,nBins+1)  << endl;
-  cout << "ZLL : Sum of weights = " << ZLL->GetSumOfWeights() << " : Integral = " << ZLL->Integral(0,nBins+1) << endl;
-  cout << "ZTT : Sum of weights = " << ZTT->GetSumOfWeights() << " : Integral = " << ZTT->Integral(0,nBins+1) << endl;
-  cout << "Fakes : Sum of weights = " << Fakes->GetSumOfWeights() << " : Integral = " << Fakes->Integral(0,nBins+1) << endl;
-
-  cout << "Data +overflow : Sum of weights = " << histData->GetSumOfWeights() << " : Integral = " << histData->Integral(1,nBins+1) << endl;
-  cout << "Data all : Sum of weights = " << histData->GetSumOfWeights() << " : Integral = " << histData->Integral(0,nBins+1) << endl;
+  cout << "QCD : Sum of weights = " << QCD->GetSumOfWeights() << " : Integral = " << QCD->Integral(1,nBins+1) << endl;
+  cout << "VV  : Sum of weights = " << VV->GetSumOfWeights()  << " : Integral = " << VV->Integral(1,nBins+1)  << endl;
+  cout << "W   : Sum of weights = " << W->GetSumOfWeights()   << " : Integral = " << W->Integral(1,nBins+1)   << endl;
+  cout << "TT  : Sum of weights = " << TT->GetSumOfWeights()  << " : Integral = " << TT->Integral(1,nBins+1)  << endl;
+  cout << "ZLL : Sum of weights = " << ZLL->GetSumOfWeights() << " : Integral = " << ZLL->Integral(1,nBins+1) << endl;
+  cout << "ZTT : Sum of weights = " << ZTT->GetSumOfWeights() << " : Integral = " << ZTT->Integral(1,nBins+1) << endl;
+  cout << "Fakes : Sum of weights = " << Fakes->GetSumOfWeights() << " : Integral = " << Fakes->Integral(1,nBins+1) << endl;
 
 
   if(FFmethod){
     cout << endl;
   cout << "************************" << endl;
-  cout << "True Taus = " << VV->Integral(1,nBins)+W->Integral(1,nBins)+TT->Integral(1,nBins)+ZLL->Integral(1,nBins)+ZTT->Integral(1,nBins) << endl;
-  cout << "True Taus + Fakes = " << VV->Integral(1,nBins)+TT->Integral(1,nBins)+ZLL->Integral(1,nBins)+ZTT->Integral(1,nBins)+Fakes->Integral(1,nBins) << endl;
-  cout << "Total+overflow = " << VV->Integral(1,nBins+1)+TT->Integral(1,nBins+1)+ZLL->Integral(1,nBins+1)+ZTT->Integral(1,nBins+1)+Fakes->Integral(1,nBins+1) << endl;
-  cout << "Total+underflow+overflow = " << VV->Integral(0,nBins+1)+TT->Integral(0,nBins+1)+ZLL->Integral(0,nBins+1)+ZTT->Integral(0,nBins+1)+Fakes->Integral(0,nBins+1) << endl;
+  cout << "True Taus = " << VV->Integral(1,nBins+1)+W->Integral(1,nBins+1)+TT->Integral(1,nBins+1)+ZLL->Integral(1,nBins+1)+ZTT->Integral(1,nBins+1) << endl;
+  cout << "True Taus + Fakes = " << VV->Integral(1,nBins+1)+W->Integral(1,nBins+1)+TT->Integral(1,nBins+1)+ZLL->Integral(1,nBins+1)+ZTT->Integral(1,nBins+1)+Fakes->Integral(1,nBins+1) << endl;
   cout << "************************" << endl;
   cout << endl;
 
@@ -446,8 +410,7 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
 
   pads[1] -> cd();
   h[1]    -> Draw();
-  if(categoryIndex==0)  SetupTwoPadSplitAsRatio(pads, "(s+b)/b", true, 0.5, 1.8);
-  else  SetupTwoPadSplitAsRatio(pads, "Obs/Exp", true, 0.65, 1.35);
+  SetupTwoPadSplitAsRatio(pads, "Obs/Exp", true, 0.65, 1.35);
   StandardAxes(h[1]->GetXaxis(), h[0]->GetYaxis(),xtitle_ ,units);
   h[1] -> GetYaxis()->SetNdivisions(4);
   h[1] -> GetXaxis()->SetTitleOffset(0.95);
@@ -459,13 +422,13 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   if(LargeScale)h[0] -> GetYaxis()->SetTitleOffset(1);
   pads[1] -> SetGrid(0,1);
   //it complains if the minimum is set to 0 and you try to set log y scale
-  if(logY) h[0] -> SetMinimum(0.05);
+  if(logY) h[0] -> SetMinimum(1);
   pads[0] -> cd();
 
   // Setup legend
   TLegend *legend;
   if(categoryIndex==5)legend = PositionedLegend(0.35, 0.20, 2, 0.03);
-  else legend = PositionedLegend(0.35, 0.25, 1, 0.03);
+  else legend = PositionedLegend(0.35, 0.20, 3, 0.03);
   legend -> SetTextFont(42);
   legend->SetNColumns(2);
   histData -> SetMarkerColor(1);
@@ -492,8 +455,6 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   InitHist(W,TColor::GetColor("#4496C8"));
   InitHist(Fakes,TColor::GetColor(192,232,100));
 
-  TH1D *EWK = (TH1D*) VV -> Clone("EWK");
-  if(!FFmethod) EWK->Add(W);
   legend -> AddEntry(histData, "Observed", "ple");
   if(useEmbedded) legend -> AddEntry(ZTT,"Embedded","f");
   else legend -> AddEntry(ZTT,"Z#rightarrow #tau#tau","f");
@@ -503,18 +464,18 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   else{
   legend -> AddEntry(QCD,"QCD","f");
   
-  //legend -> AddEntry(W,"W+jets","f");
+  legend -> AddEntry(W,"W+jets","f");
   }
-  legend -> AddEntry(EWK,"EWK","f");
+  legend -> AddEntry(VV,"EWK","f");
   
   // Add all bkg contributions to one stack plot
   THStack *stack = new THStack("Background","");
   if(FFmethod)stack->Add(Fakes);
   else{
     stack -> Add(QCD);
-    //stack -> Add(W);
+    stack -> Add(W);
   }
-  stack -> Add(EWK);
+  stack -> Add(VV);
   stack -> Add(ZLL);
   stack -> Add(TT);
   stack -> Add(ZTT);
@@ -523,22 +484,22 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   canv1->Update();
 
   InitSignal(ggH ,2);
-  InitSignal(qqH ,4);
+  InitSignal(qqH ,3);
   if(compareCP){
-    InitSignal(ggHPS,3); 
-    InitSignal(qqHPS,5); 
+    InitSignal(CPoddH,4); 
+    InitSignal(CPoddqqH,5); 
   }
   if (showSignal){
     if(compareCP){
-      legend->AddEntry(ggHPS,"PS ggH H(125) #times "+TString::Itoa(scaleSignal,10),"f");
-      ggHPS->Draw("hist same");
       legend->AddEntry(ggH,"SM ggH H(125) #times "+TString::Itoa(scaleSignal,10),"f");
       ggH->Draw("hist same");
-      if(nSamples==10){
-	legend->AddEntry(qqHPS,"PS qqH H(125) #times "+TString::Itoa(scaleSignal,10),"f");
-	qqHPS->Draw("hist same");
+      legend->AddEntry(CPoddH,"PS ggH H(125) #times "+TString::Itoa(scaleSignal,10),"f");
+      CPoddH->Draw("hist same");
+      if(nSamples==11){
 	legend->AddEntry(qqH,"SM qqH H(125) #times "+TString::Itoa(scaleSignal,10),"f");
 	qqH->Draw("hist same");
+	legend->AddEntry(CPoddqqH,"PS qqH H(125) #times "+TString::Itoa(scaleSignal,10),"f");
+	CPoddqqH->Draw("hist same");
       
       }
     }else{
@@ -603,13 +564,12 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
     Fakes->SetBinError(iB,0);
     QCD->SetBinError(iB,0);
     VV->SetBinError(iB,0);
-    EWK->SetBinError(iB,0);
     TT->SetBinError(iB,0);
     W->SetBinError(iB,0);
     ZLL->SetBinError(iB,0);
     ZTT->SetBinError(iB,0);
 
-    if(compareCP)ggHPS  -> SetBinError(iB,0);
+    if(compareCP)CPoddH  -> SetBinError(iB,0);
   }
   cout << endl;
 
@@ -631,7 +591,7 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
 	  float errbkg = max(0.1,bkgdErr->GetBinError(iB)/bkgYield);
 	  float signalYield = ggH->GetBinContent(iB)/scaleSignal;
 	  float ye = signalYield / sqrt(bkgYield+pow(bkgYield*errbkg,2));
-	  if((ye>=0.2||(categoryIndex==0))&&!FORCE){
+	  if(ye>=0.2||(categoryIndex==0||categoryIndex==1)){
 	    histData->SetBinContent(iB,-1);
 	    histData->SetBinError(iB,0);
 	  }
@@ -643,8 +603,6 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   TH1D * ratioErrH = (TH1D*)bkgdErr  -> Clone("ratioErrH");
   TH1D * ratioggH = (TH1D*)ggH  -> Clone("ratioggH");
   TH1D * ratioqqH = (TH1D*)qqH  -> Clone("ratioqqH");
-  TH1D * ratioggHPS = (TH1D*)ggHPS  -> Clone("ratioggHPS");
-  TH1D * ratioqqHPS = (TH1D*)qqHPS  -> Clone("ratioqqHPS");
   ratioH -> Divide((TH1D*)stack->GetStack()->Last()); // Divide by the sum of the THStack
 
   // Set error of MC bkg correctly in ratio
@@ -655,23 +613,15 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
     float errBkg = bkgdErr -> GetBinError(iB);
     float xggH = ratioggH->GetBinContent(iB)/scaleSignal;
     float xqqH = ratioqqH->GetBinContent(iB)/scaleSignal;
-    float xggHPS = ratioggHPS->GetBinContent(iB)/scaleSignal;
-    float xqqHPS = ratioqqHPS->GetBinContent(iB)/scaleSignal;
     ratioggH->SetBinContent(iB,1.0);
     ratioggH->SetBinError(iB,0.0);
     ratioqqH->SetBinContent(iB,1.0);
     ratioqqH->SetBinError(iB,0.0);
-    ratioggHPS->SetBinContent(iB,1.0);
-    ratioggHPS->SetBinError(iB,0.0);
-    ratioqqHPS->SetBinContent(iB,1.0);
-    ratioqqHPS->SetBinError(iB,0.0);
     if (xBkg>0) {
       float relErr = errBkg/xBkg;
       ratioErrH->SetBinError(iB,relErr);
       ratioggH->SetBinContent(iB,1+(xggH/xBkg));
       ratioqqH->SetBinContent(iB,1+(xqqH/xBkg));
-      ratioggHPS->SetBinContent(iB,1+(xggHPS/xBkg));
-      ratioqqHPS->SetBinContent(iB,1+(xqqHPS/xBkg));
     }
 
   }
@@ -680,30 +630,17 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   ratioErrH->Draw("e2same");
   ratioH->Draw("pe0same");
   if(showSignal){
-    ratioggHPS->Draw("hist same");
-    ratioqqHPS->Draw("hist same");
     ratioggH->Draw("hist same");
     ratioqqH->Draw("hist same");
   }
   pads[0]->cd();
-
   if(categoryIndex==5) histData -> GetYaxis()->SetRangeUser(0.,10000.);
-  //if(VariableName.Contains("IP_sig")){
-  //float MaxVal = histData->GetBinContent(histData->FindBin(5.));
-  //cout << MaxVal <<endl;
-    //histData ->GetYaxis()->SetRangeUser(0.,100000000000.);
-    //}
+
   histData->Draw("pesame");
-  if(VariableName.Contains("IP_sig")){
-    FixTopRange(pads[0], GetPadYMax(pads[0])*1.2, 0.115);
-  }else if(categoryIndex==2){
-    FixTopRange(pads[0], GetPadYMax(pads[0])*2.1, 0.115);
-  }else{
-    FixTopRange(pads[0], GetPadYMax(pads[0]), 0.115);
-  }
+
+  FixTopRange(pads[0], GetPadYMax(pads[0]), 0.115);
   //DrawCMSLogo(pads[0], "CMS", "Preliminary", 11, 0.045, 0.035, 1.2);
 
-  
   if (era== 2016) DrawTitle(pads[0], "35.9 fb^{-1} (13 TeV, 2016)", 3);
   else if (era== 2017) DrawTitle(pads[0], "41.9 fb^{-1} (13 TeV, 2017)", 3);
   else if (era== 2018) DrawTitle(pads[0], "59.9 fb^{-1} (13 TeV, 2018)", 3);
@@ -715,6 +652,6 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   FixOverlay();
   canv1->Update();
   pads[0]->GetFrame()->Draw();
-  //canv1 -> Print( outputDir + "MuTau"+TString::Itoa(era,10)+"_" + VariableName + (categoryIndex>=0 ? ((TString)"_Cat"+TString::Itoa(categoryIndex,10)+"_") : (TString)"_") +(useEmbedded ? (TString)"Emb-" : (TString)"") + (FFmethod ? (TString)"fakes" : (TString)"MC") + ".pdf" );
-  canv1 -> Print( outputDir + "MuTau"+TString::Itoa(era,10)+"_" + VariableName + (categoryIndex>=0 ? ((TString)"_Cat"+TString::Itoa(categoryIndex,10)+"_") : (TString)"_") +(useEmbedded ? (TString)"Emb-" : (TString)"") + (FFmethod ? (TString)"fakes" : (TString)"MC") + suffix +".png" );
+  canv1 -> Print( outputDir + "MuTau"+TString::Itoa(era,10)+"_" + VariableName + (categoryIndex>=0 ? ((TString)"_Cat"+TString::Itoa(categoryIndex,10)+"_") : (TString)"_") +(useEmbedded ? (TString)"Emb-" : (TString)"") + (FFmethod ? (TString)"fakes" : (TString)"MC") + ".pdf" );
+  canv1 -> Print( outputDir + "MuTau"+TString::Itoa(era,10)+"_" + VariableName + (categoryIndex>=0 ? ((TString)"_Cat"+TString::Itoa(categoryIndex,10)+"_") : (TString)"_") +(useEmbedded ? (TString)"Emb-" : (TString)"") + (FFmethod ? (TString)"fakes" : (TString)"MC") + ".png" );
 }
