@@ -2,17 +2,17 @@
 #include "CMS_lumi.C"
 #include "settings.h"
 void Plot_etau( bool embedded = true,
-		TString era = "2016") {
+		TString era = "2018") {
 
   // ****************************************
   // ****** Variable to plot ****************
   // ****************************************
-  TString Variable = "pt_1";
-  TString xtitle = "p_{T}(e) [GeV]";
-  TString ytitle = "Events / 5 GeV";
-  int nBins  =                 40;
+  TString Variable = "jdeta";
+  TString xtitle = "#Delta#eta_{jj}";
+  TString ytitle = "Events / 0.5";
+  int nBins  =                 20;
   float xmin =                  0;
-  float xmax =                200;
+  float xmax =                 10;
   float yLower =                1;
   float scaleYUpper =          10;
 
@@ -25,9 +25,9 @@ void Plot_etau( bool embedded = true,
 
   // ******** end of settings *********
 
-  TString dir = "/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/2017";
+  TString dir = "/nfs/dust/cms/user/rasp/HiggsCP/etau/2017";
   if (era=="2018")
-    dir = "/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/2018";
+    dir = "/nfs/dust/cms/user/rasp/HiggsCP/etau/2018";
   if (era=="2016")
     dir = "/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/2016";
 
@@ -52,11 +52,26 @@ void Plot_etau( bool embedded = true,
 
   TString Cuts("((trg_singleelectron>0.5&&pt_1>33)||(trg_etaucross&&pt_1>25&&pt_2>35&&abs(eta_1)<2.1&&abs(eta_2)<2.1))&&iso_1<0.1&&pt_1>25&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.1&&abs(eta_2)<2.3");
 
-  if (era=="2017")
-    Cuts = "((trg_singleelectron>0.5&&pt_1>28)||(trg_etaucross&&pt_1>25&&pt_2>35&&abs(eta_1)<2.1&&abs(eta_2)<2.1))&&iso_1<0.1&&pt_1>25&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.1&&abs(eta_2)<2.3";
+  if (era=="2017") {
+    //    Cuts = "((trg_singleelectron>0.5&&pt_1>28)||(trg_etaucross&&pt_1>25&&pt_2>35&&abs(eta_1)<2.1&&abs(eta_2)<2.1))&&iso_1<0.1&&pt_1>25&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.1&&abs(eta_2)<2.3";
+    Cuts = "(trg_singleelectron>0.5&&pt_1>28)&&iso_1<0.1&&pt_1>25&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.1&&abs(eta_2)<2.3&&mcweight<1e+3&&trigweight_1<4.5";
+    //    Cuts = "(trg_etaucross>0.5&&pt_1>25&&pt_2>35&&abs(eta_1)<2.1&&abs(eta_2)<2.1)&&iso_1<0.1&&pt_1>25&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.1&&abs(eta_2)<2.3";
+    Weight    = "(puweight*mcweight*effweight*trigweight_1/trigweight)*";
+    WeightEmb = "(mcweight*embweight*effweight*trigweight_1/trigweight)*";
+  }
+  if (era=="2018") {
+    Weight    = "(puweight*mcweight*effweight*trigweight_1/trigweight)*";
+    WeightEmb = "(mcweight*embweight*effweight*trigweight_1/trigweight)*";
+    Cuts = "(trg_singleelectron>0.5&&pt_1>33)&&iso_1<0.1&&pt_1>25&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.1&&abs(eta_2)<2.3&&mcweight<1e+3&&trigweight_1<4.5";
+  }
 
   if (era=="2016")
     Cuts = "(trg_singleelectron>0.5&&pt_1>26)&&iso_1<0.1&&pt_1>26&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.1&&abs(eta_2)<2.3&&mcweight<1e+3";
+  
+  if (Variable=="jpt_1"||Variable=="jeta_1")
+    Cuts += "&&njets>=1";
+  if (Variable=="jpt_2"||Variable=="jeta_2"||Variable=="mjj"||Variable=="jdeta"||Variable=="ppt_jj")
+    Cuts += "&&njets>=2";
 
   TString CutsOS = Cuts + TString("&&os>0.5");
   TString CutsSS = Cuts + TString("&&os<0.5");
@@ -427,9 +442,9 @@ void Plot_etau( bool embedded = true,
     leg->AddEntry(ZTT,"embedded Z#rightarrow#tau#tau","f");
   else 
     leg->AddEntry(ZTT,"Z#rightarrow#tau#tau","f");
-  leg->AddEntry(ZLL,"Z#rightarrow#mu#mu","f");
+  leg->AddEntry(ZLL,"Z#rightarrow ee","f");
   leg->AddEntry(QCD,"QCD","f");
-  leg->AddEntry(W,"W#rightarrow#mu#nu","f");
+  leg->AddEntry(W,"W#rightarrow e#nu","f");
   leg->AddEntry(EWK,"electroweak","f");
   leg->AddEntry(TT,"t#bar{t}","f");
   if (plotLegend) leg->Draw();
@@ -530,6 +545,6 @@ void Plot_etau( bool embedded = true,
   canv1->cd();
   canv1->SetSelected(canv1);
   canv1->Update();
-  canv1->Print("figures/plot_"+Variable+suffix+"_OS_SS_"+era+".png");
+  canv1->Print("figures/plot_"+Variable+suffix+"_OS_SS_"+era+"_single-e.png");
 
 }
