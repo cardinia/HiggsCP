@@ -41,8 +41,6 @@ string show_classification(double x) {
 
 int main(int argc, char * argv[]) {
 
-  TString FFlocation = "/nfs/dust/cms/user/cardinia/public/FF_from_IC_1cut_v2/";
-
   bool TEST = false;
 
   TString process(argv[1]);
@@ -82,6 +80,11 @@ int main(int argc, char * argv[]) {
     exit(EXIT_FAILURE);
   }
 
+
+  TString FFlocation = "/nfs/dust/cms/user/cardinia/public/FF_from_IC_1p5cut_v3/";
+  if(channel=="et") FFlocation = "/nfs/dust/cms/user/cardinia/public/FF_from_IC_et_1p5cut_v2/";
+  string channel_string = channel.Data();
+
   bool applyPreselection = true;
   bool PropagateSystematics = true;
 
@@ -110,10 +113,10 @@ int main(int argc, char * argv[]) {
     qcd_ss_os_iso_relaxed_ratio = 1.89; //number from Janek's talk in TauPOG meeting (10.04.19)
     embedded_trigger_weight  = 1.00;
     embedded_tracking_weight = 1.00;
-    input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2018/";
+    //input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2018/";
     //     input_dir = "/nfs/dust/cms/user/rasp/Run/Run2018/CP/sys";
-    //input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/SynchNTuples/March27";
-    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN_April2";
+    input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/" + era ;
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_May26";
   }
   else if(era == "2017"){
     xsec_map    = &xsec_map_2017; 
@@ -123,9 +126,10 @@ int main(int argc, char * argv[]) {
     qcd_ss_os_iso_relaxed_ratio = 1.; 
     embedded_trigger_weight  = 1.00;
     embedded_tracking_weight = 0.99;
-    input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2017/";
-    //input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/SynchNTuples/March27";
-    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN_April2";
+    //input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2017/";
+    //input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/" + era ;
+    input_dir ="/nfs/dust/cms/user/rasp/HiggsCP/etau/" + era ;
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_May26";
   }  
   else if(era == "2016"){
     xsec_map    = &xsec_map_2016;
@@ -135,9 +139,9 @@ int main(int argc, char * argv[]) {
     qcd_ss_os_iso_relaxed_ratio = 2.3;
     embedded_trigger_weight  = 1.03;
     embedded_tracking_weight = 0.98;
-    input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2016/";
-    //input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/SynchNTuples/March27";
-    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN_April2";
+    //input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2016/";
+    input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/" + era ;
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_May26";
   }
   fs::path path(output_dir.Data());
   if (!(fs::exists(path))) {
@@ -210,9 +214,9 @@ int main(int argc, char * argv[]) {
   reader_->AddVariable( "mjj", &mjj_ );
   reader_->AddVariable( "mva_dm_2", &mva_dm_2_ );
   reader_->AddVariable( "mt_1", &mt_1_ );
-  reader_->BookMVA( "BDT method", FFlocation+"fractions_"+era+"_mt.xml" );
+  reader_->BookMVA( "BDT method", FFlocation+"fractions_"+era+"_"+channel+".xml" );
 
-  TFile f_fracs(FFlocation+"mva_fract_mt_"+era+".root");
+  TFile f_fracs(FFlocation+"mva_fract_"+channel+"_"+era+".root");
   ff_fracs_qcd_ = (TH2D*)f_fracs.Get("QCD");
   ff_fracs_wjets_ = (TH2D*)f_fracs.Get("W");
   ff_fracs_qcd_->SetDirectory(0);
@@ -221,20 +225,26 @@ int main(int argc, char * argv[]) {
 
 
 
-
-  TFile * ff_file = TFile::Open(FFlocation+"fakefactors_ws_mt_lite_"+era+".root");
+  TFile * ff_file = TFile::Open(FFlocation+"fakefactors_ws_"+channel+"_lite_"+era+".root");
   FakeFactor* ff = (FakeFactor*)ff_file->Get("ff_comb");
   
   std::shared_ptr<RooWorkspace> ff_ws_;
   std::map<std::string, std::shared_ptr<RooFunctor>> fns_;
   ff_ws_ = std::shared_ptr<RooWorkspace>((RooWorkspace*)gDirectory->Get("w"));
-  fns_["ff_mt_medium_dmbins"] = std::shared_ptr<RooFunctor>(ff_ws_->function("ff_mt_medium_dmbins")->functor(ff_ws_->argSet("pt,dm,njets,m_pt,os,mt,m_iso,pass_single,mvis")));
-  fns_["ff_mt_medium_mvadmbins"] = std::shared_ptr<RooFunctor>(ff_ws_->function("ff_mt_medium_mvadmbins")->functor(ff_ws_->argSet("pt,mvadm,ipsig,njets,m_pt,os,m_iso,pass_single,met_var_qcd,met_var_w,WpT,wjets_frac,qcd_frac,ttbar_frac")));
-
+  std::string FFnamePrefix="ff_";
+  FFnamePrefix+=channel.Data();
+  TString arguments;
+  if(channel=="mt")arguments="pt,dm,njets,m_pt,os,mt,m_iso,pass_single,mvis";
+  else arguments="pt,dm,njets,e_pt,os,mt,e_iso,pass_single,mvis";
+  fns_[(FFnamePrefix+"_medium_dmbins").c_str()] = std::shared_ptr<RooFunctor>(ff_ws_->function((FFnamePrefix+"_medium_dmbins").c_str())->functor(ff_ws_->argSet(arguments.Data())));
+  //changing arguments for mvaDM
+  if(channel=="mt")arguments="pt,mvadm,ipsig,njets,m_pt,os,m_iso,pass_single,met_var_qcd,met_var_w,WpT,wjets_frac,qcd_frac,ttbar_frac";
+  else arguments="pt,mvadm,ipsig,njets,e_pt,os,e_iso,pass_single,met_var_qcd,met_var_w,WpT,wjets_frac,qcd_frac,ttbar_frac";
+  fns_[(FFnamePrefix+"_medium_mvadmbins").c_str()] = std::shared_ptr<RooFunctor>(ff_ws_->function((FFnamePrefix+"_medium_mvadmbins").c_str())->functor(ff_ws_->argSet(arguments.Data())));
   for(auto systematicFF : SystematicsFF){
-    string functionname="ff_mt_medium_mvadmbins_";
-    functionname+=systematicFF.Data();
-    fns_[functionname.c_str()] = std::shared_ptr<RooFunctor>(ff_ws_->function(functionname.c_str())->functor(ff_ws_->argSet("pt,mvadm,ipsig,njets,m_pt,os,m_iso,pass_single,met_var_qcd,met_var_w,WpT,wjets_frac,qcd_frac,ttbar_frac")));
+    string functionname=FFnamePrefix+"_medium_mvadmbins_";
+    functionname+=systematicFF;
+    fns_[functionname.c_str()] = std::shared_ptr<RooFunctor>(ff_ws_->function(functionname.c_str())->functor(ff_ws_->argSet(arguments.Data())));
   };
 
   if (!PropagateSystematics)
@@ -406,124 +416,243 @@ int main(int argc, char * argv[]) {
 	float weight_CMS_htt_ttbarShape_13TeVDown;
 	float weight_CMS_htt_ttbarShape_13TeVUp;
 
-
-	///Weights for FF
+	///////////////////////
+	///Weights for FF: mt
 	//Stat uncertainties
-	float weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltUp;
-	float weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltUp;
+	float weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_ltUp;
+	float weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_ltUp;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltUp;
-	float weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltUp;
+	float weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_ltUp;
+	float weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_ltUp;
 		
-	float weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltUp;
-	float weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltUp;
+	float weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_ltUp;
+	float weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_ltUp;
 	
 
-	float weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtUp;
-	float weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtUp;
+	float weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_gtUp;
+	float weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_gtUp;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtUp;
-	float weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtUp;
+	float weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_gtUp;
+	float weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_gtUp;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtUp;
-	float weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtUp;
+	float weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_gtUp;
+	float weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_gtUp;
 	
-	float weight_ff_mt_wjets_stat_njets0_mvadm1Up;
-	float weight_ff_mt_qcd_stat_njets0_mvadm1Up;
+	float weight_ff_mt_wjets_stat_unc1_njets0_mvadm1Up;
+	float weight_ff_mt_qcd_stat_unc1_njets0_mvadm1Up;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm1Up;
-	float weight_ff_mt_qcd_stat_njets1_mvadm1Up;
+	float weight_ff_mt_wjets_stat_unc1_njets1_mvadm1Up;
+	float weight_ff_mt_qcd_stat_unc1_njets1_mvadm1Up;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm1Up;
-	float weight_ff_mt_qcd_stat_njets2_mvadm1Up;
+	float weight_ff_mt_wjets_stat_unc1_njets2_mvadm1Up;
+	float weight_ff_mt_qcd_stat_unc1_njets2_mvadm1Up;
 	
 	
-	float weight_ff_mt_wjets_stat_njets0_mvadm2Up;
-	float weight_ff_mt_qcd_stat_njets0_mvadm2Up;
+	float weight_ff_mt_wjets_stat_unc1_njets0_mvadm2Up;
+	float weight_ff_mt_qcd_stat_unc1_njets0_mvadm2Up;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm2Up;
-	float weight_ff_mt_qcd_stat_njets1_mvadm2Up;
+	float weight_ff_mt_wjets_stat_unc1_njets1_mvadm2Up;
+	float weight_ff_mt_qcd_stat_unc1_njets1_mvadm2Up;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm2Up;
-	float weight_ff_mt_qcd_stat_njets2_mvadm2Up;
+	float weight_ff_mt_wjets_stat_unc1_njets2_mvadm2Up;
+	float weight_ff_mt_qcd_stat_unc1_njets2_mvadm2Up;
 
 
-	float weight_ff_mt_wjets_stat_njets0_mvadm10Up;
-	float weight_ff_mt_qcd_stat_njets0_mvadm10Up;
+	float weight_ff_mt_wjets_stat_unc1_njets0_mvadm10Up;
+	float weight_ff_mt_qcd_stat_unc1_njets0_mvadm10Up;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm10Up;
-	float weight_ff_mt_qcd_stat_njets1_mvadm10Up;
+	float weight_ff_mt_wjets_stat_unc1_njets1_mvadm10Up;
+	float weight_ff_mt_qcd_stat_unc1_njets1_mvadm10Up;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm10Up;
-	float weight_ff_mt_qcd_stat_njets2_mvadm10Up;
+	float weight_ff_mt_wjets_stat_unc1_njets2_mvadm10Up;
+	float weight_ff_mt_qcd_stat_unc1_njets2_mvadm10Up;
 
 
-	float weight_ff_mt_wjets_stat_njets0_mvadm11Up;
-	float weight_ff_mt_qcd_stat_njets0_mvadm11Up;
+	float weight_ff_mt_wjets_stat_unc1_njets0_mvadm11Up;
+	float weight_ff_mt_qcd_stat_unc1_njets0_mvadm11Up;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm11Up;
-	float weight_ff_mt_qcd_stat_njets1_mvadm11Up;
+	float weight_ff_mt_wjets_stat_unc1_njets1_mvadm11Up;
+	float weight_ff_mt_qcd_stat_unc1_njets1_mvadm11Up;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm11Up;
-	float weight_ff_mt_qcd_stat_njets2_mvadm11Up;
+	float weight_ff_mt_wjets_stat_unc1_njets2_mvadm11Up;
+	float weight_ff_mt_qcd_stat_unc1_njets2_mvadm11Up;
 
-	float weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltDown;
-	float weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltDown;
+	float weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_ltDown;
+	float weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_ltDown;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltDown;
-	float weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltDown;
+	float weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_ltDown;
+	float weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_ltDown;
 		
-	float weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltDown;
-	float weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltDown;
+	float weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_ltDown;
+	float weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_ltDown;
 	
 
-	float weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtDown;
-	float weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtDown;
+	float weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_gtDown;
+	float weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_gtDown;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtDown;
-	float weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtDown;
+	float weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_gtDown;
+	float weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_gtDown;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtDown;
-	float weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtDown;
+	float weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_gtDown;
+	float weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_gtDown;
 	
-	float weight_ff_mt_wjets_stat_njets0_mvadm1Down;
-	float weight_ff_mt_qcd_stat_njets0_mvadm1Down;
+	float weight_ff_mt_wjets_stat_unc1_njets0_mvadm1Down;
+	float weight_ff_mt_qcd_stat_unc1_njets0_mvadm1Down;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm1Down;
-	float weight_ff_mt_qcd_stat_njets1_mvadm1Down;
+	float weight_ff_mt_wjets_stat_unc1_njets1_mvadm1Down;
+	float weight_ff_mt_qcd_stat_unc1_njets1_mvadm1Down;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm1Down;
-	float weight_ff_mt_qcd_stat_njets2_mvadm1Down;
+	float weight_ff_mt_wjets_stat_unc1_njets2_mvadm1Down;
+	float weight_ff_mt_qcd_stat_unc1_njets2_mvadm1Down;
 	
 	
-	float weight_ff_mt_wjets_stat_njets0_mvadm2Down;
-	float weight_ff_mt_qcd_stat_njets0_mvadm2Down;
+	float weight_ff_mt_wjets_stat_unc1_njets0_mvadm2Down;
+	float weight_ff_mt_qcd_stat_unc1_njets0_mvadm2Down;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm2Down;
-	float weight_ff_mt_qcd_stat_njets1_mvadm2Down;
+	float weight_ff_mt_wjets_stat_unc1_njets1_mvadm2Down;
+	float weight_ff_mt_qcd_stat_unc1_njets1_mvadm2Down;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm2Down;
-	float weight_ff_mt_qcd_stat_njets2_mvadm2Down;
+	float weight_ff_mt_wjets_stat_unc1_njets2_mvadm2Down;
+	float weight_ff_mt_qcd_stat_unc1_njets2_mvadm2Down;
 
 
-	float weight_ff_mt_wjets_stat_njets0_mvadm10Down;
-	float weight_ff_mt_qcd_stat_njets0_mvadm10Down;
+	float weight_ff_mt_wjets_stat_unc1_njets0_mvadm10Down;
+	float weight_ff_mt_qcd_stat_unc1_njets0_mvadm10Down;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm10Down;
-	float weight_ff_mt_qcd_stat_njets1_mvadm10Down;
+	float weight_ff_mt_wjets_stat_unc1_njets1_mvadm10Down;
+	float weight_ff_mt_qcd_stat_unc1_njets1_mvadm10Down;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm10Down;
-	float weight_ff_mt_qcd_stat_njets2_mvadm10Down;
+	float weight_ff_mt_wjets_stat_unc1_njets2_mvadm10Down;
+	float weight_ff_mt_qcd_stat_unc1_njets2_mvadm10Down;
 
 
-	float weight_ff_mt_wjets_stat_njets0_mvadm11Down;
-	float weight_ff_mt_qcd_stat_njets0_mvadm11Down;
+	float weight_ff_mt_wjets_stat_unc1_njets0_mvadm11Down;
+	float weight_ff_mt_qcd_stat_unc1_njets0_mvadm11Down;
 	
-	float weight_ff_mt_wjets_stat_njets1_mvadm11Down;
-	float weight_ff_mt_qcd_stat_njets1_mvadm11Down;
+	float weight_ff_mt_wjets_stat_unc1_njets1_mvadm11Down;
+	float weight_ff_mt_qcd_stat_unc1_njets1_mvadm11Down;
 	
-	float weight_ff_mt_wjets_stat_njets2_mvadm11Down;
-	float weight_ff_mt_qcd_stat_njets2_mvadm11Down;
+	float weight_ff_mt_wjets_stat_unc1_njets2_mvadm11Down;
+	float weight_ff_mt_qcd_stat_unc1_njets2_mvadm11Down;
+
+	//////////
+	//unc2
+	//////////
+	float weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_ltUp;
+	float weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_ltUp;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_ltUp;
+	float weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_ltUp;
+		
+	float weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_ltUp;
+	float weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_ltUp;
+	
+
+	float weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_gtUp;
+	float weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_gtUp;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_gtUp;
+	float weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_gtUp;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_gtUp;
+	float weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_gtUp;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets0_mvadm1Up;
+	float weight_ff_mt_qcd_stat_unc2_njets0_mvadm1Up;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets1_mvadm1Up;
+	float weight_ff_mt_qcd_stat_unc2_njets1_mvadm1Up;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets2_mvadm1Up;
+	float weight_ff_mt_qcd_stat_unc2_njets2_mvadm1Up;
+	
+	
+	float weight_ff_mt_wjets_stat_unc2_njets0_mvadm2Up;
+	float weight_ff_mt_qcd_stat_unc2_njets0_mvadm2Up;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets1_mvadm2Up;
+	float weight_ff_mt_qcd_stat_unc2_njets1_mvadm2Up;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets2_mvadm2Up;
+	float weight_ff_mt_qcd_stat_unc2_njets2_mvadm2Up;
+
+
+	float weight_ff_mt_wjets_stat_unc2_njets0_mvadm10Up;
+	float weight_ff_mt_qcd_stat_unc2_njets0_mvadm10Up;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets1_mvadm10Up;
+	float weight_ff_mt_qcd_stat_unc2_njets1_mvadm10Up;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets2_mvadm10Up;
+	float weight_ff_mt_qcd_stat_unc2_njets2_mvadm10Up;
+
+
+	float weight_ff_mt_wjets_stat_unc2_njets0_mvadm11Up;
+	float weight_ff_mt_qcd_stat_unc2_njets0_mvadm11Up;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets1_mvadm11Up;
+	float weight_ff_mt_qcd_stat_unc2_njets1_mvadm11Up;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets2_mvadm11Up;
+	float weight_ff_mt_qcd_stat_unc2_njets2_mvadm11Up;
+
+	float weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_ltDown;
+	float weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_ltDown;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_ltDown;
+	float weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_ltDown;
+		
+	float weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_ltDown;
+	float weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_ltDown;
+	
+
+	float weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_gtDown;
+	float weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_gtDown;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_gtDown;
+	float weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_gtDown;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_gtDown;
+	float weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_gtDown;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets0_mvadm1Down;
+	float weight_ff_mt_qcd_stat_unc2_njets0_mvadm1Down;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets1_mvadm1Down;
+	float weight_ff_mt_qcd_stat_unc2_njets1_mvadm1Down;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets2_mvadm1Down;
+	float weight_ff_mt_qcd_stat_unc2_njets2_mvadm1Down;
+	
+	
+	float weight_ff_mt_wjets_stat_unc2_njets0_mvadm2Down;
+	float weight_ff_mt_qcd_stat_unc2_njets0_mvadm2Down;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets1_mvadm2Down;
+	float weight_ff_mt_qcd_stat_unc2_njets1_mvadm2Down;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets2_mvadm2Down;
+	float weight_ff_mt_qcd_stat_unc2_njets2_mvadm2Down;
+
+
+	float weight_ff_mt_wjets_stat_unc2_njets0_mvadm10Down;
+	float weight_ff_mt_qcd_stat_unc2_njets0_mvadm10Down;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets1_mvadm10Down;
+	float weight_ff_mt_qcd_stat_unc2_njets1_mvadm10Down;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets2_mvadm10Down;
+	float weight_ff_mt_qcd_stat_unc2_njets2_mvadm10Down;
+
+
+	float weight_ff_mt_wjets_stat_unc2_njets0_mvadm11Down;
+	float weight_ff_mt_qcd_stat_unc2_njets0_mvadm11Down;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets1_mvadm11Down;
+	float weight_ff_mt_qcd_stat_unc2_njets1_mvadm11Down;
+	
+	float weight_ff_mt_wjets_stat_unc2_njets2_mvadm11Down;
+	float weight_ff_mt_qcd_stat_unc2_njets2_mvadm11Down;
 
 
 	//met_var_qcd and met_var_w non-closure corrections
@@ -549,6 +678,271 @@ int main(int argc, char * argv[]) {
 	float weight_ff_mt_wjets_systDown;
 	float weight_ff_mt_ttbar_systUp;
 	float weight_ff_mt_ttbar_systDown;
+
+
+	///////////////////////
+	///Weights for FF: et
+	//Stat uncertainties
+	float weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_ltUp;
+	float weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_ltUp;
+	
+	float weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_ltUp;
+	float weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_ltUp;
+		
+	float weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_ltUp;
+	float weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_ltUp;
+	
+
+	float weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_gtUp;
+	float weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_gtUp;
+	
+	float weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_gtUp;
+	float weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_gtUp;
+	
+	float weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_gtUp;
+	float weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_gtUp;
+	
+	float weight_ff_et_wjets_stat_unc1_njets0_mvadm1Up;
+	float weight_ff_et_qcd_stat_unc1_njets0_mvadm1Up;
+	
+	float weight_ff_et_wjets_stat_unc1_njets1_mvadm1Up;
+	float weight_ff_et_qcd_stat_unc1_njets1_mvadm1Up;
+	
+	float weight_ff_et_wjets_stat_unc1_njets2_mvadm1Up;
+	float weight_ff_et_qcd_stat_unc1_njets2_mvadm1Up;
+	
+	
+	float weight_ff_et_wjets_stat_unc1_njets0_mvadm2Up;
+	float weight_ff_et_qcd_stat_unc1_njets0_mvadm2Up;
+	
+	float weight_ff_et_wjets_stat_unc1_njets1_mvadm2Up;
+	float weight_ff_et_qcd_stat_unc1_njets1_mvadm2Up;
+	
+	float weight_ff_et_wjets_stat_unc1_njets2_mvadm2Up;
+	float weight_ff_et_qcd_stat_unc1_njets2_mvadm2Up;
+
+
+	float weight_ff_et_wjets_stat_unc1_njets0_mvadm10Up;
+	float weight_ff_et_qcd_stat_unc1_njets0_mvadm10Up;
+	
+	float weight_ff_et_wjets_stat_unc1_njets1_mvadm10Up;
+	float weight_ff_et_qcd_stat_unc1_njets1_mvadm10Up;
+	
+	float weight_ff_et_wjets_stat_unc1_njets2_mvadm10Up;
+	float weight_ff_et_qcd_stat_unc1_njets2_mvadm10Up;
+
+
+	float weight_ff_et_wjets_stat_unc1_njets0_mvadm11Up;
+	float weight_ff_et_qcd_stat_unc1_njets0_mvadm11Up;
+	
+	float weight_ff_et_wjets_stat_unc1_njets1_mvadm11Up;
+	float weight_ff_et_qcd_stat_unc1_njets1_mvadm11Up;
+	
+	float weight_ff_et_wjets_stat_unc1_njets2_mvadm11Up;
+	float weight_ff_et_qcd_stat_unc1_njets2_mvadm11Up;
+
+	float weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_ltDown;
+	float weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_ltDown;
+	
+	float weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_ltDown;
+	float weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_ltDown;
+		
+	float weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_ltDown;
+	float weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_ltDown;
+	
+
+	float weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_gtDown;
+	float weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_gtDown;
+	
+	float weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_gtDown;
+	float weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_gtDown;
+	
+	float weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_gtDown;
+	float weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_gtDown;
+	
+	float weight_ff_et_wjets_stat_unc1_njets0_mvadm1Down;
+	float weight_ff_et_qcd_stat_unc1_njets0_mvadm1Down;
+	
+	float weight_ff_et_wjets_stat_unc1_njets1_mvadm1Down;
+	float weight_ff_et_qcd_stat_unc1_njets1_mvadm1Down;
+	
+	float weight_ff_et_wjets_stat_unc1_njets2_mvadm1Down;
+	float weight_ff_et_qcd_stat_unc1_njets2_mvadm1Down;
+	
+	
+	float weight_ff_et_wjets_stat_unc1_njets0_mvadm2Down;
+	float weight_ff_et_qcd_stat_unc1_njets0_mvadm2Down;
+	
+	float weight_ff_et_wjets_stat_unc1_njets1_mvadm2Down;
+	float weight_ff_et_qcd_stat_unc1_njets1_mvadm2Down;
+	
+	float weight_ff_et_wjets_stat_unc1_njets2_mvadm2Down;
+	float weight_ff_et_qcd_stat_unc1_njets2_mvadm2Down;
+
+
+	float weight_ff_et_wjets_stat_unc1_njets0_mvadm10Down;
+	float weight_ff_et_qcd_stat_unc1_njets0_mvadm10Down;
+	
+	float weight_ff_et_wjets_stat_unc1_njets1_mvadm10Down;
+	float weight_ff_et_qcd_stat_unc1_njets1_mvadm10Down;
+	
+	float weight_ff_et_wjets_stat_unc1_njets2_mvadm10Down;
+	float weight_ff_et_qcd_stat_unc1_njets2_mvadm10Down;
+
+
+	float weight_ff_et_wjets_stat_unc1_njets0_mvadm11Down;
+	float weight_ff_et_qcd_stat_unc1_njets0_mvadm11Down;
+	
+	float weight_ff_et_wjets_stat_unc1_njets1_mvadm11Down;
+	float weight_ff_et_qcd_stat_unc1_njets1_mvadm11Down;
+	
+	float weight_ff_et_wjets_stat_unc1_njets2_mvadm11Down;
+	float weight_ff_et_qcd_stat_unc1_njets2_mvadm11Down;
+
+	//////////
+	//unc2
+	//////////
+	float weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_ltUp;
+	float weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_ltUp;
+	
+	float weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_ltUp;
+	float weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_ltUp;
+		
+	float weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_ltUp;
+	float weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_ltUp;
+	
+
+	float weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_gtUp;
+	float weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_gtUp;
+	
+	float weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_gtUp;
+	float weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_gtUp;
+	
+	float weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_gtUp;
+	float weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_gtUp;
+	
+	float weight_ff_et_wjets_stat_unc2_njets0_mvadm1Up;
+	float weight_ff_et_qcd_stat_unc2_njets0_mvadm1Up;
+	
+	float weight_ff_et_wjets_stat_unc2_njets1_mvadm1Up;
+	float weight_ff_et_qcd_stat_unc2_njets1_mvadm1Up;
+	
+	float weight_ff_et_wjets_stat_unc2_njets2_mvadm1Up;
+	float weight_ff_et_qcd_stat_unc2_njets2_mvadm1Up;
+	
+	
+	float weight_ff_et_wjets_stat_unc2_njets0_mvadm2Up;
+	float weight_ff_et_qcd_stat_unc2_njets0_mvadm2Up;
+	
+	float weight_ff_et_wjets_stat_unc2_njets1_mvadm2Up;
+	float weight_ff_et_qcd_stat_unc2_njets1_mvadm2Up;
+	
+	float weight_ff_et_wjets_stat_unc2_njets2_mvadm2Up;
+	float weight_ff_et_qcd_stat_unc2_njets2_mvadm2Up;
+
+
+	float weight_ff_et_wjets_stat_unc2_njets0_mvadm10Up;
+	float weight_ff_et_qcd_stat_unc2_njets0_mvadm10Up;
+	
+	float weight_ff_et_wjets_stat_unc2_njets1_mvadm10Up;
+	float weight_ff_et_qcd_stat_unc2_njets1_mvadm10Up;
+	
+	float weight_ff_et_wjets_stat_unc2_njets2_mvadm10Up;
+	float weight_ff_et_qcd_stat_unc2_njets2_mvadm10Up;
+
+
+	float weight_ff_et_wjets_stat_unc2_njets0_mvadm11Up;
+	float weight_ff_et_qcd_stat_unc2_njets0_mvadm11Up;
+	
+	float weight_ff_et_wjets_stat_unc2_njets1_mvadm11Up;
+	float weight_ff_et_qcd_stat_unc2_njets1_mvadm11Up;
+	
+	float weight_ff_et_wjets_stat_unc2_njets2_mvadm11Up;
+	float weight_ff_et_qcd_stat_unc2_njets2_mvadm11Up;
+
+	float weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_ltDown;
+	float weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_ltDown;
+	
+	float weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_ltDown;
+	float weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_ltDown;
+		
+	float weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_ltDown;
+	float weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_ltDown;
+	
+
+	float weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_gtDown;
+	float weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_gtDown;
+	
+	float weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_gtDown;
+	float weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_gtDown;
+	
+	float weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_gtDown;
+	float weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_gtDown;
+	
+	float weight_ff_et_wjets_stat_unc2_njets0_mvadm1Down;
+	float weight_ff_et_qcd_stat_unc2_njets0_mvadm1Down;
+	
+	float weight_ff_et_wjets_stat_unc2_njets1_mvadm1Down;
+	float weight_ff_et_qcd_stat_unc2_njets1_mvadm1Down;
+	
+	float weight_ff_et_wjets_stat_unc2_njets2_mvadm1Down;
+	float weight_ff_et_qcd_stat_unc2_njets2_mvadm1Down;
+	
+	
+	float weight_ff_et_wjets_stat_unc2_njets0_mvadm2Down;
+	float weight_ff_et_qcd_stat_unc2_njets0_mvadm2Down;
+	
+	float weight_ff_et_wjets_stat_unc2_njets1_mvadm2Down;
+	float weight_ff_et_qcd_stat_unc2_njets1_mvadm2Down;
+	
+	float weight_ff_et_wjets_stat_unc2_njets2_mvadm2Down;
+	float weight_ff_et_qcd_stat_unc2_njets2_mvadm2Down;
+
+
+	float weight_ff_et_wjets_stat_unc2_njets0_mvadm10Down;
+	float weight_ff_et_qcd_stat_unc2_njets0_mvadm10Down;
+	
+	float weight_ff_et_wjets_stat_unc2_njets1_mvadm10Down;
+	float weight_ff_et_qcd_stat_unc2_njets1_mvadm10Down;
+	
+	float weight_ff_et_wjets_stat_unc2_njets2_mvadm10Down;
+	float weight_ff_et_qcd_stat_unc2_njets2_mvadm10Down;
+
+
+	float weight_ff_et_wjets_stat_unc2_njets0_mvadm11Down;
+	float weight_ff_et_qcd_stat_unc2_njets0_mvadm11Down;
+	
+	float weight_ff_et_wjets_stat_unc2_njets1_mvadm11Down;
+	float weight_ff_et_qcd_stat_unc2_njets1_mvadm11Down;
+	
+	float weight_ff_et_wjets_stat_unc2_njets2_mvadm11Down;
+	float weight_ff_et_qcd_stat_unc2_njets2_mvadm11Down;
+
+
+	//met_var_qcd and met_var_w non-closure corrections
+
+	float weight_ff_et_qcd_met_closure_systUp;
+	float weight_ff_et_wjets_met_closure_systUp;
+	float weight_ff_et_ttbar_met_closure_systUp;
+	float weight_ff_et_qcd_met_closure_systDown;
+	float weight_ff_et_wjets_met_closure_systDown;
+	float weight_ff_et_ttbar_met_closure_systDown;
+
+	//m_pt non-closure corrections
+
+	float weight_ff_et_qcd_l_pt_closure_systUp;
+	float weight_ff_et_qcd_l_pt_closure_systDown;
+	float weight_ff_et_wjets_l_pt_closure_systUp;
+	float weight_ff_et_wjets_l_pt_closure_systDown;
+
+	//extrapolations from DR to SR
+	float weight_ff_et_qcd_systUp;
+	float weight_ff_et_qcd_systDown;
+	float weight_ff_et_wjets_systUp;
+	float weight_ff_et_wjets_systDown;
+	float weight_ff_et_ttbar_systUp;
+	float weight_ff_et_ttbar_systDown;
+
 
 	//Weights for Tau ES and ID
 
@@ -718,124 +1112,241 @@ int main(int argc, char * argv[]) {
 
 	outTree->Branch("weight_CMS_htt_ttbarShape_13TeVDown",&weight_CMS_htt_ttbarShape_13TeVDown,"weight_CMS_htt_ttbarShape_13TeVDown/F");
 	outTree->Branch("weight_CMS_htt_ttbarShape_13TeVUp",&weight_CMS_htt_ttbarShape_13TeVUp,"weight_CMS_htt_ttbarShape_13TeVUp/F");
-	///Weights for FF
+	////////////////////////////////
+	///Weights for FF: mt
 	//Stat uncertainties
-	outTree->Branch("weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltUp",&weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltUp,"weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltUp/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltUp",&weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltUp,"weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltUp/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_ltUp",&weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_ltUp,"weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_ltUp/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_ltUp",&weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_ltUp,"weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_ltUp/F");
 			                                                                                                                                                                           
-	outTree->Branch("weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltUp",&weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltUp,"weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltUp/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltUp",&weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltUp,"weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltUp/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_ltUp",&weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_ltUp,"weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_ltUp/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_ltUp",&weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_ltUp,"weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_ltUp/F");
 			                                                                                                                                                                           
-	outTree->Branch("weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltUp",&weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltUp,"weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltUp/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltUp",&weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltUp,"weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltUp/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_ltUp",&weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_ltUp,"weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_ltUp/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_ltUp",&weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_ltUp,"weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_ltUp/F");
 			                                                                                                                                                                           
 			                                                                                                                                                                           
-	outTree->Branch("weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtUp",&weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtUp,"weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtUp/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtUp",&weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtUp,"weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtUp/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_gtUp",&weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_gtUp,"weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_gtUp/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_gtUp",&weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_gtUp,"weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_gtUp/F");
 			                                                                                                                                                                           
-	outTree->Branch("weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtUp",&weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtUp,"weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtUp/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtUp",&weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtUp,"weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtUp/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_gtUp",&weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_gtUp,"weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_gtUp/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_gtUp",&weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_gtUp,"weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_gtUp/F");
 			                                                                                                                                                                           
-	outTree->Branch("weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtUp",&weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtUp,"weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtUp/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtUp",&weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtUp,"weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtUp/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_gtUp",&weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_gtUp,"weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_gtUp/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_gtUp",&weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_gtUp,"weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_gtUp/F");
 	
-	outTree->Branch("weight_ff_mt_wjets_stat_njets0_mvadm1Up",&weight_ff_mt_wjets_stat_njets0_mvadm1Up,"weight_ff_mt_wjets_stat_njets0_mvadm1Up/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets0_mvadm1Up",&weight_ff_mt_qcd_stat_njets0_mvadm1Up,"weight_ff_mt_qcd_stat_njets0_mvadm1Up/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets0_mvadm1Up",&weight_ff_mt_wjets_stat_unc1_njets0_mvadm1Up,"weight_ff_mt_wjets_stat_unc1_njets0_mvadm1Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets0_mvadm1Up",&weight_ff_mt_qcd_stat_unc1_njets0_mvadm1Up,"weight_ff_mt_qcd_stat_unc1_njets0_mvadm1Up/F");
 			                                                                                                                                                   
-	outTree->Branch("weight_ff_mt_wjets_stat_njets1_mvadm1Up",&weight_ff_mt_wjets_stat_njets1_mvadm1Up,"weight_ff_mt_wjets_stat_njets1_mvadm1Up/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets1_mvadm1Up",&weight_ff_mt_qcd_stat_njets1_mvadm1Up,"weight_ff_mt_qcd_stat_njets1_mvadm1Up/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets1_mvadm1Up",&weight_ff_mt_wjets_stat_unc1_njets1_mvadm1Up,"weight_ff_mt_wjets_stat_unc1_njets1_mvadm1Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets1_mvadm1Up",&weight_ff_mt_qcd_stat_unc1_njets1_mvadm1Up,"weight_ff_mt_qcd_stat_unc1_njets1_mvadm1Up/F");
 			                                                                                                                                                   
-	outTree->Branch("weight_ff_mt_wjets_stat_njets2_mvadm1Up",&weight_ff_mt_wjets_stat_njets2_mvadm1Up,"weight_ff_mt_wjets_stat_njets2_mvadm1Up/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets2_mvadm1Up",&weight_ff_mt_qcd_stat_njets2_mvadm1Up,"weight_ff_mt_qcd_stat_njets2_mvadm1Up/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets2_mvadm1Up",&weight_ff_mt_wjets_stat_unc1_njets2_mvadm1Up,"weight_ff_mt_wjets_stat_unc1_njets2_mvadm1Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets2_mvadm1Up",&weight_ff_mt_qcd_stat_unc1_njets2_mvadm1Up,"weight_ff_mt_qcd_stat_unc1_njets2_mvadm1Up/F");
 
-	outTree->Branch("weight_ff_mt_wjets_stat_njets0_mvadm2Up",&weight_ff_mt_wjets_stat_njets0_mvadm2Up,"weight_ff_mt_wjets_stat_njets0_mvadm2Up/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets0_mvadm2Up",&weight_ff_mt_qcd_stat_njets0_mvadm2Up,"weight_ff_mt_qcd_stat_njets0_mvadm2Up/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets0_mvadm2Up",&weight_ff_mt_wjets_stat_unc1_njets0_mvadm2Up,"weight_ff_mt_wjets_stat_unc1_njets0_mvadm2Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets0_mvadm2Up",&weight_ff_mt_qcd_stat_unc1_njets0_mvadm2Up,"weight_ff_mt_qcd_stat_unc1_njets0_mvadm2Up/F");
 			                                                                                                                                                   
-	outTree->Branch("weight_ff_mt_wjets_stat_njets1_mvadm2Up",&weight_ff_mt_wjets_stat_njets1_mvadm2Up,"weight_ff_mt_wjets_stat_njets1_mvadm2Up/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets1_mvadm2Up",&weight_ff_mt_qcd_stat_njets1_mvadm2Up,"weight_ff_mt_qcd_stat_njets1_mvadm2Up/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets1_mvadm2Up",&weight_ff_mt_wjets_stat_unc1_njets1_mvadm2Up,"weight_ff_mt_wjets_stat_unc1_njets1_mvadm2Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets1_mvadm2Up",&weight_ff_mt_qcd_stat_unc1_njets1_mvadm2Up,"weight_ff_mt_qcd_stat_unc1_njets1_mvadm2Up/F");
 			                                                                                                                                                   
-	outTree->Branch("weight_ff_mt_wjets_stat_njets2_mvadm2Up",&weight_ff_mt_wjets_stat_njets2_mvadm2Up,"weight_ff_mt_wjets_stat_njets2_mvadm2Up/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets2_mvadm2Up",&weight_ff_mt_qcd_stat_njets2_mvadm2Up,"weight_ff_mt_qcd_stat_njets2_mvadm2Up/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets2_mvadm2Up",&weight_ff_mt_wjets_stat_unc1_njets2_mvadm2Up,"weight_ff_mt_wjets_stat_unc1_njets2_mvadm2Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets2_mvadm2Up",&weight_ff_mt_qcd_stat_unc1_njets2_mvadm2Up,"weight_ff_mt_qcd_stat_unc1_njets2_mvadm2Up/F");
 
 
-	outTree->Branch("weight_ff_mt_wjets_stat_njets0_mvadm10Up",&weight_ff_mt_wjets_stat_njets0_mvadm10Up,"weight_ff_mt_wjets_stat_njets0_mvadm10Up/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets0_mvadm10Up",&weight_ff_mt_qcd_stat_njets0_mvadm10Up,"weight_ff_mt_qcd_stat_njets0_mvadm10Up/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets0_mvadm10Up",&weight_ff_mt_wjets_stat_unc1_njets0_mvadm10Up,"weight_ff_mt_wjets_stat_unc1_njets0_mvadm10Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets0_mvadm10Up",&weight_ff_mt_qcd_stat_unc1_njets0_mvadm10Up,"weight_ff_mt_qcd_stat_unc1_njets0_mvadm10Up/F");
 			                                                                                                      	                                                 
-	outTree->Branch("weight_ff_mt_wjets_stat_njets1_mvadm10Up",&weight_ff_mt_wjets_stat_njets1_mvadm10Up,"weight_ff_mt_wjets_stat_njets1_mvadm10Up/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets1_mvadm10Up",&weight_ff_mt_qcd_stat_njets1_mvadm10Up,"weight_ff_mt_qcd_stat_njets1_mvadm10Up/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets1_mvadm10Up",&weight_ff_mt_wjets_stat_unc1_njets1_mvadm10Up,"weight_ff_mt_wjets_stat_unc1_njets1_mvadm10Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets1_mvadm10Up",&weight_ff_mt_qcd_stat_unc1_njets1_mvadm10Up,"weight_ff_mt_qcd_stat_unc1_njets1_mvadm10Up/F");
 			                                                                                                      	                                                 
-	outTree->Branch("weight_ff_mt_wjets_stat_njets2_mvadm10Up",&weight_ff_mt_wjets_stat_njets2_mvadm10Up,"weight_ff_mt_wjets_stat_njets2_mvadm10Up/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets2_mvadm10Up",&weight_ff_mt_qcd_stat_njets2_mvadm10Up,"weight_ff_mt_qcd_stat_njets2_mvadm10Up/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets2_mvadm10Up",&weight_ff_mt_wjets_stat_unc1_njets2_mvadm10Up,"weight_ff_mt_wjets_stat_unc1_njets2_mvadm10Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets2_mvadm10Up",&weight_ff_mt_qcd_stat_unc1_njets2_mvadm10Up,"weight_ff_mt_qcd_stat_unc1_njets2_mvadm10Up/F");
 			                                                                                                      	                                                 
 			                                                                                                      	                                                 
-	outTree->Branch("weight_ff_mt_wjets_stat_njets0_mvadm11Up",&weight_ff_mt_wjets_stat_njets0_mvadm11Up,"weight_ff_mt_wjets_stat_njets0_mvadm11Up/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets0_mvadm11Up",&weight_ff_mt_qcd_stat_njets0_mvadm11Up,"weight_ff_mt_qcd_stat_njets0_mvadm11Up/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets0_mvadm11Up",&weight_ff_mt_wjets_stat_unc1_njets0_mvadm11Up,"weight_ff_mt_wjets_stat_unc1_njets0_mvadm11Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets0_mvadm11Up",&weight_ff_mt_qcd_stat_unc1_njets0_mvadm11Up,"weight_ff_mt_qcd_stat_unc1_njets0_mvadm11Up/F");
 			                                                                                                      	                                                 
-	outTree->Branch("weight_ff_mt_wjets_stat_njets1_mvadm11Up",&weight_ff_mt_wjets_stat_njets1_mvadm11Up,"weight_ff_mt_wjets_stat_njets1_mvadm11Up/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets1_mvadm11Up",&weight_ff_mt_qcd_stat_njets1_mvadm11Up,"weight_ff_mt_qcd_stat_njets1_mvadm11Up/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets1_mvadm11Up",&weight_ff_mt_wjets_stat_unc1_njets1_mvadm11Up,"weight_ff_mt_wjets_stat_unc1_njets1_mvadm11Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets1_mvadm11Up",&weight_ff_mt_qcd_stat_unc1_njets1_mvadm11Up,"weight_ff_mt_qcd_stat_unc1_njets1_mvadm11Up/F");
 			                                                                                                      	                                                 
-	outTree->Branch("weight_ff_mt_wjets_stat_njets2_mvadm11Up",&weight_ff_mt_wjets_stat_njets2_mvadm11Up,"weight_ff_mt_wjets_stat_njets2_mvadm11Up/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets2_mvadm11Up",&weight_ff_mt_qcd_stat_njets2_mvadm11Up,"weight_ff_mt_qcd_stat_njets2_mvadm11Up/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets2_mvadm11Up",&weight_ff_mt_wjets_stat_unc1_njets2_mvadm11Up,"weight_ff_mt_wjets_stat_unc1_njets2_mvadm11Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets2_mvadm11Up",&weight_ff_mt_qcd_stat_unc1_njets2_mvadm11Up,"weight_ff_mt_qcd_stat_unc1_njets2_mvadm11Up/F");
 
 
-	outTree->Branch("weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltDown",&weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltDown,"weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltDown/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltDown",&weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltDown,"weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltDown/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_ltDown",&weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_ltDown,"weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_ltDown/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_ltDown",&weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_ltDown,"weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_ltDown/F");
 			                                                                                                                                                                           
-	outTree->Branch("weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltDown",&weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltDown,"weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltDown/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltDown",&weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltDown,"weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltDown/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_ltDown",&weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_ltDown,"weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_ltDown/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_ltDown",&weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_ltDown,"weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_ltDown/F");
 			                                                                                                                                                                           
-	outTree->Branch("weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltDown",&weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltDown,"weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltDown/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltDown",&weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltDown,"weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltDown/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_ltDown",&weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_ltDown,"weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_ltDown/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_ltDown",&weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_ltDown,"weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_ltDown/F");
 			                                                                                                                                                                           
 			                                                                                                                                                                           
-	outTree->Branch("weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtDown",&weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtDown,"weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtDown/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtDown",&weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtDown,"weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtDown/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_gtDown",&weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_gtDown,"weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_gtDown/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_gtDown",&weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_gtDown,"weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_gtDown/F");
 			                                                                                                                                                                           
-	outTree->Branch("weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtDown",&weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtDown,"weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtDown/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtDown",&weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtDown,"weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtDown/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_gtDown",&weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_gtDown,"weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_gtDown/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_gtDown",&weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_gtDown,"weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_gtDown/F");
 			                                                                                                                                                                           
-	outTree->Branch("weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtDown",&weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtDown,"weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtDown/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtDown",&weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtDown,"weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtDown/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_gtDown",&weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_gtDown,"weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_gtDown/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_gtDown",&weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_gtDown,"weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_gtDown/F");
 	
-	outTree->Branch("weight_ff_mt_wjets_stat_njets0_mvadm1Down",&weight_ff_mt_wjets_stat_njets0_mvadm1Down,"weight_ff_mt_wjets_stat_njets0_mvadm1Down/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets0_mvadm1Down",&weight_ff_mt_qcd_stat_njets0_mvadm1Down,"weight_ff_mt_qcd_stat_njets0_mvadm1Down/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets0_mvadm1Down",&weight_ff_mt_wjets_stat_unc1_njets0_mvadm1Down,"weight_ff_mt_wjets_stat_unc1_njets0_mvadm1Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets0_mvadm1Down",&weight_ff_mt_qcd_stat_unc1_njets0_mvadm1Down,"weight_ff_mt_qcd_stat_unc1_njets0_mvadm1Down/F");
 			                                                                                                                                                   
-	outTree->Branch("weight_ff_mt_wjets_stat_njets1_mvadm1Down",&weight_ff_mt_wjets_stat_njets1_mvadm1Down,"weight_ff_mt_wjets_stat_njets1_mvadm1Down/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets1_mvadm1Down",&weight_ff_mt_qcd_stat_njets1_mvadm1Down,"weight_ff_mt_qcd_stat_njets1_mvadm1Down/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets1_mvadm1Down",&weight_ff_mt_wjets_stat_unc1_njets1_mvadm1Down,"weight_ff_mt_wjets_stat_unc1_njets1_mvadm1Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets1_mvadm1Down",&weight_ff_mt_qcd_stat_unc1_njets1_mvadm1Down,"weight_ff_mt_qcd_stat_unc1_njets1_mvadm1Down/F");
 			                                                                                                                                                   
-	outTree->Branch("weight_ff_mt_wjets_stat_njets2_mvadm1Down",&weight_ff_mt_wjets_stat_njets2_mvadm1Down,"weight_ff_mt_wjets_stat_njets2_mvadm1Down/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets2_mvadm1Down",&weight_ff_mt_qcd_stat_njets2_mvadm1Down,"weight_ff_mt_qcd_stat_njets2_mvadm1Down/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets2_mvadm1Down",&weight_ff_mt_wjets_stat_unc1_njets2_mvadm1Down,"weight_ff_mt_wjets_stat_unc1_njets2_mvadm1Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets2_mvadm1Down",&weight_ff_mt_qcd_stat_unc1_njets2_mvadm1Down,"weight_ff_mt_qcd_stat_unc1_njets2_mvadm1Down/F");
 
-	outTree->Branch("weight_ff_mt_wjets_stat_njets0_mvadm2Down",&weight_ff_mt_wjets_stat_njets0_mvadm2Down,"weight_ff_mt_wjets_stat_njets0_mvadm2Down/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets0_mvadm2Down",&weight_ff_mt_qcd_stat_njets0_mvadm2Down,"weight_ff_mt_qcd_stat_njets0_mvadm2Down/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets0_mvadm2Down",&weight_ff_mt_wjets_stat_unc1_njets0_mvadm2Down,"weight_ff_mt_wjets_stat_unc1_njets0_mvadm2Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets0_mvadm2Down",&weight_ff_mt_qcd_stat_unc1_njets0_mvadm2Down,"weight_ff_mt_qcd_stat_unc1_njets0_mvadm2Down/F");
 			                                                                                                                                                   
-	outTree->Branch("weight_ff_mt_wjets_stat_njets1_mvadm2Down",&weight_ff_mt_wjets_stat_njets1_mvadm2Down,"weight_ff_mt_wjets_stat_njets1_mvadm2Down/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets1_mvadm2Down",&weight_ff_mt_qcd_stat_njets1_mvadm2Down,"weight_ff_mt_qcd_stat_njets1_mvadm2Down/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets1_mvadm2Down",&weight_ff_mt_wjets_stat_unc1_njets1_mvadm2Down,"weight_ff_mt_wjets_stat_unc1_njets1_mvadm2Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets1_mvadm2Down",&weight_ff_mt_qcd_stat_unc1_njets1_mvadm2Down,"weight_ff_mt_qcd_stat_unc1_njets1_mvadm2Down/F");
 			                                                                                                                                                   
-	outTree->Branch("weight_ff_mt_wjets_stat_njets2_mvadm2Down",&weight_ff_mt_wjets_stat_njets2_mvadm2Down,"weight_ff_mt_wjets_stat_njets2_mvadm2Down/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets2_mvadm2Down",&weight_ff_mt_qcd_stat_njets2_mvadm2Down,"weight_ff_mt_qcd_stat_njets2_mvadm2Down/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets2_mvadm2Down",&weight_ff_mt_wjets_stat_unc1_njets2_mvadm2Down,"weight_ff_mt_wjets_stat_unc1_njets2_mvadm2Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets2_mvadm2Down",&weight_ff_mt_qcd_stat_unc1_njets2_mvadm2Down,"weight_ff_mt_qcd_stat_unc1_njets2_mvadm2Down/F");
 
 
-	outTree->Branch("weight_ff_mt_wjets_stat_njets0_mvadm10Down",&weight_ff_mt_wjets_stat_njets0_mvadm10Down,"weight_ff_mt_wjets_stat_njets0_mvadm10Down/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets0_mvadm10Down",&weight_ff_mt_qcd_stat_njets0_mvadm10Down,"weight_ff_mt_qcd_stat_njets0_mvadm10Down/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets0_mvadm10Down",&weight_ff_mt_wjets_stat_unc1_njets0_mvadm10Down,"weight_ff_mt_wjets_stat_unc1_njets0_mvadm10Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets0_mvadm10Down",&weight_ff_mt_qcd_stat_unc1_njets0_mvadm10Down,"weight_ff_mt_qcd_stat_unc1_njets0_mvadm10Down/F");
 			                                                                                                      	                                                 
-	outTree->Branch("weight_ff_mt_wjets_stat_njets1_mvadm10Down",&weight_ff_mt_wjets_stat_njets1_mvadm10Down,"weight_ff_mt_wjets_stat_njets1_mvadm10Down/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets1_mvadm10Down",&weight_ff_mt_qcd_stat_njets1_mvadm10Down,"weight_ff_mt_qcd_stat_njets1_mvadm10Down/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets1_mvadm10Down",&weight_ff_mt_wjets_stat_unc1_njets1_mvadm10Down,"weight_ff_mt_wjets_stat_unc1_njets1_mvadm10Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets1_mvadm10Down",&weight_ff_mt_qcd_stat_unc1_njets1_mvadm10Down,"weight_ff_mt_qcd_stat_unc1_njets1_mvadm10Down/F");
 			                                                                                                      	                                                 
-	outTree->Branch("weight_ff_mt_wjets_stat_njets2_mvadm10Down",&weight_ff_mt_wjets_stat_njets2_mvadm10Down,"weight_ff_mt_wjets_stat_njets2_mvadm10Down/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets2_mvadm10Down",&weight_ff_mt_qcd_stat_njets2_mvadm10Down,"weight_ff_mt_qcd_stat_njets2_mvadm10Down/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets2_mvadm10Down",&weight_ff_mt_wjets_stat_unc1_njets2_mvadm10Down,"weight_ff_mt_wjets_stat_unc1_njets2_mvadm10Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets2_mvadm10Down",&weight_ff_mt_qcd_stat_unc1_njets2_mvadm10Down,"weight_ff_mt_qcd_stat_unc1_njets2_mvadm10Down/F");
 			                                                                                                      	                                                 
 			                                                                                                      	                                                 
-	outTree->Branch("weight_ff_mt_wjets_stat_njets0_mvadm11Down",&weight_ff_mt_wjets_stat_njets0_mvadm11Down,"weight_ff_mt_wjets_stat_njets0_mvadm11Down/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets0_mvadm11Down",&weight_ff_mt_qcd_stat_njets0_mvadm11Down,"weight_ff_mt_qcd_stat_njets0_mvadm11Down/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets0_mvadm11Down",&weight_ff_mt_wjets_stat_unc1_njets0_mvadm11Down,"weight_ff_mt_wjets_stat_unc1_njets0_mvadm11Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets0_mvadm11Down",&weight_ff_mt_qcd_stat_unc1_njets0_mvadm11Down,"weight_ff_mt_qcd_stat_unc1_njets0_mvadm11Down/F");
 			                                                                                                      	                                                 
-	outTree->Branch("weight_ff_mt_wjets_stat_njets1_mvadm11Down",&weight_ff_mt_wjets_stat_njets1_mvadm11Down,"weight_ff_mt_wjets_stat_njets1_mvadm11Down/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets1_mvadm11Down",&weight_ff_mt_qcd_stat_njets1_mvadm11Down,"weight_ff_mt_qcd_stat_njets1_mvadm11Down/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets1_mvadm11Down",&weight_ff_mt_wjets_stat_unc1_njets1_mvadm11Down,"weight_ff_mt_wjets_stat_unc1_njets1_mvadm11Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets1_mvadm11Down",&weight_ff_mt_qcd_stat_unc1_njets1_mvadm11Down,"weight_ff_mt_qcd_stat_unc1_njets1_mvadm11Down/F");
 			                                                                                                      	                                                 
-	outTree->Branch("weight_ff_mt_wjets_stat_njets2_mvadm11Down",&weight_ff_mt_wjets_stat_njets2_mvadm11Down,"weight_ff_mt_wjets_stat_njets2_mvadm11Down/F");
-	outTree->Branch("weight_ff_mt_qcd_stat_njets2_mvadm11Down",&weight_ff_mt_qcd_stat_njets2_mvadm11Down,"weight_ff_mt_qcd_stat_njets2_mvadm11Down/F");
+	outTree->Branch("weight_ff_mt_wjets_stat_unc1_njets2_mvadm11Down",&weight_ff_mt_wjets_stat_unc1_njets2_mvadm11Down,"weight_ff_mt_wjets_stat_unc1_njets2_mvadm11Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc1_njets2_mvadm11Down",&weight_ff_mt_qcd_stat_unc1_njets2_mvadm11Down,"weight_ff_mt_qcd_stat_unc1_njets2_mvadm11Down/F");
+	///////////
+	//unc2
+	////////////
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_ltUp",&weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_ltUp,"weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_ltUp/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_ltUp",&weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_ltUp,"weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_ltUp/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_ltUp",&weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_ltUp,"weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_ltUp/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_ltUp",&weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_ltUp,"weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_ltUp/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_ltUp",&weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_ltUp,"weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_ltUp/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_ltUp",&weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_ltUp,"weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_ltUp/F");
+			                                                                                                                                                                           
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_gtUp",&weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_gtUp,"weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_gtUp/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_gtUp",&weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_gtUp,"weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_gtUp/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_gtUp",&weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_gtUp,"weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_gtUp/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_gtUp",&weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_gtUp,"weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_gtUp/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_gtUp",&weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_gtUp,"weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_gtUp/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_gtUp",&weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_gtUp,"weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_gtUp/F");
+	
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets0_mvadm1Up",&weight_ff_mt_wjets_stat_unc2_njets0_mvadm1Up,"weight_ff_mt_wjets_stat_unc2_njets0_mvadm1Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets0_mvadm1Up",&weight_ff_mt_qcd_stat_unc2_njets0_mvadm1Up,"weight_ff_mt_qcd_stat_unc2_njets0_mvadm1Up/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets1_mvadm1Up",&weight_ff_mt_wjets_stat_unc2_njets1_mvadm1Up,"weight_ff_mt_wjets_stat_unc2_njets1_mvadm1Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets1_mvadm1Up",&weight_ff_mt_qcd_stat_unc2_njets1_mvadm1Up,"weight_ff_mt_qcd_stat_unc2_njets1_mvadm1Up/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets2_mvadm1Up",&weight_ff_mt_wjets_stat_unc2_njets2_mvadm1Up,"weight_ff_mt_wjets_stat_unc2_njets2_mvadm1Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets2_mvadm1Up",&weight_ff_mt_qcd_stat_unc2_njets2_mvadm1Up,"weight_ff_mt_qcd_stat_unc2_njets2_mvadm1Up/F");
+
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets0_mvadm2Up",&weight_ff_mt_wjets_stat_unc2_njets0_mvadm2Up,"weight_ff_mt_wjets_stat_unc2_njets0_mvadm2Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets0_mvadm2Up",&weight_ff_mt_qcd_stat_unc2_njets0_mvadm2Up,"weight_ff_mt_qcd_stat_unc2_njets0_mvadm2Up/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets1_mvadm2Up",&weight_ff_mt_wjets_stat_unc2_njets1_mvadm2Up,"weight_ff_mt_wjets_stat_unc2_njets1_mvadm2Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets1_mvadm2Up",&weight_ff_mt_qcd_stat_unc2_njets1_mvadm2Up,"weight_ff_mt_qcd_stat_unc2_njets1_mvadm2Up/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets2_mvadm2Up",&weight_ff_mt_wjets_stat_unc2_njets2_mvadm2Up,"weight_ff_mt_wjets_stat_unc2_njets2_mvadm2Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets2_mvadm2Up",&weight_ff_mt_qcd_stat_unc2_njets2_mvadm2Up,"weight_ff_mt_qcd_stat_unc2_njets2_mvadm2Up/F");
 
 
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets0_mvadm10Up",&weight_ff_mt_wjets_stat_unc2_njets0_mvadm10Up,"weight_ff_mt_wjets_stat_unc2_njets0_mvadm10Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets0_mvadm10Up",&weight_ff_mt_qcd_stat_unc2_njets0_mvadm10Up,"weight_ff_mt_qcd_stat_unc2_njets0_mvadm10Up/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets1_mvadm10Up",&weight_ff_mt_wjets_stat_unc2_njets1_mvadm10Up,"weight_ff_mt_wjets_stat_unc2_njets1_mvadm10Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets1_mvadm10Up",&weight_ff_mt_qcd_stat_unc2_njets1_mvadm10Up,"weight_ff_mt_qcd_stat_unc2_njets1_mvadm10Up/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets2_mvadm10Up",&weight_ff_mt_wjets_stat_unc2_njets2_mvadm10Up,"weight_ff_mt_wjets_stat_unc2_njets2_mvadm10Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets2_mvadm10Up",&weight_ff_mt_qcd_stat_unc2_njets2_mvadm10Up,"weight_ff_mt_qcd_stat_unc2_njets2_mvadm10Up/F");
+			                                                                                                      	                                                 
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets0_mvadm11Up",&weight_ff_mt_wjets_stat_unc2_njets0_mvadm11Up,"weight_ff_mt_wjets_stat_unc2_njets0_mvadm11Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets0_mvadm11Up",&weight_ff_mt_qcd_stat_unc2_njets0_mvadm11Up,"weight_ff_mt_qcd_stat_unc2_njets0_mvadm11Up/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets1_mvadm11Up",&weight_ff_mt_wjets_stat_unc2_njets1_mvadm11Up,"weight_ff_mt_wjets_stat_unc2_njets1_mvadm11Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets1_mvadm11Up",&weight_ff_mt_qcd_stat_unc2_njets1_mvadm11Up,"weight_ff_mt_qcd_stat_unc2_njets1_mvadm11Up/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets2_mvadm11Up",&weight_ff_mt_wjets_stat_unc2_njets2_mvadm11Up,"weight_ff_mt_wjets_stat_unc2_njets2_mvadm11Up/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets2_mvadm11Up",&weight_ff_mt_qcd_stat_unc2_njets2_mvadm11Up,"weight_ff_mt_qcd_stat_unc2_njets2_mvadm11Up/F");
+
+
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_ltDown",&weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_ltDown,"weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_ltDown/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_ltDown",&weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_ltDown,"weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_ltDown/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_ltDown",&weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_ltDown,"weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_ltDown/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_ltDown",&weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_ltDown,"weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_ltDown/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_ltDown",&weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_ltDown,"weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_ltDown/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_ltDown",&weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_ltDown,"weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_ltDown/F");
+			                                                                                                                                                                           
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_gtDown",&weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_gtDown,"weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_gtDown/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_gtDown",&weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_gtDown,"weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_gtDown/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_gtDown",&weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_gtDown,"weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_gtDown/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_gtDown",&weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_gtDown,"weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_gtDown/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_gtDown",&weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_gtDown,"weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_gtDown/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_gtDown",&weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_gtDown,"weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_gtDown/F");
+	
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets0_mvadm1Down",&weight_ff_mt_wjets_stat_unc2_njets0_mvadm1Down,"weight_ff_mt_wjets_stat_unc2_njets0_mvadm1Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets0_mvadm1Down",&weight_ff_mt_qcd_stat_unc2_njets0_mvadm1Down,"weight_ff_mt_qcd_stat_unc2_njets0_mvadm1Down/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets1_mvadm1Down",&weight_ff_mt_wjets_stat_unc2_njets1_mvadm1Down,"weight_ff_mt_wjets_stat_unc2_njets1_mvadm1Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets1_mvadm1Down",&weight_ff_mt_qcd_stat_unc2_njets1_mvadm1Down,"weight_ff_mt_qcd_stat_unc2_njets1_mvadm1Down/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets2_mvadm1Down",&weight_ff_mt_wjets_stat_unc2_njets2_mvadm1Down,"weight_ff_mt_wjets_stat_unc2_njets2_mvadm1Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets2_mvadm1Down",&weight_ff_mt_qcd_stat_unc2_njets2_mvadm1Down,"weight_ff_mt_qcd_stat_unc2_njets2_mvadm1Down/F");
+
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets0_mvadm2Down",&weight_ff_mt_wjets_stat_unc2_njets0_mvadm2Down,"weight_ff_mt_wjets_stat_unc2_njets0_mvadm2Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets0_mvadm2Down",&weight_ff_mt_qcd_stat_unc2_njets0_mvadm2Down,"weight_ff_mt_qcd_stat_unc2_njets0_mvadm2Down/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets1_mvadm2Down",&weight_ff_mt_wjets_stat_unc2_njets1_mvadm2Down,"weight_ff_mt_wjets_stat_unc2_njets1_mvadm2Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets1_mvadm2Down",&weight_ff_mt_qcd_stat_unc2_njets1_mvadm2Down,"weight_ff_mt_qcd_stat_unc2_njets1_mvadm2Down/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets2_mvadm2Down",&weight_ff_mt_wjets_stat_unc2_njets2_mvadm2Down,"weight_ff_mt_wjets_stat_unc2_njets2_mvadm2Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets2_mvadm2Down",&weight_ff_mt_qcd_stat_unc2_njets2_mvadm2Down,"weight_ff_mt_qcd_stat_unc2_njets2_mvadm2Down/F");
+
+
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets0_mvadm10Down",&weight_ff_mt_wjets_stat_unc2_njets0_mvadm10Down,"weight_ff_mt_wjets_stat_unc2_njets0_mvadm10Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets0_mvadm10Down",&weight_ff_mt_qcd_stat_unc2_njets0_mvadm10Down,"weight_ff_mt_qcd_stat_unc2_njets0_mvadm10Down/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets1_mvadm10Down",&weight_ff_mt_wjets_stat_unc2_njets1_mvadm10Down,"weight_ff_mt_wjets_stat_unc2_njets1_mvadm10Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets1_mvadm10Down",&weight_ff_mt_qcd_stat_unc2_njets1_mvadm10Down,"weight_ff_mt_qcd_stat_unc2_njets1_mvadm10Down/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets2_mvadm10Down",&weight_ff_mt_wjets_stat_unc2_njets2_mvadm10Down,"weight_ff_mt_wjets_stat_unc2_njets2_mvadm10Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets2_mvadm10Down",&weight_ff_mt_qcd_stat_unc2_njets2_mvadm10Down,"weight_ff_mt_qcd_stat_unc2_njets2_mvadm10Down/F");
+			                                                                                                      	                                                 
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets0_mvadm11Down",&weight_ff_mt_wjets_stat_unc2_njets0_mvadm11Down,"weight_ff_mt_wjets_stat_unc2_njets0_mvadm11Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets0_mvadm11Down",&weight_ff_mt_qcd_stat_unc2_njets0_mvadm11Down,"weight_ff_mt_qcd_stat_unc2_njets0_mvadm11Down/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets1_mvadm11Down",&weight_ff_mt_wjets_stat_unc2_njets1_mvadm11Down,"weight_ff_mt_wjets_stat_unc2_njets1_mvadm11Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets1_mvadm11Down",&weight_ff_mt_qcd_stat_unc2_njets1_mvadm11Down,"weight_ff_mt_qcd_stat_unc2_njets1_mvadm11Down/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_mt_wjets_stat_unc2_njets2_mvadm11Down",&weight_ff_mt_wjets_stat_unc2_njets2_mvadm11Down,"weight_ff_mt_wjets_stat_unc2_njets2_mvadm11Down/F");
+	outTree->Branch("weight_ff_mt_qcd_stat_unc2_njets2_mvadm11Down",&weight_ff_mt_qcd_stat_unc2_njets2_mvadm11Down,"weight_ff_mt_qcd_stat_unc2_njets2_mvadm11Down/F");
+	
 	//met_var_qcd and met_var_w non-closure corrections
 
 	outTree->Branch("weight_ff_mt_qcd_met_closure_systUp",&weight_ff_mt_qcd_met_closure_systUp,"weight_ff_mt_qcd_met_closure_systUp/F");
@@ -859,6 +1370,265 @@ int main(int argc, char * argv[]) {
 	outTree->Branch("weight_ff_mt_wjets_systDown",&weight_ff_mt_wjets_systDown,"weight_ff_mt_wjets_systDown/F");
 	outTree->Branch("weight_ff_mt_ttbar_systUp",&weight_ff_mt_ttbar_systUp,"weight_ff_mt_ttbar_systUp/F");
 	outTree->Branch("weight_ff_mt_ttbar_systDown",&weight_ff_mt_ttbar_systDown,"weight_ff_mt_ttbar_systDown/F");
+
+	////////////////////////////////
+	///Weights for FF: et
+	//Stat uncertainties
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_ltUp",&weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_ltUp,"weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_ltUp/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_ltUp",&weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_ltUp,"weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_ltUp/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_ltUp",&weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_ltUp,"weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_ltUp/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_ltUp",&weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_ltUp,"weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_ltUp/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_ltUp",&weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_ltUp,"weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_ltUp/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_ltUp",&weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_ltUp,"weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_ltUp/F");
+			                                                                                                                                                                           
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_gtUp",&weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_gtUp,"weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_gtUp/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_gtUp",&weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_gtUp,"weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_gtUp/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_gtUp",&weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_gtUp,"weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_gtUp/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_gtUp",&weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_gtUp,"weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_gtUp/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_gtUp",&weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_gtUp,"weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_gtUp/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_gtUp",&weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_gtUp,"weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_gtUp/F");
+	
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets0_mvadm1Up",&weight_ff_et_wjets_stat_unc1_njets0_mvadm1Up,"weight_ff_et_wjets_stat_unc1_njets0_mvadm1Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets0_mvadm1Up",&weight_ff_et_qcd_stat_unc1_njets0_mvadm1Up,"weight_ff_et_qcd_stat_unc1_njets0_mvadm1Up/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets1_mvadm1Up",&weight_ff_et_wjets_stat_unc1_njets1_mvadm1Up,"weight_ff_et_wjets_stat_unc1_njets1_mvadm1Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets1_mvadm1Up",&weight_ff_et_qcd_stat_unc1_njets1_mvadm1Up,"weight_ff_et_qcd_stat_unc1_njets1_mvadm1Up/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets2_mvadm1Up",&weight_ff_et_wjets_stat_unc1_njets2_mvadm1Up,"weight_ff_et_wjets_stat_unc1_njets2_mvadm1Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets2_mvadm1Up",&weight_ff_et_qcd_stat_unc1_njets2_mvadm1Up,"weight_ff_et_qcd_stat_unc1_njets2_mvadm1Up/F");
+
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets0_mvadm2Up",&weight_ff_et_wjets_stat_unc1_njets0_mvadm2Up,"weight_ff_et_wjets_stat_unc1_njets0_mvadm2Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets0_mvadm2Up",&weight_ff_et_qcd_stat_unc1_njets0_mvadm2Up,"weight_ff_et_qcd_stat_unc1_njets0_mvadm2Up/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets1_mvadm2Up",&weight_ff_et_wjets_stat_unc1_njets1_mvadm2Up,"weight_ff_et_wjets_stat_unc1_njets1_mvadm2Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets1_mvadm2Up",&weight_ff_et_qcd_stat_unc1_njets1_mvadm2Up,"weight_ff_et_qcd_stat_unc1_njets1_mvadm2Up/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets2_mvadm2Up",&weight_ff_et_wjets_stat_unc1_njets2_mvadm2Up,"weight_ff_et_wjets_stat_unc1_njets2_mvadm2Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets2_mvadm2Up",&weight_ff_et_qcd_stat_unc1_njets2_mvadm2Up,"weight_ff_et_qcd_stat_unc1_njets2_mvadm2Up/F");
+
+
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets0_mvadm10Up",&weight_ff_et_wjets_stat_unc1_njets0_mvadm10Up,"weight_ff_et_wjets_stat_unc1_njets0_mvadm10Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets0_mvadm10Up",&weight_ff_et_qcd_stat_unc1_njets0_mvadm10Up,"weight_ff_et_qcd_stat_unc1_njets0_mvadm10Up/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets1_mvadm10Up",&weight_ff_et_wjets_stat_unc1_njets1_mvadm10Up,"weight_ff_et_wjets_stat_unc1_njets1_mvadm10Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets1_mvadm10Up",&weight_ff_et_qcd_stat_unc1_njets1_mvadm10Up,"weight_ff_et_qcd_stat_unc1_njets1_mvadm10Up/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets2_mvadm10Up",&weight_ff_et_wjets_stat_unc1_njets2_mvadm10Up,"weight_ff_et_wjets_stat_unc1_njets2_mvadm10Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets2_mvadm10Up",&weight_ff_et_qcd_stat_unc1_njets2_mvadm10Up,"weight_ff_et_qcd_stat_unc1_njets2_mvadm10Up/F");
+			                                                                                                      	                                                 
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets0_mvadm11Up",&weight_ff_et_wjets_stat_unc1_njets0_mvadm11Up,"weight_ff_et_wjets_stat_unc1_njets0_mvadm11Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets0_mvadm11Up",&weight_ff_et_qcd_stat_unc1_njets0_mvadm11Up,"weight_ff_et_qcd_stat_unc1_njets0_mvadm11Up/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets1_mvadm11Up",&weight_ff_et_wjets_stat_unc1_njets1_mvadm11Up,"weight_ff_et_wjets_stat_unc1_njets1_mvadm11Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets1_mvadm11Up",&weight_ff_et_qcd_stat_unc1_njets1_mvadm11Up,"weight_ff_et_qcd_stat_unc1_njets1_mvadm11Up/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets2_mvadm11Up",&weight_ff_et_wjets_stat_unc1_njets2_mvadm11Up,"weight_ff_et_wjets_stat_unc1_njets2_mvadm11Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets2_mvadm11Up",&weight_ff_et_qcd_stat_unc1_njets2_mvadm11Up,"weight_ff_et_qcd_stat_unc1_njets2_mvadm11Up/F");
+
+
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_ltDown",&weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_ltDown,"weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_ltDown/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_ltDown",&weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_ltDown,"weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_ltDown/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_ltDown",&weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_ltDown,"weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_ltDown/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_ltDown",&weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_ltDown,"weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_ltDown/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_ltDown",&weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_ltDown,"weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_ltDown/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_ltDown",&weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_ltDown,"weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_ltDown/F");
+			                                                                                                                                                                           
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_gtDown",&weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_gtDown,"weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_gtDown/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_gtDown",&weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_gtDown,"weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_gtDown/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_gtDown",&weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_gtDown,"weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_gtDown/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_gtDown",&weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_gtDown,"weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_gtDown/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_gtDown",&weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_gtDown,"weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_gtDown/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_gtDown",&weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_gtDown,"weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_gtDown/F");
+	
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets0_mvadm1Down",&weight_ff_et_wjets_stat_unc1_njets0_mvadm1Down,"weight_ff_et_wjets_stat_unc1_njets0_mvadm1Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets0_mvadm1Down",&weight_ff_et_qcd_stat_unc1_njets0_mvadm1Down,"weight_ff_et_qcd_stat_unc1_njets0_mvadm1Down/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets1_mvadm1Down",&weight_ff_et_wjets_stat_unc1_njets1_mvadm1Down,"weight_ff_et_wjets_stat_unc1_njets1_mvadm1Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets1_mvadm1Down",&weight_ff_et_qcd_stat_unc1_njets1_mvadm1Down,"weight_ff_et_qcd_stat_unc1_njets1_mvadm1Down/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets2_mvadm1Down",&weight_ff_et_wjets_stat_unc1_njets2_mvadm1Down,"weight_ff_et_wjets_stat_unc1_njets2_mvadm1Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets2_mvadm1Down",&weight_ff_et_qcd_stat_unc1_njets2_mvadm1Down,"weight_ff_et_qcd_stat_unc1_njets2_mvadm1Down/F");
+
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets0_mvadm2Down",&weight_ff_et_wjets_stat_unc1_njets0_mvadm2Down,"weight_ff_et_wjets_stat_unc1_njets0_mvadm2Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets0_mvadm2Down",&weight_ff_et_qcd_stat_unc1_njets0_mvadm2Down,"weight_ff_et_qcd_stat_unc1_njets0_mvadm2Down/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets1_mvadm2Down",&weight_ff_et_wjets_stat_unc1_njets1_mvadm2Down,"weight_ff_et_wjets_stat_unc1_njets1_mvadm2Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets1_mvadm2Down",&weight_ff_et_qcd_stat_unc1_njets1_mvadm2Down,"weight_ff_et_qcd_stat_unc1_njets1_mvadm2Down/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets2_mvadm2Down",&weight_ff_et_wjets_stat_unc1_njets2_mvadm2Down,"weight_ff_et_wjets_stat_unc1_njets2_mvadm2Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets2_mvadm2Down",&weight_ff_et_qcd_stat_unc1_njets2_mvadm2Down,"weight_ff_et_qcd_stat_unc1_njets2_mvadm2Down/F");
+
+
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets0_mvadm10Down",&weight_ff_et_wjets_stat_unc1_njets0_mvadm10Down,"weight_ff_et_wjets_stat_unc1_njets0_mvadm10Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets0_mvadm10Down",&weight_ff_et_qcd_stat_unc1_njets0_mvadm10Down,"weight_ff_et_qcd_stat_unc1_njets0_mvadm10Down/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets1_mvadm10Down",&weight_ff_et_wjets_stat_unc1_njets1_mvadm10Down,"weight_ff_et_wjets_stat_unc1_njets1_mvadm10Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets1_mvadm10Down",&weight_ff_et_qcd_stat_unc1_njets1_mvadm10Down,"weight_ff_et_qcd_stat_unc1_njets1_mvadm10Down/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets2_mvadm10Down",&weight_ff_et_wjets_stat_unc1_njets2_mvadm10Down,"weight_ff_et_wjets_stat_unc1_njets2_mvadm10Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets2_mvadm10Down",&weight_ff_et_qcd_stat_unc1_njets2_mvadm10Down,"weight_ff_et_qcd_stat_unc1_njets2_mvadm10Down/F");
+			                                                                                                      	                                                 
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets0_mvadm11Down",&weight_ff_et_wjets_stat_unc1_njets0_mvadm11Down,"weight_ff_et_wjets_stat_unc1_njets0_mvadm11Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets0_mvadm11Down",&weight_ff_et_qcd_stat_unc1_njets0_mvadm11Down,"weight_ff_et_qcd_stat_unc1_njets0_mvadm11Down/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets1_mvadm11Down",&weight_ff_et_wjets_stat_unc1_njets1_mvadm11Down,"weight_ff_et_wjets_stat_unc1_njets1_mvadm11Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets1_mvadm11Down",&weight_ff_et_qcd_stat_unc1_njets1_mvadm11Down,"weight_ff_et_qcd_stat_unc1_njets1_mvadm11Down/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_et_wjets_stat_unc1_njets2_mvadm11Down",&weight_ff_et_wjets_stat_unc1_njets2_mvadm11Down,"weight_ff_et_wjets_stat_unc1_njets2_mvadm11Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc1_njets2_mvadm11Down",&weight_ff_et_qcd_stat_unc1_njets2_mvadm11Down,"weight_ff_et_qcd_stat_unc1_njets2_mvadm11Down/F");
+	///////////
+	//unc2
+	////////////
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_ltUp",&weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_ltUp,"weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_ltUp/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_ltUp",&weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_ltUp,"weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_ltUp/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_ltUp",&weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_ltUp,"weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_ltUp/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_ltUp",&weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_ltUp,"weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_ltUp/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_ltUp",&weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_ltUp,"weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_ltUp/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_ltUp",&weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_ltUp,"weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_ltUp/F");
+			                                                                                                                                                                           
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_gtUp",&weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_gtUp,"weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_gtUp/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_gtUp",&weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_gtUp,"weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_gtUp/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_gtUp",&weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_gtUp,"weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_gtUp/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_gtUp",&weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_gtUp,"weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_gtUp/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_gtUp",&weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_gtUp,"weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_gtUp/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_gtUp",&weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_gtUp,"weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_gtUp/F");
+	
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets0_mvadm1Up",&weight_ff_et_wjets_stat_unc2_njets0_mvadm1Up,"weight_ff_et_wjets_stat_unc2_njets0_mvadm1Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets0_mvadm1Up",&weight_ff_et_qcd_stat_unc2_njets0_mvadm1Up,"weight_ff_et_qcd_stat_unc2_njets0_mvadm1Up/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets1_mvadm1Up",&weight_ff_et_wjets_stat_unc2_njets1_mvadm1Up,"weight_ff_et_wjets_stat_unc2_njets1_mvadm1Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets1_mvadm1Up",&weight_ff_et_qcd_stat_unc2_njets1_mvadm1Up,"weight_ff_et_qcd_stat_unc2_njets1_mvadm1Up/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets2_mvadm1Up",&weight_ff_et_wjets_stat_unc2_njets2_mvadm1Up,"weight_ff_et_wjets_stat_unc2_njets2_mvadm1Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets2_mvadm1Up",&weight_ff_et_qcd_stat_unc2_njets2_mvadm1Up,"weight_ff_et_qcd_stat_unc2_njets2_mvadm1Up/F");
+
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets0_mvadm2Up",&weight_ff_et_wjets_stat_unc2_njets0_mvadm2Up,"weight_ff_et_wjets_stat_unc2_njets0_mvadm2Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets0_mvadm2Up",&weight_ff_et_qcd_stat_unc2_njets0_mvadm2Up,"weight_ff_et_qcd_stat_unc2_njets0_mvadm2Up/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets1_mvadm2Up",&weight_ff_et_wjets_stat_unc2_njets1_mvadm2Up,"weight_ff_et_wjets_stat_unc2_njets1_mvadm2Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets1_mvadm2Up",&weight_ff_et_qcd_stat_unc2_njets1_mvadm2Up,"weight_ff_et_qcd_stat_unc2_njets1_mvadm2Up/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets2_mvadm2Up",&weight_ff_et_wjets_stat_unc2_njets2_mvadm2Up,"weight_ff_et_wjets_stat_unc2_njets2_mvadm2Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets2_mvadm2Up",&weight_ff_et_qcd_stat_unc2_njets2_mvadm2Up,"weight_ff_et_qcd_stat_unc2_njets2_mvadm2Up/F");
+
+
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets0_mvadm10Up",&weight_ff_et_wjets_stat_unc2_njets0_mvadm10Up,"weight_ff_et_wjets_stat_unc2_njets0_mvadm10Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets0_mvadm10Up",&weight_ff_et_qcd_stat_unc2_njets0_mvadm10Up,"weight_ff_et_qcd_stat_unc2_njets0_mvadm10Up/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets1_mvadm10Up",&weight_ff_et_wjets_stat_unc2_njets1_mvadm10Up,"weight_ff_et_wjets_stat_unc2_njets1_mvadm10Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets1_mvadm10Up",&weight_ff_et_qcd_stat_unc2_njets1_mvadm10Up,"weight_ff_et_qcd_stat_unc2_njets1_mvadm10Up/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets2_mvadm10Up",&weight_ff_et_wjets_stat_unc2_njets2_mvadm10Up,"weight_ff_et_wjets_stat_unc2_njets2_mvadm10Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets2_mvadm10Up",&weight_ff_et_qcd_stat_unc2_njets2_mvadm10Up,"weight_ff_et_qcd_stat_unc2_njets2_mvadm10Up/F");
+			                                                                                                      	                                                 
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets0_mvadm11Up",&weight_ff_et_wjets_stat_unc2_njets0_mvadm11Up,"weight_ff_et_wjets_stat_unc2_njets0_mvadm11Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets0_mvadm11Up",&weight_ff_et_qcd_stat_unc2_njets0_mvadm11Up,"weight_ff_et_qcd_stat_unc2_njets0_mvadm11Up/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets1_mvadm11Up",&weight_ff_et_wjets_stat_unc2_njets1_mvadm11Up,"weight_ff_et_wjets_stat_unc2_njets1_mvadm11Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets1_mvadm11Up",&weight_ff_et_qcd_stat_unc2_njets1_mvadm11Up,"weight_ff_et_qcd_stat_unc2_njets1_mvadm11Up/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets2_mvadm11Up",&weight_ff_et_wjets_stat_unc2_njets2_mvadm11Up,"weight_ff_et_wjets_stat_unc2_njets2_mvadm11Up/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets2_mvadm11Up",&weight_ff_et_qcd_stat_unc2_njets2_mvadm11Up,"weight_ff_et_qcd_stat_unc2_njets2_mvadm11Up/F");
+
+
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_ltDown",&weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_ltDown,"weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_ltDown/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_ltDown",&weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_ltDown,"weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_ltDown/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_ltDown",&weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_ltDown,"weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_ltDown/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_ltDown",&weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_ltDown,"weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_ltDown/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_ltDown",&weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_ltDown,"weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_ltDown/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_ltDown",&weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_ltDown,"weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_ltDown/F");
+			                                                                                                                                                                           
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_gtDown",&weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_gtDown,"weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_gtDown/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_gtDown",&weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_gtDown,"weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_gtDown/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_gtDown",&weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_gtDown,"weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_gtDown/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_gtDown",&weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_gtDown,"weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_gtDown/F");
+			                                                                                                                                                                           
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_gtDown",&weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_gtDown,"weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_gtDown/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_gtDown",&weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_gtDown,"weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_gtDown/F");
+	
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets0_mvadm1Down",&weight_ff_et_wjets_stat_unc2_njets0_mvadm1Down,"weight_ff_et_wjets_stat_unc2_njets0_mvadm1Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets0_mvadm1Down",&weight_ff_et_qcd_stat_unc2_njets0_mvadm1Down,"weight_ff_et_qcd_stat_unc2_njets0_mvadm1Down/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets1_mvadm1Down",&weight_ff_et_wjets_stat_unc2_njets1_mvadm1Down,"weight_ff_et_wjets_stat_unc2_njets1_mvadm1Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets1_mvadm1Down",&weight_ff_et_qcd_stat_unc2_njets1_mvadm1Down,"weight_ff_et_qcd_stat_unc2_njets1_mvadm1Down/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets2_mvadm1Down",&weight_ff_et_wjets_stat_unc2_njets2_mvadm1Down,"weight_ff_et_wjets_stat_unc2_njets2_mvadm1Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets2_mvadm1Down",&weight_ff_et_qcd_stat_unc2_njets2_mvadm1Down,"weight_ff_et_qcd_stat_unc2_njets2_mvadm1Down/F");
+
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets0_mvadm2Down",&weight_ff_et_wjets_stat_unc2_njets0_mvadm2Down,"weight_ff_et_wjets_stat_unc2_njets0_mvadm2Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets0_mvadm2Down",&weight_ff_et_qcd_stat_unc2_njets0_mvadm2Down,"weight_ff_et_qcd_stat_unc2_njets0_mvadm2Down/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets1_mvadm2Down",&weight_ff_et_wjets_stat_unc2_njets1_mvadm2Down,"weight_ff_et_wjets_stat_unc2_njets1_mvadm2Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets1_mvadm2Down",&weight_ff_et_qcd_stat_unc2_njets1_mvadm2Down,"weight_ff_et_qcd_stat_unc2_njets1_mvadm2Down/F");
+			                                                                                                                                                   
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets2_mvadm2Down",&weight_ff_et_wjets_stat_unc2_njets2_mvadm2Down,"weight_ff_et_wjets_stat_unc2_njets2_mvadm2Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets2_mvadm2Down",&weight_ff_et_qcd_stat_unc2_njets2_mvadm2Down,"weight_ff_et_qcd_stat_unc2_njets2_mvadm2Down/F");
+
+
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets0_mvadm10Down",&weight_ff_et_wjets_stat_unc2_njets0_mvadm10Down,"weight_ff_et_wjets_stat_unc2_njets0_mvadm10Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets0_mvadm10Down",&weight_ff_et_qcd_stat_unc2_njets0_mvadm10Down,"weight_ff_et_qcd_stat_unc2_njets0_mvadm10Down/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets1_mvadm10Down",&weight_ff_et_wjets_stat_unc2_njets1_mvadm10Down,"weight_ff_et_wjets_stat_unc2_njets1_mvadm10Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets1_mvadm10Down",&weight_ff_et_qcd_stat_unc2_njets1_mvadm10Down,"weight_ff_et_qcd_stat_unc2_njets1_mvadm10Down/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets2_mvadm10Down",&weight_ff_et_wjets_stat_unc2_njets2_mvadm10Down,"weight_ff_et_wjets_stat_unc2_njets2_mvadm10Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets2_mvadm10Down",&weight_ff_et_qcd_stat_unc2_njets2_mvadm10Down,"weight_ff_et_qcd_stat_unc2_njets2_mvadm10Down/F");
+			                                                                                                      	                                                 
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets0_mvadm11Down",&weight_ff_et_wjets_stat_unc2_njets0_mvadm11Down,"weight_ff_et_wjets_stat_unc2_njets0_mvadm11Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets0_mvadm11Down",&weight_ff_et_qcd_stat_unc2_njets0_mvadm11Down,"weight_ff_et_qcd_stat_unc2_njets0_mvadm11Down/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets1_mvadm11Down",&weight_ff_et_wjets_stat_unc2_njets1_mvadm11Down,"weight_ff_et_wjets_stat_unc2_njets1_mvadm11Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets1_mvadm11Down",&weight_ff_et_qcd_stat_unc2_njets1_mvadm11Down,"weight_ff_et_qcd_stat_unc2_njets1_mvadm11Down/F");
+			                                                                                                      	                                                 
+	outTree->Branch("weight_ff_et_wjets_stat_unc2_njets2_mvadm11Down",&weight_ff_et_wjets_stat_unc2_njets2_mvadm11Down,"weight_ff_et_wjets_stat_unc2_njets2_mvadm11Down/F");
+	outTree->Branch("weight_ff_et_qcd_stat_unc2_njets2_mvadm11Down",&weight_ff_et_qcd_stat_unc2_njets2_mvadm11Down,"weight_ff_et_qcd_stat_unc2_njets2_mvadm11Down/F");
+	
+	//met_var_qcd and met_var_w non-closure corrections
+
+	outTree->Branch("weight_ff_et_qcd_met_closure_systUp",&weight_ff_et_qcd_met_closure_systUp,"weight_ff_et_qcd_met_closure_systUp/F");
+	outTree->Branch("weight_ff_et_wjets_met_closure_systUp",&weight_ff_et_wjets_met_closure_systUp,"weight_ff_et_wjets_met_closure_systUp/F");
+	outTree->Branch("weight_ff_et_ttbar_met_closure_systUp",&weight_ff_et_ttbar_met_closure_systUp,"weight_ff_et_ttbar_met_closure_systUp/F");
+	outTree->Branch("weight_ff_et_qcd_met_closure_systDown",&weight_ff_et_qcd_met_closure_systDown,"weight_ff_et_qcd_met_closure_systDown/F");
+	outTree->Branch("weight_ff_et_wjets_met_closure_systDown",&weight_ff_et_wjets_met_closure_systDown,"weight_ff_et_wjets_met_closure_systDown/F");
+	outTree->Branch("weight_ff_et_ttbar_met_closure_systDown",&weight_ff_et_ttbar_met_closure_systDown,"weight_ff_et_ttbar_met_closure_systDown/F");
+
+	//m_pt non-closure corrections
+
+	outTree->Branch("weight_ff_et_qcd_l_pt_closure_systUp",&weight_ff_et_qcd_l_pt_closure_systUp,"weight_ff_et_qcd_l_pt_closure_systUp/F");
+	outTree->Branch("weight_ff_et_qcd_l_pt_closure_systDown",&weight_ff_et_qcd_l_pt_closure_systDown,"weight_ff_et_qcd_l_pt_closure_systDown/F");
+	outTree->Branch("weight_ff_et_wjets_l_pt_closure_systUp",&weight_ff_et_wjets_l_pt_closure_systUp,"weight_ff_et_wjets_l_pt_closure_systUp/F");
+	outTree->Branch("weight_ff_et_wjets_l_pt_closure_systDown",&weight_ff_et_wjets_l_pt_closure_systDown,"weight_ff_et_wjets_l_pt_closure_systDown/F");
+
+	//extrapolations from DR to SR
+	outTree->Branch("weight_ff_et_qcd_systUp",&weight_ff_et_qcd_systUp,"weight_ff_et_qcd_systUp/F");
+	outTree->Branch("weight_ff_et_qcd_systDown",&weight_ff_et_qcd_systDown,"weight_ff_et_qcd_systDown/F");
+	outTree->Branch("weight_ff_et_wjets_systUp",&weight_ff_et_wjets_systUp,"weight_ff_et_wjets_systUp/F");
+	outTree->Branch("weight_ff_et_wjets_systDown",&weight_ff_et_wjets_systDown,"weight_ff_et_wjets_systDown/F");
+	outTree->Branch("weight_ff_et_ttbar_systUp",&weight_ff_et_ttbar_systUp,"weight_ff_et_ttbar_systUp/F");
+	outTree->Branch("weight_ff_et_ttbar_systDown",&weight_ff_et_ttbar_systDown,"weight_ff_et_ttbar_systDown/F");
 
 
 	//Weights for Tau ES and ID
@@ -1114,16 +1884,18 @@ int main(int argc, char * argv[]) {
                     is_trigger = is_singleLepTrigger || is_crossTrigger;
 		  }
 		  if( is_trigger < 0.5 ) continue;
-		  if( byTightDeepTau2017v2p1VSmu_2 < 0.5) continue;
+		  if( byTightDeepTau2017v2p1VSmu_2  < 0.5 ) continue;
 		  if( byVVLooseDeepTau2017v2p1VSe_2 < 0.5 ) continue;
-		  if( byVVVLooseDeepTau2017v2p1VSjet_2 < 0.5 ) continue;
 		}else{
 		  if( iso_1 > 0.10 )              continue;
-		  else if( pt_1 < 20 )            continue; 
-		  else if( pt_2 < 20 )            continue; 
+		  if( pt_1 < 20 )                 continue; 
+		  if( pt_2 < 20 )                 continue; 
 		  if (abs(eta_1)>2.1)             continue;
 		  if (abs(eta_2)>2.3)             continue;
+		  if( byVLooseDeepTau2017v2p1VSmu_2 < 0.5 ) continue;
+		  if( byTightDeepTau2017v2p1VSe_2   < 0.5 ) continue;
 		}
+		if( byVVVLooseDeepTau2017v2p1VSjet_2 < 0.5 ) continue;
 		if( extraelec_veto > 0.5 )       continue;
 		if( nbtag!=0 )                   continue;
 		if( extramuon_veto > 0.5 )       continue;
@@ -1195,7 +1967,8 @@ int main(int argc, char * argv[]) {
 						iso_1,
 						static_cast<double>(trg_singlemuon),
 						m_vis};
-		ff_nom = fns_["ff_mt_medium_dmbins"]->eval(args.data());
+
+		ff_nom = fns_[("ff_"+channel+"_medium_dmbins").Data()]->eval(args.data());
 
 		auto args_mva = std::vector<double>{pt_2,
 						    dmMVA_2,
@@ -1211,7 +1984,7 @@ int main(int argc, char * argv[]) {
 						    w_frac,
 						    qcd_frac,
 						    ttbar_frac};
-		ff_mva = ReturnFinite(fns_["ff_mt_medium_mvadmbins"]->eval(args_mva.data()));
+		ff_mva = ReturnFinite(fns_[("ff_"+channel+"_medium_mvadmbins").Data()]->eval(args_mva.data()));
 		/*
 		if(!isnan((ff_mva))) cout << "********************** NaN: ff_mva  ******************************"<<endl << 
 				    "pt_2: "<< pt_2<< endl <<
@@ -1231,8 +2004,9 @@ int main(int argc, char * argv[]) {
 		
 		///Weights for FF
 		//Stat uncertainties
-		if(!isnormal(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm0_sig_lt3_up"]->eval(args_mva.data()))&&fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm0_sig_lt3_up"]->eval(args_mva.data())!=0){
-		  cout << "*************************" << show_classification(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm0_sig_lt3_up"]->eval(args_mva.data())) << " " << fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm0_sig_lt3_up"]->eval(args_mva.data()) <<"******************************"<<endl << 
+		/*
+		if(!isnormal(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm0_sig_lt3_up"]->eval(args_mva.data()))&&fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm0_sig_lt3_up"]->eval(args_mva.data())!=0){
+		  cout << "*************************" << show_classification(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm0_sig_lt3_up"]->eval(args_mva.data())) << " " << fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm0_sig_lt3_up"]->eval(args_mva.data()) <<"******************************"<<endl << 
 				    "pt_2: "<< pt_2<< endl <<
 				    "dmMVA_2: "<< dmMVA_2<< endl <<
 				    "IP_signif_RefitV_with_BS_2: "<< IP_signif_RefitV_with_BS_2<< endl <<
@@ -1251,157 +2025,566 @@ int main(int argc, char * argv[]) {
 		  cout << "size :" << args_mva.size() <<endl;
 		  for(auto argument : args_mva) cout << argument << endl;
 		  cout << endl << "**********************"<<endl;
-		    ff_ws_->Print();
-		  }
+		  ff_ws_->Print();
+		}
+		*/
+		if(channel=="mt"){
+		
+		  weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_ltUp = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm0_sig_lt3_up"]->eval(args_mva.data()));
+		  
+		  weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_ltUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm0_sig_lt3_up"]  ->eval(args_mva.data()));
+		  
+		  weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_ltUp = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm0_sig_lt3_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_ltUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm0_sig_lt3_up"]  ->eval(args_mva.data()));
+		  
+		  weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_ltUp = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm0_sig_lt3_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_ltUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm0_sig_lt3_up"]  ->eval(args_mva.data()));
+									                                                                                                
+		  
+		  weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_gtUp = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm0_sig_gt3_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_gtUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm0_sig_gt3_up"]  ->eval(args_mva.data()));
+		  
+		  weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_gtUp = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm0_sig_gt3_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_gtUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm0_sig_gt3_up"]  ->eval(args_mva.data()));
+		  
+		  weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_gtUp = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm0_sig_gt3_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_gtUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm0_sig_gt3_up"]  ->eval(args_mva.data()));
+		  
+		  
+		  
+		  weight_ff_mt_wjets_stat_unc1_njets0_mvadm1Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm1_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets0_mvadm1Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm1_up"]  ->eval(args_mva.data()));
+		  
+		  weight_ff_mt_wjets_stat_unc1_njets1_mvadm1Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm1_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets1_mvadm1Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm1_up"]  ->eval(args_mva.data()));
+		  
+		  weight_ff_mt_wjets_stat_unc1_njets2_mvadm1Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm1_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets2_mvadm1Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm1_up"]  ->eval(args_mva.data()));
+		  
+		  
+		  weight_ff_mt_wjets_stat_unc1_njets0_mvadm2Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm2_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets0_mvadm2Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm2_up"]  ->eval(args_mva.data()));
+		
+		  weight_ff_mt_wjets_stat_unc1_njets1_mvadm2Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm2_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets1_mvadm2Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm2_up"]  ->eval(args_mva.data()));
+								                                                                                         
+		  weight_ff_mt_wjets_stat_unc1_njets2_mvadm2Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm2_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets2_mvadm2Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm2_up"]  ->eval(args_mva.data()));
 
-		weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltUp = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm0_sig_lt3_up"]->eval(args_mva.data()));
 
-		weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm0_sig_lt3_up"]  ->eval(args_mva.data())) ;
-									                                                                                                                                                                                      
-		weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltUp = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm0_sig_lt3_up"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm0_sig_lt3_up"]  ->eval(args_mva.data()));
-									                                                                                                                                                                                      
-		weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltUp = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm0_sig_lt3_up"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm0_sig_lt3_up"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc1_njets0_mvadm10Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm10_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets0_mvadm10Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm10_up"]  ->eval(args_mva.data()));
+								                                                                                     	   
+		  weight_ff_mt_wjets_stat_unc1_njets1_mvadm10Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm10_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets1_mvadm10Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm10_up"]  ->eval(args_mva.data()));
+								                                                                                     	   
+		  weight_ff_mt_wjets_stat_unc1_njets2_mvadm10Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm10_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets2_mvadm10Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm10_up"]  ->eval(args_mva.data()));
+								                                                                                     	   
+								                                                                                     	   
+		  weight_ff_mt_wjets_stat_unc1_njets0_mvadm11Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm11_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets0_mvadm11Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm11_up"]  ->eval(args_mva.data()));
+								                                                                                     	   
+		  weight_ff_mt_wjets_stat_unc1_njets1_mvadm11Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm11_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets1_mvadm11Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm11_up"]  ->eval(args_mva.data()));
+								                                                                                     	   
+		  weight_ff_mt_wjets_stat_unc1_njets2_mvadm11Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm11_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets2_mvadm11Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm11_up"]  ->eval(args_mva.data()));
+
+
+
+		  weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_ltDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm0_sig_lt3_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_ltDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm0_sig_lt3_down"]  ->eval(args_mva.data()));
+									                                                                                              	   
+		  weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_ltDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm0_sig_lt3_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_ltDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm0_sig_lt3_down"]  ->eval(args_mva.data()));
+									                                                                                              	   
+		  weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_ltDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm0_sig_lt3_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_ltDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm0_sig_lt3_down"]  ->eval(args_mva.data()));
+									                                                                                              	   
+									                                                                                              	   
+		  weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_gtDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm0_sig_gt3_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_gtDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm0_sig_gt3_down"]  ->eval(args_mva.data()));
+									                                                                                              	   
+		  weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_gtDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm0_sig_gt3_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_gtDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm0_sig_gt3_down"]  ->eval(args_mva.data()));
+									                                                                                              	   
+		  weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_gtDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm0_sig_gt3_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_gtDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm0_sig_gt3_down"]  ->eval(args_mva.data()));
+
+
+
+		  weight_ff_mt_wjets_stat_unc1_njets0_mvadm1Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm1_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets0_mvadm1Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm1_down"]  ->eval(args_mva.data()));
+								                                                                                       	    
+		  weight_ff_mt_wjets_stat_unc1_njets1_mvadm1Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm1_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets1_mvadm1Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm1_down"]  ->eval(args_mva.data()));
+								                                                                                       	    
+		  weight_ff_mt_wjets_stat_unc1_njets2_mvadm1Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm1_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets2_mvadm1Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm1_down"]  ->eval(args_mva.data()));
+								                                                                                       	    
+								                                                                                       	    
+		  weight_ff_mt_wjets_stat_unc1_njets0_mvadm2Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm2_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets0_mvadm2Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm2_down"]  ->eval(args_mva.data()));
+								                                                                                       	    
+		  weight_ff_mt_wjets_stat_unc1_njets1_mvadm2Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm2_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets1_mvadm2Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm2_down"]  ->eval(args_mva.data()));
+								                                                                                       	    
+		  weight_ff_mt_wjets_stat_unc1_njets2_mvadm2Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm2_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets2_mvadm2Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm2_down"]  ->eval(args_mva.data()));
+
+
+		  weight_ff_mt_wjets_stat_unc1_njets0_mvadm10Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm10_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets0_mvadm10Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm10_down"]  ->eval(args_mva.data()));
+								                                                                                              
+		  weight_ff_mt_wjets_stat_unc1_njets1_mvadm10Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm10_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets1_mvadm10Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm10_down"]  ->eval(args_mva.data()));
+								                                                                                              
+		  weight_ff_mt_wjets_stat_unc1_njets2_mvadm10Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm10_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets2_mvadm10Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm10_down"]  ->eval(args_mva.data()));
+								                                                                                              
+								                                                                                              
+		  weight_ff_mt_wjets_stat_unc1_njets0_mvadm11Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm11_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets0_mvadm11Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm11_down"]  ->eval(args_mva.data()));
+								                                                                                              
+		  weight_ff_mt_wjets_stat_unc1_njets1_mvadm11Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm11_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets1_mvadm11Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm11_down"]  ->eval(args_mva.data()));
+								                                                                                              
+		  weight_ff_mt_wjets_stat_unc1_njets2_mvadm11Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm11_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc1_njets2_mvadm11Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm11_down"]  ->eval(args_mva.data()));
+
+
+
+		  ////////////
+		  //unc2
+		  ///////////
+
+		  weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_ltUp = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm0_sig_lt3_up"]->eval(args_mva.data()));
+
+		  weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_ltUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm0_sig_lt3_up"]  ->eval(args_mva.data()));
+
+		  weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_ltUp = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm0_sig_lt3_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_ltUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm0_sig_lt3_up"]  ->eval(args_mva.data()));
+
+		  weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_ltUp = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm0_sig_lt3_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_ltUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm0_sig_lt3_up"]  ->eval(args_mva.data()));
 									                                                                                                
 									                                                                                                
-		weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtUp = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm0_sig_gt3_up"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm0_sig_gt3_up"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_gtUp = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm0_sig_gt3_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_gtUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm0_sig_gt3_up"]  ->eval(args_mva.data()));
 									                                                                                                
-		weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtUp = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm0_sig_gt3_up"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm0_sig_gt3_up"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_gtUp = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm0_sig_gt3_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_gtUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm0_sig_gt3_up"]  ->eval(args_mva.data()));
 									                                                                                                
-		weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtUp = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm0_sig_gt3_up"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm0_sig_gt3_up"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_gtUp = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm0_sig_gt3_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_gtUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm0_sig_gt3_up"]  ->eval(args_mva.data()));
 
 
 
-		weight_ff_mt_wjets_stat_njets0_mvadm1Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm1_up"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets0_mvadm1Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm1_up"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets0_mvadm1Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm1_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets0_mvadm1Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm1_up"]  ->eval(args_mva.data()));
 								                                                                                         
-		weight_ff_mt_wjets_stat_njets1_mvadm1Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm1_up"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets1_mvadm1Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm1_up"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets1_mvadm1Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm1_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets1_mvadm1Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm1_up"]  ->eval(args_mva.data()));
 								                                                                                         
-		weight_ff_mt_wjets_stat_njets2_mvadm1Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm1_up"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets2_mvadm1Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm1_up"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets2_mvadm1Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm1_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets2_mvadm1Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm1_up"]  ->eval(args_mva.data()));
 								                                                                                         
 								                                                                                         
-		weight_ff_mt_wjets_stat_njets0_mvadm2Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm2_up"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets0_mvadm2Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm2_up"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets0_mvadm2Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm2_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets0_mvadm2Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm2_up"]  ->eval(args_mva.data()));
 								                                                                                         
-		weight_ff_mt_wjets_stat_njets1_mvadm2Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm2_up"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets1_mvadm2Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm2_up"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets1_mvadm2Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm2_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets1_mvadm2Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm2_up"]  ->eval(args_mva.data()));
 								                                                                                         
-		weight_ff_mt_wjets_stat_njets2_mvadm2Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm2_up"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets2_mvadm2Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm2_up"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets2_mvadm2Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm2_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets2_mvadm2Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm2_up"]  ->eval(args_mva.data()));
 
 
-		weight_ff_mt_wjets_stat_njets0_mvadm10Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm10_up"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets0_mvadm10Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm10_up"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets0_mvadm10Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm10_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets0_mvadm10Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm10_up"]  ->eval(args_mva.data()));
 								                                                                                     	   
-		weight_ff_mt_wjets_stat_njets1_mvadm10Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm10_up"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets1_mvadm10Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm10_up"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets1_mvadm10Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm10_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets1_mvadm10Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm10_up"]  ->eval(args_mva.data()));
 								                                                                                     	   
-		weight_ff_mt_wjets_stat_njets2_mvadm10Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm10_up"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets2_mvadm10Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm10_up"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets2_mvadm10Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm10_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets2_mvadm10Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm10_up"]  ->eval(args_mva.data()));
 								                                                                                     	   
 								                                                                                     	   
-		weight_ff_mt_wjets_stat_njets0_mvadm11Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm11_up"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets0_mvadm11Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm11_up"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets0_mvadm11Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm11_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets0_mvadm11Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm11_up"]  ->eval(args_mva.data()));
 								                                                                                     	   
-		weight_ff_mt_wjets_stat_njets1_mvadm11Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm11_up"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets1_mvadm11Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm11_up"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets1_mvadm11Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm11_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets1_mvadm11Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm11_up"]  ->eval(args_mva.data()));
 								                                                                                     	   
-		weight_ff_mt_wjets_stat_njets2_mvadm11Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm11_up"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets2_mvadm11Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm11_up"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets2_mvadm11Up = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm11_up"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets2_mvadm11Up   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm11_up"]  ->eval(args_mva.data()));
 
 
 
-		weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm0_sig_lt3_down"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm0_sig_lt3_down"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_ltDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm0_sig_lt3_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_ltDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm0_sig_lt3_down"]  ->eval(args_mva.data()));
 									                                                                                              	   
-		weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm0_sig_lt3_down"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm0_sig_lt3_down"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_ltDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm0_sig_lt3_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_ltDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm0_sig_lt3_down"]  ->eval(args_mva.data()));
 									                                                                                              	   
-		weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm0_sig_lt3_down"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm0_sig_lt3_down"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_ltDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm0_sig_lt3_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_ltDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm0_sig_lt3_down"]  ->eval(args_mva.data()));
 									                                                                                              	   
 									                                                                                              	   
-		weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm0_sig_gt3_down"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm0_sig_gt3_down"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_gtDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm0_sig_gt3_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_gtDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm0_sig_gt3_down"]  ->eval(args_mva.data()));
 									                                                                                              	   
-		weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm0_sig_gt3_down"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm0_sig_gt3_down"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_gtDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm0_sig_gt3_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_gtDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm0_sig_gt3_down"]  ->eval(args_mva.data()));
 									                                                                                              	   
-		weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm0_sig_gt3_down"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm0_sig_gt3_down"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_gtDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm0_sig_gt3_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_gtDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm0_sig_gt3_down"]  ->eval(args_mva.data()));
 
 
 
-		weight_ff_mt_wjets_stat_njets0_mvadm1Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm1_down"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets0_mvadm1Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm1_down"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets0_mvadm1Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm1_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets0_mvadm1Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm1_down"]  ->eval(args_mva.data()));
 								                                                                                       	    
-		weight_ff_mt_wjets_stat_njets1_mvadm1Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm1_down"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets1_mvadm1Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm1_down"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets1_mvadm1Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm1_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets1_mvadm1Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm1_down"]  ->eval(args_mva.data()));
 								                                                                                       	    
-		weight_ff_mt_wjets_stat_njets2_mvadm1Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm1_down"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets2_mvadm1Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm1_down"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets2_mvadm1Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm1_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets2_mvadm1Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm1_down"]  ->eval(args_mva.data()));
 								                                                                                       	    
 								                                                                                       	    
-		weight_ff_mt_wjets_stat_njets0_mvadm2Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm2_down"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets0_mvadm2Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm2_down"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets0_mvadm2Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm2_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets0_mvadm2Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm2_down"]  ->eval(args_mva.data()));
 								                                                                                       	    
-		weight_ff_mt_wjets_stat_njets1_mvadm2Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm2_down"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets1_mvadm2Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm2_down"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets1_mvadm2Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm2_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets1_mvadm2Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm2_down"]  ->eval(args_mva.data()));
 								                                                                                       	    
-		weight_ff_mt_wjets_stat_njets2_mvadm2Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm2_down"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets2_mvadm2Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm2_down"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets2_mvadm2Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm2_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets2_mvadm2Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm2_down"]  ->eval(args_mva.data()));
 
 
-		weight_ff_mt_wjets_stat_njets0_mvadm10Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm10_down"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets0_mvadm10Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm10_down"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets0_mvadm10Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm10_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets0_mvadm10Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm10_down"]  ->eval(args_mva.data()));
 								                                                                                              
-		weight_ff_mt_wjets_stat_njets1_mvadm10Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm10_down"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets1_mvadm10Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm10_down"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets1_mvadm10Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm10_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets1_mvadm10Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm10_down"]  ->eval(args_mva.data()));
 								                                                                                              
-		weight_ff_mt_wjets_stat_njets2_mvadm10Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm10_down"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets2_mvadm10Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm10_down"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets2_mvadm10Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm10_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets2_mvadm10Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm10_down"]  ->eval(args_mva.data()));
 								                                                                                              
 								                                                                                              
-		weight_ff_mt_wjets_stat_njets0_mvadm11Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet0_mvadm11_down"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets0_mvadm11Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet0_mvadm11_down"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets0_mvadm11Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm11_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets0_mvadm11Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm11_down"]  ->eval(args_mva.data()));
 								                                                                                              
-		weight_ff_mt_wjets_stat_njets1_mvadm11Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet1_mvadm11_down"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets1_mvadm11Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet1_mvadm11_down"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets1_mvadm11Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm11_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets1_mvadm11Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm11_down"]  ->eval(args_mva.data()));
 								                                                                                              
-		weight_ff_mt_wjets_stat_njets2_mvadm11Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_njet2_mvadm11_down"]->eval(args_mva.data()));
-		weight_ff_mt_qcd_stat_njets2_mvadm11Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_njet2_mvadm11_down"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_stat_unc2_njets2_mvadm11Down = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm11_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_stat_unc2_njets2_mvadm11Down   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm11_down"]  ->eval(args_mva.data()));
 
 
-		//met_var_qcd and met_var_w non-closure corrections
+		  //met_var_qcd and met_var_w non-closure corrections
 
-		weight_ff_mt_qcd_met_closure_systUp     = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_met_up"]    ->eval(args_mva.data()));
-		weight_ff_mt_wjets_met_closure_systUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_met_up"]  ->eval(args_mva.data()));
-		weight_ff_mt_ttbar_met_closure_systUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_ttbar_met_up"]  ->eval(args_mva.data()));
-		weight_ff_mt_qcd_met_closure_systDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_met_down"]  ->eval(args_mva.data()));
-		weight_ff_mt_wjets_met_closure_systDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_met_down"]->eval(args_mva.data()));
-		weight_ff_mt_ttbar_met_closure_systDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_ttbar_met_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_met_closure_systUp     = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_met_up"]    ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_met_closure_systUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_met_up"]  ->eval(args_mva.data()));
+		  weight_ff_mt_ttbar_met_closure_systUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_ttbar_met_up"]  ->eval(args_mva.data()));
+		  weight_ff_mt_qcd_met_closure_systDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_met_down"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_met_closure_systDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_met_down"]->eval(args_mva.data()));
+		  weight_ff_mt_ttbar_met_closure_systDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_ttbar_met_down"]->eval(args_mva.data()));
 
-		//m_pt non-closure corrections
+		  //m_pt non-closure corrections
 
-		weight_ff_mt_qcd_l_pt_closure_systUp     = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_l_pt_up"]    ->eval(args_mva.data()));
-		weight_ff_mt_qcd_l_pt_closure_systDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_l_pt_down"]  ->eval(args_mva.data()));
-		weight_ff_mt_wjets_l_pt_closure_systUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_l_pt_up"]  ->eval(args_mva.data()));
-		weight_ff_mt_wjets_l_pt_closure_systDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_l_pt_down"]->eval(args_mva.data()));
+		  weight_ff_mt_qcd_l_pt_closure_systUp     = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_l_pt_up"]    ->eval(args_mva.data()));
+		  weight_ff_mt_qcd_l_pt_closure_systDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_l_pt_down"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_l_pt_closure_systUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_l_pt_up"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_l_pt_closure_systDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_l_pt_down"]->eval(args_mva.data()));
 
-		//extrapolations from DR to SR
-		weight_ff_mt_qcd_systUp     = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_syst_up"]    ->eval(args_mva.data()));
-		weight_ff_mt_qcd_systDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_syst_down"]  ->eval(args_mva.data()));
-		weight_ff_mt_wjets_systUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_syst_up"]  ->eval(args_mva.data()));
-		weight_ff_mt_wjets_systDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_syst_down"]->eval(args_mva.data()));
-		weight_ff_mt_ttbar_systUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_ttbar_syst_up"]  ->eval(args_mva.data()));
-		weight_ff_mt_ttbar_systDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_ttbar_syst_down"]->eval(args_mva.data()));
+		  //extrapolations from DR to SR
+		  weight_ff_mt_qcd_systUp     = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_syst_up"]    ->eval(args_mva.data()));
+		  weight_ff_mt_qcd_systDown   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_qcd_syst_down"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_systUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_syst_up"]  ->eval(args_mva.data()));
+		  weight_ff_mt_wjets_systDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_syst_down"]->eval(args_mva.data()));
+		  weight_ff_mt_ttbar_systUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_ttbar_syst_up"]  ->eval(args_mva.data()));
+		  weight_ff_mt_ttbar_systDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_ttbar_syst_down"]->eval(args_mva.data()));
+		}else{
+		  
+		  weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_ltUp = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm0_sig_lt3_up"]->eval(args_mva.data()));
 
+		  weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_ltUp   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm0_sig_lt3_up"]  ->eval(args_mva.data()));
+
+		  weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_ltUp = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm0_sig_lt3_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_ltUp   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm0_sig_lt3_up"]  ->eval(args_mva.data()));
+
+		  weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_ltUp = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm0_sig_lt3_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_ltUp   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm0_sig_lt3_up"]  ->eval(args_mva.data()));
+									                                                                                                
+									                                                                                                
+		  weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_gtUp = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm0_sig_gt3_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_gtUp   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm0_sig_gt3_up"]  ->eval(args_mva.data()));
+									                                                                                                
+		  weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_gtUp = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm0_sig_gt3_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_gtUp   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm0_sig_gt3_up"]  ->eval(args_mva.data()));
+									                                                                                                
+		  weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_gtUp = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm0_sig_gt3_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_gtUp   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm0_sig_gt3_up"]  ->eval(args_mva.data()));
+
+
+
+		  weight_ff_et_wjets_stat_unc1_njets0_mvadm1Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm1_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets0_mvadm1Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm1_up"]  ->eval(args_mva.data()));
+								                                                                                         
+		  weight_ff_et_wjets_stat_unc1_njets1_mvadm1Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm1_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets1_mvadm1Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm1_up"]  ->eval(args_mva.data()));
+								                                                                                         
+		  weight_ff_et_wjets_stat_unc1_njets2_mvadm1Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm1_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets2_mvadm1Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm1_up"]  ->eval(args_mva.data()));
+								                                                                                         
+								                                                                                         
+		  weight_ff_et_wjets_stat_unc1_njets0_mvadm2Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm2_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets0_mvadm2Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm2_up"]  ->eval(args_mva.data()));
+								                                                                                         
+		  weight_ff_et_wjets_stat_unc1_njets1_mvadm2Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm2_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets1_mvadm2Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm2_up"]  ->eval(args_mva.data()));
+								                                                                                         
+		  weight_ff_et_wjets_stat_unc1_njets2_mvadm2Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm2_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets2_mvadm2Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm2_up"]  ->eval(args_mva.data()));
+
+
+		  weight_ff_et_wjets_stat_unc1_njets0_mvadm10Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm10_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets0_mvadm10Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm10_up"]  ->eval(args_mva.data()));
+								                                                                                     	   
+		  weight_ff_et_wjets_stat_unc1_njets1_mvadm10Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm10_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets1_mvadm10Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm10_up"]  ->eval(args_mva.data()));
+								                                                                                     	   
+		  weight_ff_et_wjets_stat_unc1_njets2_mvadm10Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm10_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets2_mvadm10Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm10_up"]  ->eval(args_mva.data()));
+								                                                                                     	   
+								                                                                                     	   
+		  weight_ff_et_wjets_stat_unc1_njets0_mvadm11Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm11_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets0_mvadm11Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm11_up"]  ->eval(args_mva.data()));
+								                                                                                     	   
+		  weight_ff_et_wjets_stat_unc1_njets1_mvadm11Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm11_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets1_mvadm11Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm11_up"]  ->eval(args_mva.data()));
+								                                                                                     	   
+		  weight_ff_et_wjets_stat_unc1_njets2_mvadm11Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm11_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets2_mvadm11Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm11_up"]  ->eval(args_mva.data()));
+
+
+
+		  weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_ltDown = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm0_sig_lt3_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_ltDown   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm0_sig_lt3_down"]  ->eval(args_mva.data()));
+									                                                                                              	   
+		  weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_ltDown = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm0_sig_lt3_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_ltDown   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm0_sig_lt3_down"]  ->eval(args_mva.data()));
+									                                                                                              	   
+		  weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_ltDown = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm0_sig_lt3_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_ltDown   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm0_sig_lt3_down"]  ->eval(args_mva.data()));
+									                                                                                              	   
+									                                                                                              	   
+		  weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_gtDown = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm0_sig_gt3_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_gtDown   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm0_sig_gt3_down"]  ->eval(args_mva.data()));
+									                                                                                              	   
+		  weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_gtDown = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm0_sig_gt3_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_gtDown   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm0_sig_gt3_down"]  ->eval(args_mva.data()));
+									                                                                                              	   
+		  weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_gtDown = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm0_sig_gt3_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_gtDown   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm0_sig_gt3_down"]  ->eval(args_mva.data()));
+
+
+
+		  weight_ff_et_wjets_stat_unc1_njets0_mvadm1Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm1_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets0_mvadm1Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm1_down"]  ->eval(args_mva.data()));
+								                                                                                       	    
+		  weight_ff_et_wjets_stat_unc1_njets1_mvadm1Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm1_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets1_mvadm1Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm1_down"]  ->eval(args_mva.data()));
+								                                                                                       	    
+		  weight_ff_et_wjets_stat_unc1_njets2_mvadm1Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm1_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets2_mvadm1Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm1_down"]  ->eval(args_mva.data()));
+								                                                                                       	    
+								                                                                                       	    
+		  weight_ff_et_wjets_stat_unc1_njets0_mvadm2Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm2_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets0_mvadm2Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm2_down"]  ->eval(args_mva.data()));
+								                                                                                       	    
+		  weight_ff_et_wjets_stat_unc1_njets1_mvadm2Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm2_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets1_mvadm2Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm2_down"]  ->eval(args_mva.data()));
+								                                                                                       	    
+		  weight_ff_et_wjets_stat_unc1_njets2_mvadm2Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm2_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets2_mvadm2Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm2_down"]  ->eval(args_mva.data()));
+
+
+		  weight_ff_et_wjets_stat_unc1_njets0_mvadm10Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm10_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets0_mvadm10Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm10_down"]  ->eval(args_mva.data()));
+								                                                                                              
+		  weight_ff_et_wjets_stat_unc1_njets1_mvadm10Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm10_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets1_mvadm10Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm10_down"]  ->eval(args_mva.data()));
+								                                                                                              
+		  weight_ff_et_wjets_stat_unc1_njets2_mvadm10Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm10_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets2_mvadm10Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm10_down"]  ->eval(args_mva.data()));
+								                                                                                              
+								                                                                                              
+		  weight_ff_et_wjets_stat_unc1_njets0_mvadm11Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm11_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets0_mvadm11Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet0_mvadm11_down"]  ->eval(args_mva.data()));
+								                                                                                              
+		  weight_ff_et_wjets_stat_unc1_njets1_mvadm11Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet1_mvadm11_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets1_mvadm11Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet1_mvadm11_down"]  ->eval(args_mva.data()));
+								                                                                                              
+		  weight_ff_et_wjets_stat_unc1_njets2_mvadm11Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet2_mvadm11_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc1_njets2_mvadm11Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc1_njet2_mvadm11_down"]  ->eval(args_mva.data()));
+
+
+
+		  ////////////
+		  //unc2
+		  ///////////
+
+		  weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_ltUp = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm0_sig_lt3_up"]->eval(args_mva.data()));
+
+		  weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_ltUp   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm0_sig_lt3_up"]  ->eval(args_mva.data()));
+
+		  weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_ltUp = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm0_sig_lt3_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_ltUp   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm0_sig_lt3_up"]  ->eval(args_mva.data()));
+
+		  weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_ltUp = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm0_sig_lt3_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_ltUp   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm0_sig_lt3_up"]  ->eval(args_mva.data()));
+									                                                                                                
+									                                                                                                
+		  weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_gtUp = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm0_sig_gt3_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_gtUp   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm0_sig_gt3_up"]  ->eval(args_mva.data()));
+									                                                                                                
+		  weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_gtUp = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm0_sig_gt3_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_gtUp   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm0_sig_gt3_up"]  ->eval(args_mva.data()));
+									                                                                                                
+		  weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_gtUp = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm0_sig_gt3_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_gtUp   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm0_sig_gt3_up"]  ->eval(args_mva.data()));
+
+
+
+		  weight_ff_et_wjets_stat_unc2_njets0_mvadm1Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm1_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets0_mvadm1Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm1_up"]  ->eval(args_mva.data()));
+								                                                                                         
+		  weight_ff_et_wjets_stat_unc2_njets1_mvadm1Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm1_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets1_mvadm1Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm1_up"]  ->eval(args_mva.data()));
+								                                                                                         
+		  weight_ff_et_wjets_stat_unc2_njets2_mvadm1Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm1_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets2_mvadm1Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm1_up"]  ->eval(args_mva.data()));
+								                                                                                         
+								                                                                                         
+		  weight_ff_et_wjets_stat_unc2_njets0_mvadm2Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm2_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets0_mvadm2Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm2_up"]  ->eval(args_mva.data()));
+								                                                                                         
+		  weight_ff_et_wjets_stat_unc2_njets1_mvadm2Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm2_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets1_mvadm2Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm2_up"]  ->eval(args_mva.data()));
+								                                                                                         
+		  weight_ff_et_wjets_stat_unc2_njets2_mvadm2Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm2_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets2_mvadm2Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm2_up"]  ->eval(args_mva.data()));
+
+
+		  weight_ff_et_wjets_stat_unc2_njets0_mvadm10Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm10_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets0_mvadm10Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm10_up"]  ->eval(args_mva.data()));
+								                                                                                     	   
+		  weight_ff_et_wjets_stat_unc2_njets1_mvadm10Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm10_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets1_mvadm10Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm10_up"]  ->eval(args_mva.data()));
+								                                                                                     	   
+		  weight_ff_et_wjets_stat_unc2_njets2_mvadm10Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm10_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets2_mvadm10Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm10_up"]  ->eval(args_mva.data()));
+								                                                                                     	   
+								                                                                                     	   
+		  weight_ff_et_wjets_stat_unc2_njets0_mvadm11Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm11_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets0_mvadm11Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm11_up"]  ->eval(args_mva.data()));
+								                                                                                     	   
+		  weight_ff_et_wjets_stat_unc2_njets1_mvadm11Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm11_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets1_mvadm11Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm11_up"]  ->eval(args_mva.data()));
+								                                                                                     	   
+		  weight_ff_et_wjets_stat_unc2_njets2_mvadm11Up = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm11_up"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets2_mvadm11Up   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm11_up"]  ->eval(args_mva.data()));
+
+
+
+		  weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_ltDown = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm0_sig_lt3_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_ltDown   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm0_sig_lt3_down"]  ->eval(args_mva.data()));
+									                                                                                              	   
+		  weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_ltDown = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm0_sig_lt3_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_ltDown   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm0_sig_lt3_down"]  ->eval(args_mva.data()));
+									                                                                                              	   
+		  weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_ltDown = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm0_sig_lt3_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_ltDown   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm0_sig_lt3_down"]  ->eval(args_mva.data()));
+									                                                                                              	   
+									                                                                                              	   
+		  weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_gtDown = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm0_sig_gt3_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_gtDown   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm0_sig_gt3_down"]  ->eval(args_mva.data()));
+									                                                                                              	   
+		  weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_gtDown = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm0_sig_gt3_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_gtDown   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm0_sig_gt3_down"]  ->eval(args_mva.data()));
+									                                                                                              	   
+		  weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_gtDown = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm0_sig_gt3_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_gtDown   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm0_sig_gt3_down"]  ->eval(args_mva.data()));
+
+
+
+		  weight_ff_et_wjets_stat_unc2_njets0_mvadm1Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm1_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets0_mvadm1Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm1_down"]  ->eval(args_mva.data()));
+								                                                                                       	    
+		  weight_ff_et_wjets_stat_unc2_njets1_mvadm1Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm1_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets1_mvadm1Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm1_down"]  ->eval(args_mva.data()));
+								                                                                                       	    
+		  weight_ff_et_wjets_stat_unc2_njets2_mvadm1Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm1_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets2_mvadm1Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm1_down"]  ->eval(args_mva.data()));
+								                                                                                       	    
+								                                                                                       	    
+		  weight_ff_et_wjets_stat_unc2_njets0_mvadm2Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm2_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets0_mvadm2Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm2_down"]  ->eval(args_mva.data()));
+								                                                                                       	    
+		  weight_ff_et_wjets_stat_unc2_njets1_mvadm2Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm2_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets1_mvadm2Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm2_down"]  ->eval(args_mva.data()));
+								                                                                                       	    
+		  weight_ff_et_wjets_stat_unc2_njets2_mvadm2Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm2_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets2_mvadm2Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm2_down"]  ->eval(args_mva.data()));
+
+
+		  weight_ff_et_wjets_stat_unc2_njets0_mvadm10Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm10_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets0_mvadm10Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm10_down"]  ->eval(args_mva.data()));
+								                                                                                              
+		  weight_ff_et_wjets_stat_unc2_njets1_mvadm10Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm10_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets1_mvadm10Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm10_down"]  ->eval(args_mva.data()));
+								                                                                                              
+		  weight_ff_et_wjets_stat_unc2_njets2_mvadm10Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm10_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets2_mvadm10Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm10_down"]  ->eval(args_mva.data()));
+								                                                                                              
+								                                                                                              
+		  weight_ff_et_wjets_stat_unc2_njets0_mvadm11Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet0_mvadm11_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets0_mvadm11Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet0_mvadm11_down"]  ->eval(args_mva.data()));
+								                                                                                              
+		  weight_ff_et_wjets_stat_unc2_njets1_mvadm11Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet1_mvadm11_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets1_mvadm11Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet1_mvadm11_down"]  ->eval(args_mva.data()));
+								                                                                                              
+		  weight_ff_et_wjets_stat_unc2_njets2_mvadm11Down = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc2_njet2_mvadm11_down"]->eval(args_mva.data()));
+		  weight_ff_et_qcd_stat_unc2_njets2_mvadm11Down   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_stat_unc2_njet2_mvadm11_down"]  ->eval(args_mva.data()));
+
+
+		  //met_var_qcd and met_var_w non-closure corrections
+
+		  weight_ff_et_qcd_met_closure_systUp     = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_met_up"]    ->eval(args_mva.data()));
+		  weight_ff_et_wjets_met_closure_systUp   = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_met_up"]  ->eval(args_mva.data()));
+		  weight_ff_et_ttbar_met_closure_systUp   = ReturnFinite(fns_["ff_et_medium_mvadmbins_ttbar_met_up"]  ->eval(args_mva.data()));
+		  weight_ff_et_qcd_met_closure_systDown   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_met_down"]  ->eval(args_mva.data()));
+		  weight_ff_et_wjets_met_closure_systDown = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_met_down"]->eval(args_mva.data()));
+		  weight_ff_et_ttbar_met_closure_systDown = ReturnFinite(fns_["ff_et_medium_mvadmbins_ttbar_met_down"]->eval(args_mva.data()));
+
+		  //m_pt non-closure corrections
+
+		  weight_ff_et_qcd_l_pt_closure_systUp     = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_l_pt_up"]    ->eval(args_mva.data()));
+		  weight_ff_et_qcd_l_pt_closure_systDown   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_l_pt_down"]  ->eval(args_mva.data()));
+		  weight_ff_et_wjets_l_pt_closure_systUp   = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_l_pt_up"]  ->eval(args_mva.data()));
+		  weight_ff_et_wjets_l_pt_closure_systDown = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_l_pt_down"]->eval(args_mva.data()));
+
+		  //extrapolations from DR to SR
+		  weight_ff_et_qcd_systUp     = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_syst_up"]    ->eval(args_mva.data()));
+		  weight_ff_et_qcd_systDown   = ReturnFinite(fns_["ff_et_medium_mvadmbins_qcd_syst_down"]  ->eval(args_mva.data()));
+		  weight_ff_et_wjets_systUp   = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_syst_up"]  ->eval(args_mva.data()));
+		  weight_ff_et_wjets_systDown = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_syst_down"]->eval(args_mva.data()));
+		  weight_ff_et_ttbar_systUp   = ReturnFinite(fns_["ff_et_medium_mvadmbins_ttbar_syst_up"]  ->eval(args_mva.data()));
+		  weight_ff_et_ttbar_systDown = ReturnFinite(fns_["ff_et_medium_mvadmbins_ttbar_syst_down"]->eval(args_mva.data()));
+		}
 		//		cout << "ff_nom : " << ff_nom << "   ff_mva : " << ff_mva << endl;
 
 		/// END of weights for FF
@@ -1410,129 +2593,252 @@ int main(int argc, char * argv[]) {
 		ff_nom = 1.;
 		ff_mva = 1.;
 		//Stat uncertainties
-		weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltUp = 1.;
-		weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltUp   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_ltUp = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_ltUp   = 1.;
 								 
-		weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltUp = 1.;
-		weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltUp   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_ltUp = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_ltUp   = 1.;
 								 
-		weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltUp = 1.;
-		weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltUp   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_ltUp = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_ltUp   = 1.;
 								 
 								 
-		weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtUp = 1.;
-		weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtUp   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_gtUp = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_gtUp   = 1.;
 								 
-		weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtUp = 1.;
-		weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtUp   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_gtUp = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_gtUp   = 1.;
 								 
-		weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtUp = 1.;
-		weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtUp   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_gtUp = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_gtUp   = 1.;
 
 
 
-		weight_ff_mt_wjets_stat_njets0_mvadm1Up = 1.;
-		weight_ff_mt_qcd_stat_njets0_mvadm1Up   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets0_mvadm1Up = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets0_mvadm1Up   = 1.;
 							  
-		weight_ff_mt_wjets_stat_njets1_mvadm1Up = 1.;
-		weight_ff_mt_qcd_stat_njets1_mvadm1Up   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets1_mvadm1Up = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets1_mvadm1Up   = 1.;
 							  
-		weight_ff_mt_wjets_stat_njets2_mvadm1Up = 1.;
-		weight_ff_mt_qcd_stat_njets2_mvadm1Up   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets2_mvadm1Up = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets2_mvadm1Up   = 1.;
 							  
 							  
-		weight_ff_mt_wjets_stat_njets0_mvadm2Up = 1.;
-		weight_ff_mt_qcd_stat_njets0_mvadm2Up   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets0_mvadm2Up = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets0_mvadm2Up   = 1.;
 							  
-		weight_ff_mt_wjets_stat_njets1_mvadm2Up = 1.;
-		weight_ff_mt_qcd_stat_njets1_mvadm2Up   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets1_mvadm2Up = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets1_mvadm2Up   = 1.;
 							  
-		weight_ff_mt_wjets_stat_njets2_mvadm2Up = 1.;
-		weight_ff_mt_qcd_stat_njets2_mvadm2Up   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets2_mvadm2Up = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets2_mvadm2Up   = 1.;
 
 
-		weight_ff_mt_wjets_stat_njets0_mvadm10Up = 1.;
-		weight_ff_mt_qcd_stat_njets0_mvadm10Up   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets0_mvadm10Up = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets0_mvadm10Up   = 1.;
 							   
-		weight_ff_mt_wjets_stat_njets1_mvadm10Up = 1.;
-		weight_ff_mt_qcd_stat_njets1_mvadm10Up   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets1_mvadm10Up = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets1_mvadm10Up   = 1.;
 							   
-		weight_ff_mt_wjets_stat_njets2_mvadm10Up = 1.;
-		weight_ff_mt_qcd_stat_njets2_mvadm10Up   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets2_mvadm10Up = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets2_mvadm10Up   = 1.;
 							   
 							   
-		weight_ff_mt_wjets_stat_njets0_mvadm11Up = 1.;
-		weight_ff_mt_qcd_stat_njets0_mvadm11Up   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets0_mvadm11Up = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets0_mvadm11Up   = 1.;
 							   
-		weight_ff_mt_wjets_stat_njets1_mvadm11Up = 1.;
-		weight_ff_mt_qcd_stat_njets1_mvadm11Up   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets1_mvadm11Up = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets1_mvadm11Up   = 1.;
 							   
-		weight_ff_mt_wjets_stat_njets2_mvadm11Up = 1.;
-		weight_ff_mt_qcd_stat_njets2_mvadm11Up   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets2_mvadm11Up = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets2_mvadm11Up   = 1.;
 
 
 
-		weight_ff_mt_wjets_stat_njets0_mvadm0_sig_ltDown = 1.;
-		weight_ff_mt_qcd_stat_njets0_mvadm0_sig_ltDown   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_ltDown = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_ltDown   = 1.;
 								   
-		weight_ff_mt_wjets_stat_njets1_mvadm0_sig_ltDown = 1.;
-		weight_ff_mt_qcd_stat_njets1_mvadm0_sig_ltDown   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_ltDown = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_ltDown   = 1.;
 								   
-		weight_ff_mt_wjets_stat_njets2_mvadm0_sig_ltDown = 1.;
-		weight_ff_mt_qcd_stat_njets2_mvadm0_sig_ltDown   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_ltDown = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_ltDown   = 1.;
 								   
 								   
-		weight_ff_mt_wjets_stat_njets0_mvadm0_sig_gtDown = 1.;
-		weight_ff_mt_qcd_stat_njets0_mvadm0_sig_gtDown   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_gtDown = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_gtDown   = 1.;
 								   
-		weight_ff_mt_wjets_stat_njets1_mvadm0_sig_gtDown = 1.;
-		weight_ff_mt_qcd_stat_njets1_mvadm0_sig_gtDown   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_gtDown = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_gtDown   = 1.;
 								   
-		weight_ff_mt_wjets_stat_njets2_mvadm0_sig_gtDown = 1.;
-		weight_ff_mt_qcd_stat_njets2_mvadm0_sig_gtDown   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_gtDown = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_gtDown   = 1.;
 
 
 
-		weight_ff_mt_wjets_stat_njets0_mvadm1Down = 1.;
-		weight_ff_mt_qcd_stat_njets0_mvadm1Down   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets0_mvadm1Down = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets0_mvadm1Down   = 1.;
 							    
-		weight_ff_mt_wjets_stat_njets1_mvadm1Down = 1.;
-		weight_ff_mt_qcd_stat_njets1_mvadm1Down   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets1_mvadm1Down = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets1_mvadm1Down   = 1.;
 							    
-		weight_ff_mt_wjets_stat_njets2_mvadm1Down = 1.;
-		weight_ff_mt_qcd_stat_njets2_mvadm1Down   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets2_mvadm1Down = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets2_mvadm1Down   = 1.;
 							    
 							    
-		weight_ff_mt_wjets_stat_njets0_mvadm2Down = 1.;
-		weight_ff_mt_qcd_stat_njets0_mvadm2Down   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets0_mvadm2Down = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets0_mvadm2Down   = 1.;
 							    
-		weight_ff_mt_wjets_stat_njets1_mvadm2Down = 1.;
-		weight_ff_mt_qcd_stat_njets1_mvadm2Down   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets1_mvadm2Down = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets1_mvadm2Down   = 1.;
 							    
-		weight_ff_mt_wjets_stat_njets2_mvadm2Down = 1.;
-		weight_ff_mt_qcd_stat_njets2_mvadm2Down   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets2_mvadm2Down = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets2_mvadm2Down   = 1.;
 
 
-		weight_ff_mt_wjets_stat_njets0_mvadm10Down = 1.;
-		weight_ff_mt_qcd_stat_njets0_mvadm10Down   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets0_mvadm10Down = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets0_mvadm10Down   = 1.;
 							     
-		weight_ff_mt_wjets_stat_njets1_mvadm10Down = 1.;
-		weight_ff_mt_qcd_stat_njets1_mvadm10Down   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets1_mvadm10Down = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets1_mvadm10Down   = 1.;
 							     
-		weight_ff_mt_wjets_stat_njets2_mvadm10Down = 1.;
-		weight_ff_mt_qcd_stat_njets2_mvadm10Down   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets2_mvadm10Down = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets2_mvadm10Down   = 1.;
 							     
 							     
-		weight_ff_mt_wjets_stat_njets0_mvadm11Down = 1.;
-		weight_ff_mt_qcd_stat_njets0_mvadm11Down   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets0_mvadm11Down = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets0_mvadm11Down   = 1.;
 							     
-		weight_ff_mt_wjets_stat_njets1_mvadm11Down = 1.;
-		weight_ff_mt_qcd_stat_njets1_mvadm11Down   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets1_mvadm11Down = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets1_mvadm11Down   = 1.;
 							     
-		weight_ff_mt_wjets_stat_njets2_mvadm11Down = 1.;
-		weight_ff_mt_qcd_stat_njets2_mvadm11Down   = 1.;
+		weight_ff_mt_wjets_stat_unc1_njets2_mvadm11Down = 1.;
+		weight_ff_mt_qcd_stat_unc1_njets2_mvadm11Down   = 1.;
+		////////////
+		///unc2
+		////////////
+		weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_ltUp = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_ltUp   = 1.;
+								 
+		weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_ltUp = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_ltUp   = 1.;
+								 
+		weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_ltUp = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_ltUp   = 1.;
+								 
+								 
+		weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_gtUp = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_gtUp   = 1.;
+								 
+		weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_gtUp = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_gtUp   = 1.;
+								 
+		weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_gtUp = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_gtUp   = 1.;
 
 
+
+		weight_ff_mt_wjets_stat_unc2_njets0_mvadm1Up = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets0_mvadm1Up   = 1.;
+							  
+		weight_ff_mt_wjets_stat_unc2_njets1_mvadm1Up = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets1_mvadm1Up   = 1.;
+							  
+		weight_ff_mt_wjets_stat_unc2_njets2_mvadm1Up = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets2_mvadm1Up   = 1.;
+							  
+							  
+		weight_ff_mt_wjets_stat_unc2_njets0_mvadm2Up = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets0_mvadm2Up   = 1.;
+							  
+		weight_ff_mt_wjets_stat_unc2_njets1_mvadm2Up = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets1_mvadm2Up   = 1.;
+							  
+		weight_ff_mt_wjets_stat_unc2_njets2_mvadm2Up = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets2_mvadm2Up   = 1.;
+
+
+		weight_ff_mt_wjets_stat_unc2_njets0_mvadm10Up = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets0_mvadm10Up   = 1.;
+							   
+		weight_ff_mt_wjets_stat_unc2_njets1_mvadm10Up = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets1_mvadm10Up   = 1.;
+							   
+		weight_ff_mt_wjets_stat_unc2_njets2_mvadm10Up = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets2_mvadm10Up   = 1.;
+							   
+							   
+		weight_ff_mt_wjets_stat_unc2_njets0_mvadm11Up = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets0_mvadm11Up   = 1.;
+							   
+		weight_ff_mt_wjets_stat_unc2_njets1_mvadm11Up = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets1_mvadm11Up   = 1.;
+							   
+		weight_ff_mt_wjets_stat_unc2_njets2_mvadm11Up = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets2_mvadm11Up   = 1.;
+
+
+
+		weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_ltDown = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_ltDown   = 1.;
+								   
+		weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_ltDown = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_ltDown   = 1.;
+								   
+		weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_ltDown = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_ltDown   = 1.;
+								   
+								   
+		weight_ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_gtDown = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_gtDown   = 1.;
+								   
+		weight_ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_gtDown = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_gtDown   = 1.;
+								   
+		weight_ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_gtDown = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_gtDown   = 1.;
+
+
+
+		weight_ff_mt_wjets_stat_unc2_njets0_mvadm1Down = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets0_mvadm1Down   = 1.;
+							    
+		weight_ff_mt_wjets_stat_unc2_njets1_mvadm1Down = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets1_mvadm1Down   = 1.;
+							    
+		weight_ff_mt_wjets_stat_unc2_njets2_mvadm1Down = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets2_mvadm1Down   = 1.;
+							    
+							    
+		weight_ff_mt_wjets_stat_unc2_njets0_mvadm2Down = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets0_mvadm2Down   = 1.;
+							    
+		weight_ff_mt_wjets_stat_unc2_njets1_mvadm2Down = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets1_mvadm2Down   = 1.;
+							    
+		weight_ff_mt_wjets_stat_unc2_njets2_mvadm2Down = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets2_mvadm2Down   = 1.;
+
+
+		weight_ff_mt_wjets_stat_unc2_njets0_mvadm10Down = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets0_mvadm10Down   = 1.;
+							     
+		weight_ff_mt_wjets_stat_unc2_njets1_mvadm10Down = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets1_mvadm10Down   = 1.;
+							     
+		weight_ff_mt_wjets_stat_unc2_njets2_mvadm10Down = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets2_mvadm10Down   = 1.;
+							     
+							     
+		weight_ff_mt_wjets_stat_unc2_njets0_mvadm11Down = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets0_mvadm11Down   = 1.;
+							     
+		weight_ff_mt_wjets_stat_unc2_njets1_mvadm11Down = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets1_mvadm11Down   = 1.;
+							     
+		weight_ff_mt_wjets_stat_unc2_njets2_mvadm11Down = 1.;
+		weight_ff_mt_qcd_stat_unc2_njets2_mvadm11Down   = 1.;
+		
 		//met_var_qcd and met_var_w non-closure corrections
 
 		weight_ff_mt_qcd_met_closure_systUp     = 1.;
@@ -1556,6 +2862,278 @@ int main(int argc, char * argv[]) {
 		weight_ff_mt_wjets_systDown = 1.;
 		weight_ff_mt_ttbar_systUp   = 1.;
 		weight_ff_mt_ttbar_systDown = 1.;
+		//////////////
+		//Stat uncertainties
+		weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_ltUp = 1.;
+		weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_ltUp   = 1.;
+								 
+		weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_ltUp = 1.;
+		weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_ltUp   = 1.;
+								 
+		weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_ltUp = 1.;
+		weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_ltUp   = 1.;
+								 
+								 
+		weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_gtUp = 1.;
+		weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_gtUp   = 1.;
+								 
+		weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_gtUp = 1.;
+		weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_gtUp   = 1.;
+								 
+		weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_gtUp = 1.;
+		weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_gtUp   = 1.;
+
+
+
+		weight_ff_et_wjets_stat_unc1_njets0_mvadm1Up = 1.;
+		weight_ff_et_qcd_stat_unc1_njets0_mvadm1Up   = 1.;
+							  
+		weight_ff_et_wjets_stat_unc1_njets1_mvadm1Up = 1.;
+		weight_ff_et_qcd_stat_unc1_njets1_mvadm1Up   = 1.;
+							  
+		weight_ff_et_wjets_stat_unc1_njets2_mvadm1Up = 1.;
+		weight_ff_et_qcd_stat_unc1_njets2_mvadm1Up   = 1.;
+							  
+							  
+		weight_ff_et_wjets_stat_unc1_njets0_mvadm2Up = 1.;
+		weight_ff_et_qcd_stat_unc1_njets0_mvadm2Up   = 1.;
+							  
+		weight_ff_et_wjets_stat_unc1_njets1_mvadm2Up = 1.;
+		weight_ff_et_qcd_stat_unc1_njets1_mvadm2Up   = 1.;
+							  
+		weight_ff_et_wjets_stat_unc1_njets2_mvadm2Up = 1.;
+		weight_ff_et_qcd_stat_unc1_njets2_mvadm2Up   = 1.;
+
+
+		weight_ff_et_wjets_stat_unc1_njets0_mvadm10Up = 1.;
+		weight_ff_et_qcd_stat_unc1_njets0_mvadm10Up   = 1.;
+							   
+		weight_ff_et_wjets_stat_unc1_njets1_mvadm10Up = 1.;
+		weight_ff_et_qcd_stat_unc1_njets1_mvadm10Up   = 1.;
+							   
+		weight_ff_et_wjets_stat_unc1_njets2_mvadm10Up = 1.;
+		weight_ff_et_qcd_stat_unc1_njets2_mvadm10Up   = 1.;
+							   
+							   
+		weight_ff_et_wjets_stat_unc1_njets0_mvadm11Up = 1.;
+		weight_ff_et_qcd_stat_unc1_njets0_mvadm11Up   = 1.;
+							   
+		weight_ff_et_wjets_stat_unc1_njets1_mvadm11Up = 1.;
+		weight_ff_et_qcd_stat_unc1_njets1_mvadm11Up   = 1.;
+							   
+		weight_ff_et_wjets_stat_unc1_njets2_mvadm11Up = 1.;
+		weight_ff_et_qcd_stat_unc1_njets2_mvadm11Up   = 1.;
+
+
+
+		weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_ltDown = 1.;
+		weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_ltDown   = 1.;
+								   
+		weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_ltDown = 1.;
+		weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_ltDown   = 1.;
+								   
+		weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_ltDown = 1.;
+		weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_ltDown   = 1.;
+								   
+								   
+		weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_gtDown = 1.;
+		weight_ff_et_qcd_stat_unc1_njets0_mvadm0_sig_gtDown   = 1.;
+								   
+		weight_ff_et_wjets_stat_unc1_njets1_mvadm0_sig_gtDown = 1.;
+		weight_ff_et_qcd_stat_unc1_njets1_mvadm0_sig_gtDown   = 1.;
+								   
+		weight_ff_et_wjets_stat_unc1_njets2_mvadm0_sig_gtDown = 1.;
+		weight_ff_et_qcd_stat_unc1_njets2_mvadm0_sig_gtDown   = 1.;
+
+
+
+		weight_ff_et_wjets_stat_unc1_njets0_mvadm1Down = 1.;
+		weight_ff_et_qcd_stat_unc1_njets0_mvadm1Down   = 1.;
+							    
+		weight_ff_et_wjets_stat_unc1_njets1_mvadm1Down = 1.;
+		weight_ff_et_qcd_stat_unc1_njets1_mvadm1Down   = 1.;
+							    
+		weight_ff_et_wjets_stat_unc1_njets2_mvadm1Down = 1.;
+		weight_ff_et_qcd_stat_unc1_njets2_mvadm1Down   = 1.;
+							    
+							    
+		weight_ff_et_wjets_stat_unc1_njets0_mvadm2Down = 1.;
+		weight_ff_et_qcd_stat_unc1_njets0_mvadm2Down   = 1.;
+							    
+		weight_ff_et_wjets_stat_unc1_njets1_mvadm2Down = 1.;
+		weight_ff_et_qcd_stat_unc1_njets1_mvadm2Down   = 1.;
+							    
+		weight_ff_et_wjets_stat_unc1_njets2_mvadm2Down = 1.;
+		weight_ff_et_qcd_stat_unc1_njets2_mvadm2Down   = 1.;
+
+
+		weight_ff_et_wjets_stat_unc1_njets0_mvadm10Down = 1.;
+		weight_ff_et_qcd_stat_unc1_njets0_mvadm10Down   = 1.;
+							     
+		weight_ff_et_wjets_stat_unc1_njets1_mvadm10Down = 1.;
+		weight_ff_et_qcd_stat_unc1_njets1_mvadm10Down   = 1.;
+							     
+		weight_ff_et_wjets_stat_unc1_njets2_mvadm10Down = 1.;
+		weight_ff_et_qcd_stat_unc1_njets2_mvadm10Down   = 1.;
+							     
+							     
+		weight_ff_et_wjets_stat_unc1_njets0_mvadm11Down = 1.;
+		weight_ff_et_qcd_stat_unc1_njets0_mvadm11Down   = 1.;
+							     
+		weight_ff_et_wjets_stat_unc1_njets1_mvadm11Down = 1.;
+		weight_ff_et_qcd_stat_unc1_njets1_mvadm11Down   = 1.;
+							     
+		weight_ff_et_wjets_stat_unc1_njets2_mvadm11Down = 1.;
+		weight_ff_et_qcd_stat_unc1_njets2_mvadm11Down   = 1.;
+		////////////
+		///unc2
+		////////////
+		weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_ltUp = 1.;
+		weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_ltUp   = 1.;
+								 
+		weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_ltUp = 1.;
+		weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_ltUp   = 1.;
+								 
+		weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_ltUp = 1.;
+		weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_ltUp   = 1.;
+								 
+								 
+		weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_gtUp = 1.;
+		weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_gtUp   = 1.;
+								 
+		weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_gtUp = 1.;
+		weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_gtUp   = 1.;
+								 
+		weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_gtUp = 1.;
+		weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_gtUp   = 1.;
+
+
+
+		weight_ff_et_wjets_stat_unc2_njets0_mvadm1Up = 1.;
+		weight_ff_et_qcd_stat_unc2_njets0_mvadm1Up   = 1.;
+							  
+		weight_ff_et_wjets_stat_unc2_njets1_mvadm1Up = 1.;
+		weight_ff_et_qcd_stat_unc2_njets1_mvadm1Up   = 1.;
+							  
+		weight_ff_et_wjets_stat_unc2_njets2_mvadm1Up = 1.;
+		weight_ff_et_qcd_stat_unc2_njets2_mvadm1Up   = 1.;
+							  
+							  
+		weight_ff_et_wjets_stat_unc2_njets0_mvadm2Up = 1.;
+		weight_ff_et_qcd_stat_unc2_njets0_mvadm2Up   = 1.;
+							  
+		weight_ff_et_wjets_stat_unc2_njets1_mvadm2Up = 1.;
+		weight_ff_et_qcd_stat_unc2_njets1_mvadm2Up   = 1.;
+							  
+		weight_ff_et_wjets_stat_unc2_njets2_mvadm2Up = 1.;
+		weight_ff_et_qcd_stat_unc2_njets2_mvadm2Up   = 1.;
+
+
+		weight_ff_et_wjets_stat_unc2_njets0_mvadm10Up = 1.;
+		weight_ff_et_qcd_stat_unc2_njets0_mvadm10Up   = 1.;
+							   
+		weight_ff_et_wjets_stat_unc2_njets1_mvadm10Up = 1.;
+		weight_ff_et_qcd_stat_unc2_njets1_mvadm10Up   = 1.;
+							   
+		weight_ff_et_wjets_stat_unc2_njets2_mvadm10Up = 1.;
+		weight_ff_et_qcd_stat_unc2_njets2_mvadm10Up   = 1.;
+							   
+							   
+		weight_ff_et_wjets_stat_unc2_njets0_mvadm11Up = 1.;
+		weight_ff_et_qcd_stat_unc2_njets0_mvadm11Up   = 1.;
+							   
+		weight_ff_et_wjets_stat_unc2_njets1_mvadm11Up = 1.;
+		weight_ff_et_qcd_stat_unc2_njets1_mvadm11Up   = 1.;
+							   
+		weight_ff_et_wjets_stat_unc2_njets2_mvadm11Up = 1.;
+		weight_ff_et_qcd_stat_unc2_njets2_mvadm11Up   = 1.;
+
+
+
+		weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_ltDown = 1.;
+		weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_ltDown   = 1.;
+								   
+		weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_ltDown = 1.;
+		weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_ltDown   = 1.;
+								   
+		weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_ltDown = 1.;
+		weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_ltDown   = 1.;
+								   
+								   
+		weight_ff_et_wjets_stat_unc2_njets0_mvadm0_sig_gtDown = 1.;
+		weight_ff_et_qcd_stat_unc2_njets0_mvadm0_sig_gtDown   = 1.;
+								   
+		weight_ff_et_wjets_stat_unc2_njets1_mvadm0_sig_gtDown = 1.;
+		weight_ff_et_qcd_stat_unc2_njets1_mvadm0_sig_gtDown   = 1.;
+								   
+		weight_ff_et_wjets_stat_unc2_njets2_mvadm0_sig_gtDown = 1.;
+		weight_ff_et_qcd_stat_unc2_njets2_mvadm0_sig_gtDown   = 1.;
+
+
+
+		weight_ff_et_wjets_stat_unc2_njets0_mvadm1Down = 1.;
+		weight_ff_et_qcd_stat_unc2_njets0_mvadm1Down   = 1.;
+							    
+		weight_ff_et_wjets_stat_unc2_njets1_mvadm1Down = 1.;
+		weight_ff_et_qcd_stat_unc2_njets1_mvadm1Down   = 1.;
+							    
+		weight_ff_et_wjets_stat_unc2_njets2_mvadm1Down = 1.;
+		weight_ff_et_qcd_stat_unc2_njets2_mvadm1Down   = 1.;
+							    
+							    
+		weight_ff_et_wjets_stat_unc2_njets0_mvadm2Down = 1.;
+		weight_ff_et_qcd_stat_unc2_njets0_mvadm2Down   = 1.;
+							    
+		weight_ff_et_wjets_stat_unc2_njets1_mvadm2Down = 1.;
+		weight_ff_et_qcd_stat_unc2_njets1_mvadm2Down   = 1.;
+							    
+		weight_ff_et_wjets_stat_unc2_njets2_mvadm2Down = 1.;
+		weight_ff_et_qcd_stat_unc2_njets2_mvadm2Down   = 1.;
+
+
+		weight_ff_et_wjets_stat_unc2_njets0_mvadm10Down = 1.;
+		weight_ff_et_qcd_stat_unc2_njets0_mvadm10Down   = 1.;
+							     
+		weight_ff_et_wjets_stat_unc2_njets1_mvadm10Down = 1.;
+		weight_ff_et_qcd_stat_unc2_njets1_mvadm10Down   = 1.;
+							     
+		weight_ff_et_wjets_stat_unc2_njets2_mvadm10Down = 1.;
+		weight_ff_et_qcd_stat_unc2_njets2_mvadm10Down   = 1.;
+							     
+							     
+		weight_ff_et_wjets_stat_unc2_njets0_mvadm11Down = 1.;
+		weight_ff_et_qcd_stat_unc2_njets0_mvadm11Down   = 1.;
+							     
+		weight_ff_et_wjets_stat_unc2_njets1_mvadm11Down = 1.;
+		weight_ff_et_qcd_stat_unc2_njets1_mvadm11Down   = 1.;
+							     
+		weight_ff_et_wjets_stat_unc2_njets2_mvadm11Down = 1.;
+		weight_ff_et_qcd_stat_unc2_njets2_mvadm11Down   = 1.;
+		
+		//met_var_qcd and met_var_w non-closure corrections
+
+		weight_ff_et_qcd_met_closure_systUp     = 1.;
+		weight_ff_et_wjets_met_closure_systUp   = 1.;
+		weight_ff_et_ttbar_met_closure_systUp   = 1.;
+		weight_ff_et_qcd_met_closure_systDown   = 1.;
+		weight_ff_et_wjets_met_closure_systDown = 1.;
+		weight_ff_et_ttbar_met_closure_systDown = 1.;
+
+		//m_pt non-closure corrections
+
+		weight_ff_et_qcd_l_pt_closure_systUp     = 1.;
+		weight_ff_et_qcd_l_pt_closure_systDown   = 1.;
+		weight_ff_et_wjets_l_pt_closure_systUp   = 1.;
+		weight_ff_et_wjets_l_pt_closure_systDown = 1.;
+
+		//extrapolations from DR to SR
+		weight_ff_et_qcd_systUp     = 1.;
+		weight_ff_et_qcd_systDown   = 1.;
+		weight_ff_et_wjets_systUp   = 1.;
+		weight_ff_et_wjets_systDown = 1.;
+		weight_ff_et_ttbar_systUp   = 1.;
+		weight_ff_et_ttbar_systDown = 1.;
+
 	      }
 	      
 	      ff_sys = ff_nom; // TO DO: fix systematics
