@@ -300,7 +300,10 @@ const vector<TString> WJets_2018           = { "W1JetsToLNu" ,
                                                "W2JetsToLNu" ,
                                                "W3JetsToLNu" ,
                                                "W4JetsToLNu" ,
-                                               "WJetsToLNu" };
+                                               "WJetsToLNu",
+					       "EWKWPlus2Jets_WToLNu_M-50",
+					       "EWKWMinus2Jets_WToLNu_M-50",
+					       };
 const vector<TString> TTbar_2018           = { "TTTo2L2Nu" ,
                                                "TTToHadronic" ,
                                                "TTToSemiLeptonic" };
@@ -308,18 +311,29 @@ const vector<TString> SingleTop_2018       = { "ST_t-channel_antitop_4f" ,
                                                "ST_t-channel_top_4f" ,
                                                "ST_tW_antitop_5f" ,
                                                "ST_tW_top_5f" };
-const vector<TString> Diboson_2018         = { "WW" ,
-                                               "WZ" ,
-                                               "ZZ" ,
+const vector<TString> Diboson_2018         = { "VVTo2L2Nu",
+					       "WZTo2L2Q",
+					       "WZTo3LNu",
+					       "ZZTo2L2Q",
+					       "ZZTo4L",
 					       "ST_t-channel_antitop_4f" ,
                                                "ST_t-channel_top_4f" ,
                                                "ST_tW_antitop_5f" ,
                                                "ST_tW_top_5f" };
+const vector<TString> EWKZ_2018            = {"EWKZ2Jets_ZToLL_M-50",
+					      "EWKZ2Jets_ZToNuNu"};
 
 const vector<TString> GluGluHToTauTau_2018 = { "GluGluHToTauTau_M125" };
 const vector<TString> VBFHToTauTau_2018    = { "VBFHToTauTau_M125"}; 
 const vector<TString> GluGluHToUncorrTauTau_2018 = { "GluGluHToTauTauUncorrDecays_M125" };
 const vector<TString> VBFHToUncorrTauTau_2018 = { "VBFHToTauTauUncorrDecays_M125" };
+const vector<TString> VHToUncorrTauTau_2018      = { "WminusHToTauTauUncorrDecays_M125","WplusHToTauTauUncorrDecays_M125","ZHToTauTauUncorrDecays_M125" };
+const vector<TString> HToWW_2018         = { "GluGluHToWWTo2L2Nu_M125",
+					     "VBFHToWWTo2L2Nu_M125",
+					     "GluGluZH_HToWW_M125",
+					     "HWminusJ_HToWW_M125",
+					     "HWplusJ_HToWW_M125",
+					     "HZJ_HToWW_M125"};
 
 // 2017
 const vector<TString> SingleMuon_2017       = {"SingleMuon_Run2017B",
@@ -354,7 +368,10 @@ const vector<TString> WJets_2017           = { "W1JetsToLNu" ,
 					       "W2JetsToLNu" ,
 					       "W3JetsToLNu" ,
 					       "W4JetsToLNu" ,
-					       "WJetsToLNu"
+					       "WJetsToLNu"  ,
+					       "EWKWPlus2Jets_WToLNu_M-50",
+					       "EWKWMinus2Jets_WToLNu_M-50",
+					      
 					       /*"WGToLNuG_TuneCP5_13TeV-madgraphMLM-pythia8",
 					       "EWKWMinus2Jets_WToLNu_M-50_TuneCP5_13TeV-madgraph-pythia8" ,
 					       "EWKWPlus2Jets_WToLNu_M-50_TuneCP5_13TeV-madgraph-pythia8"*/};
@@ -365,13 +382,17 @@ const vector<TString> SingleTop_2017       = { "ST_t-channel_antitop_4f" ,
 					       "ST_t-channel_top_4f" ,
 					       "ST_tW_antitop_5f" ,
 					       "ST_tW_top_5f" };
-const vector<TString> Diboson_2017         = { "WW" ,
-					       "WZ" ,
-					       "ZZ" ,
+const vector<TString> Diboson_2017         = { "VVTo2L2Nu",
+					       "WZTo2L2Q",
+					       "WZTo3LNu",
+					       "ZZTo2L2Q",
+					       "ZZTo4L",
 					       "ST_t-channel_antitop_4f" ,
 					       "ST_t-channel_top_4f" ,
 					       "ST_tW_antitop_5f" ,
 					       "ST_tW_top_5f" };
+const vector<TString> EWKZ_2017            = {"EWKZ2Jets_ZToLL_M-50",
+					      "EWKZ2Jets_ZToNuNu"};
 const vector<TString> GluGluHToTauTau_2017 = { "GluGluHToTauTau_M125" };
 const vector<TString> SUSYGluGluToHToTauTau_2017 = { "SUSYGluGluToHToTauTau" };
 const vector<TString> VBFHToTauTau_2017    = { "VBFHToTauTau_M125"
@@ -379,7 +400,14 @@ const vector<TString> VBFHToTauTau_2017    = { "VBFHToTauTau_M125"
 					       "WplusHToTauTau_M125_13TeV_powheg_pythia8",
 					       "WminusHToTauTau_M125_13TeV_powheg_pythia8"*/}; 
 const vector<TString> GluGluHToUncorrTauTau_2017 = { "GluGluHToTauTauUncorrDecays_M125" };
-const vector<TString> VBFHToUncorrTauTau_2017 = { "VBFHToTauTauUncorrDecays_M125" };
+const vector<TString> VBFHToUncorrTauTau_2017 = { "VBFHToTauTauUncorrDecays_M125_1","VBFHToTauTauUncorrDecays_M125_2" };
+const vector<TString> VHToUncorrTauTau_2017      = { "WminusHToTauTauUncorrDecays_M125","WplusHToTauTauUncorrDecays_M125","ZHToTauTauUncorrDecays_M125" };
+const vector<TString> HToWW_2017         = { "GluGluHToWWTo2L2Nu_M125",
+					       "VBFHToWWTo2L2Nu_M125",
+					       "GluGluZH_HToWW_M125",
+					       "HWminusJ_HToWW_M125",
+					       "HWplusJ_HToWW_M125",
+					       "HZJ_HToWW_M125"};
 
 //the 2017 samples below seem not needed for mu-tau
 const vector<TString> ZHToTauTau_2017      = { "ZHToTauTau_M125" };//seems absent for mutau
@@ -430,23 +458,37 @@ const vector<TString> WJets_2016           = { "W1JetsToLNu",
 					       "W2JetsToLNu", 
 					       "W3JetsToLNu", 
 					       "W4JetsToLNu", 
-					       "WJetsToLNu"};
+					       "WJetsToLNu" ,
+					       "EWKWPlus2Jets_WToLNu_M-50",
+					       "EWKWMinus2Jets_WToLNu_M-50",
+					      };
 const vector<TString> TTbar_2016           = { "TT" };
 const vector<TString> SingleTop_2016       = { "ST_t-channel_antitop_4f", 
 					       "ST_t-channel_top_4f", 
 					       "ST_tW_antitop_5f", 
 					       "ST_tW_top_5f" };
 //const vector<TString> Diboson_2016         = { "VVTo2L2Nu" , "WZJToLLLNu" , "WZTo1L1Nu2Q" , "WZTo1L3Nu" , "WZTo2L2Q" , "ZZTo2L2Q" , "ZZTo4L" , "WWToLNuQQ" };
-const vector<TString> Diboson_2016         = { "WW",
-					       "WZ",
-					       "ZZ",
+const vector<TString> Diboson_2016         = { "VVTo2L2Nu",
+					       "WZTo2L2Q",
+					       "WZTo3LNu",
+					       "ZZTo2L2Q",
+					       "ZZTo4L",
 					       "ST_t-channel_antitop_4f", 
 					       "ST_t-channel_top_4f", 
 					       "ST_tW_antitop_5f", 
 					       "ST_tW_top_5f" };
+const vector<TString> EWKZ_2016            = {"EWKZ2Jets_ZToLL_M-50",
+					      "EWKZ2Jets_ZToNuNu"};
 
 const vector<TString> GluGluHToUncorrTauTau_2016 = { "GluGluHToTauTauUncorrDecays_M125" };
 const vector<TString> VBFHToUncorrTauTau_2016 = { "VBFHToTauTauUncorrDecays_M125" };
+const vector<TString> VHToUncorrTauTau_2016      = { "WminusHToTauTauUncorrDecays_M125","WplusHToTauTauUncorrDecays_M125","ZHToTauTauUncorrDecays_M125" };
+const vector<TString> HToWW_2016 = { "GluGluHToWWTo2L2Nu_M125",
+				     "VBFHToWWTo2L2Nu_M125",
+				     "GluGluZH_HToWW_M125",
+				     "HWminusJ_HToWW_M125",
+				     "HWplusJ_HToWW_M125",
+				     "HZJ_HToWW_M125"};
 
 const vector<TString> ZHToTauTau_2016      = { "ZHToTauTau_M125" };
 const vector<TString> WHToTauTau_2016      = { "WplusHToTauTau_M125" , "WminusHToTauTau_M125" };
@@ -487,9 +529,17 @@ const map<TString, vector<TString> > map_sample = {
   {"SingleTop_2017",SingleTop_2017},
   {"SingleTop_2016",SingleTop_2016},
 
+  {"EWKZ_2018",EWKZ_2018},
+  {"EWKZ_2017",EWKZ_2017},
+  {"EWKZ_2016",EWKZ_2016},
+
   {"Diboson_2018",Diboson_2018},
   {"Diboson_2017",Diboson_2017},
   {"Diboson_2016",Diboson_2016},
+
+  {"HToWW_2018",HToWW_2018},
+  {"HToWW_2017",HToWW_2017},
+  {"HToWW_2016",HToWW_2016},
 
   {"GluGluHToUncorrTauTau_2018",GluGluHToUncorrTauTau_2018},
   {"GluGluHToUncorrTauTau_2017",GluGluHToUncorrTauTau_2017},
@@ -498,6 +548,10 @@ const map<TString, vector<TString> > map_sample = {
   {"VBFHToUncorrTauTau_2018",VBFHToUncorrTauTau_2018},
   {"VBFHToUncorrTauTau_2017",VBFHToUncorrTauTau_2017},
   {"VBFHToUncorrTauTau_2016",VBFHToUncorrTauTau_2016},
+
+  {"VHToUncorrTauTau_2018",VHToUncorrTauTau_2018},
+  {"VHToUncorrTauTau_2017",VHToUncorrTauTau_2017},
+  {"VHToUncorrTauTau_2016",VHToUncorrTauTau_2016},
 
 };
 
@@ -526,10 +580,28 @@ const map<TString, double> xsec_map_2018 = {
    { "WW" , 75.88 },
    { "WZ" , 27.57 },
    { "ZZ" , 12.14 },
+    { "VVTo2L2Nu"                , 11.95 },
+    { "WWToLNuQQ"                , 49.997 },
+    { "WZTo2L2Q"                 , 5.595 },
+    { "WZTo1L1Nu2Q"              , 10.71 },
+    { "WZTo1L3Nu"                , 3.05 },
+    { "WZJToLLLNu"               , 4.708 },
+    { "WZTo3LNu"                , 4.43 },
+    { "ZZTo4L"                   , 1.212 },
+    { "ZZTo2L2Q"                 , 3.22 },
    { "GluGluHToTauTau_M125" , 48.58*0.0627 },
    { "VBFHToTauTau_M125"    , 3.782*0.0627 },
+   {"GluGluHToWWTo2L2Nu_M125",     1.09},
+   {"VBFHToWWTo2L2Nu_M125",        0.0850},
+   {"GluGluZH_HToWW_M125",         0.0262},
+   {"HWminusJ_HToWW_M125",         0.114},
+   {"HWplusJ_HToWW_M125",          0.18},
+   {"HZJ_HToWW_M125",              0.163},
    { "GluGluHToTauTauUncorrDecays_M125" , 48.58*0.0627*0.2446 },
-   { "VBFHToTauTauUncorrDecays_M125"    , 3.782*0.0627*0.2695 }
+   { "VBFHToTauTauUncorrDecays_M125"    , 3.782*0.0627*0.2695 },
+   { "WminusHToTauTauUncorrDecays_M125",  0.0527*0.2394},
+   { "WplusHToTauTauUncorrDecays_M125",   0.0334*0.2567},
+   { "ZHToTauTauUncorrDecays_M125",       0.0477*0.2514}
 };
 // 2017 (checked ! - reference is https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2017 )
 
@@ -554,11 +626,25 @@ const map<TString, double> xsec_map_2017 = {
   { "WW" , 75.88 },
   { "WZ" , 27.57 },
   { "ZZ" , 12.14 }, 
+    { "VVTo2L2Nu"                , 11.95 },
+    { "WWToLNuQQ"                , 49.997 },
+    { "WZTo2L2Q"                 , 5.595 },
+    { "WZTo1L1Nu2Q"              , 10.71 },
+    { "WZTo1L3Nu"                , 3.05 },
+    { "WZJToLLLNu"               , 4.708 },
+    { "WZTo3LNu"                , 4.43 },
+    { "ZZTo4L"                   , 1.212 },
+    { "ZZTo2L2Q"                 , 3.22 },
   { "GluGluHToTauTau_M125" , 48.58*0.0627 },
   { "SUSYGluGluToHToTauTau" , 48.58*0.0627 },
   { "VBFHToTauTau_M125"    , 3.782*0.0627 },
   { "GluGluHToTauTauUncorrDecays_M125" , 48.58*0.0627*0.2447 },
   { "VBFHToTauTauUncorrDecays_M125"    , 3.782*0.0627*0.2697 },
+  { "VBFHToTauTauUncorrDecays_M125_1"    , 3.782*0.0627*0.2697 },
+  { "VBFHToTauTauUncorrDecays_M125_2"    , 3.782*0.0627*0.2697 },
+   { "WminusHToTauTauUncorrDecays_M125",  0.0527*0.2394},
+   { "WplusHToTauTauUncorrDecays_M125",   0.0334*0.2567},
+  { "ZHToTauTauUncorrDecays_M125",       0.0477*0.2514},
   { "EWKWMinus2Jets_WToLNu_M-50" , 23.24 },
   { "EWKWPlus2Jets_WToLNu_M-50" , 29.59 },
   { "WGToLNuG"    , 464.4 },
@@ -569,7 +655,13 @@ const map<TString, double> xsec_map_2017 = {
   { "WminusHToTauTau_M125" , 0.0358 },
   { "GluGluHToWWTo2L2Nu"                        , 48.6*0.02374 },  // from: https://twiki.cern.ch/twiki/bin/view/LHCPhysics/LHCHXSWG#Higgs_cross_sections_and_decay_b and https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageBR#H_llll_ll
   { "VBFHToWWTo2L2Nu_M125" , 3.78*0.02374 }, // from: see links above
-  { "ttHToTauTau_M125"         , 0.5071*0.0627 }  // from: see links above
+  { "ttHToTauTau_M125"         , 0.5071*0.0627 },  // from: see links above
+  {"GluGluHToWWTo2L2Nu_M125",     1.09},
+  {"VBFHToWWTo2L2Nu_M125",        0.0850},
+  {"GluGluZH_HToWW_M125",         0.0262},
+  {"HWminusJ_HToWW_M125",         0.114},
+  {"HWplusJ_HToWW_M125",          0.18},
+  {"HZJ_HToWW_M125",              0.163},
 };
 
 
@@ -597,15 +689,17 @@ const map<TString, double> xsec_map_2016 = {
     { "WZTo1L1Nu2Q"              , 10.71 },
     { "WZTo1L3Nu"                , 3.05 },
     { "WZJToLLLNu"               , 4.708 },
+    { "WZTo3LNu"                , 4.43 },
     { "ZZTo4L"                   , 1.212 },
     { "ZZTo2L2Q"                 , 3.22 },
-    { "GluGluHToTauTauUncorrDecays_M125" , 48.58*0.0627*0.2455 },
-    { "VBFHToTauTauUncorrDecays_M125"    , 3.782*0.0627*0.2727 },
     {"ZZ" , 12.14},
     {"WW" , 75.88},
     {"WZ" , 27.6},
     { "GluGluHToTauTauUncorrDecays_M125" , 48.58*0.0627*0.2455 },
     { "VBFHToTauTauUncorrDecays_M125"    , 3.782*0.0627*0.2727 },
+   { "WminusHToTauTauUncorrDecays_M125",  0.0527*0.2394},
+   { "WplusHToTauTauUncorrDecays_M125",   0.0334*0.2567},
+    { "ZHToTauTauUncorrDecays_M125",       0.0477*0.2514},
     { "WGToLNuG"                 , 178.4 }, // xsdb
     { "WGstarToLNuMuMu"          , 2.793 },
     { "WGstarToLNuEE"            , 3.526 },
@@ -619,8 +713,14 @@ const map<TString, double> xsec_map_2016 = {
     { "WminusHToTauTau_M125"     , 0.0358 },
     { "GluGluHToWWTo2L2Nu_M125"  , 48.6*0.02374 }, // see 2017
     { "VBFHToWWTo2L2Nu_M125"     , 3.78*0.02374 }, // see 2017
-    { "ttHJetToTT_M125"          , 0.5071*0.0627 } // see 2017
-  };
+    { "ttHJetToTT_M125"          , 0.5071*0.0627 }, // see 2017
+    {"GluGluHToWWTo2L2Nu_M125",     1.09},
+    {"VBFHToWWTo2L2Nu_M125",        0.0850},
+    {"GluGluZH_HToWW_M125",         0.0262},
+    {"HWminusJ_HToWW_M125",         0.114},
+    {"HWplusJ_HToWW_M125",          0.18},
+    {"HZJ_HToWW_M125",              0.163},
+};
 // **************************************************************************************************
 // **************************************************************************************************
 // maps short name to filenames - needed for stitching

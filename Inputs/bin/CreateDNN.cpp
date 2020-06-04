@@ -103,7 +103,11 @@ int main(int argc, char * argv[]) {
   
   //TString output_dir = "";
   samples_map[channel + "-NOMINAL_ntuple_"+Sample     ] = map_sample.at(Sample);
-
+  if(channel=="mt")
+    input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/mutau_June2/" + era ;
+  else 
+    input_dir ="/nfs/dust/cms/user/rasp/HiggsCP/etau/" + era ;
+    
   TString output_dir="";
   if (era == "2018"){
     xsec_map    = &xsec_map_2018;
@@ -115,8 +119,9 @@ int main(int argc, char * argv[]) {
     embedded_tracking_weight = 1.00;
     //input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2018/";
     //     input_dir = "/nfs/dust/cms/user/rasp/Run/Run2018/CP/sys";
-    input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/" + era ;
-    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_May26";
+    //input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/" + era ;
+    //input_dir ="/nfs/dust/cms/user/rasp/HiggsCP/etau/" + era ;
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_June3";
   }
   else if(era == "2017"){
     xsec_map    = &xsec_map_2017; 
@@ -128,8 +133,8 @@ int main(int argc, char * argv[]) {
     embedded_tracking_weight = 0.99;
     //input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2017/";
     //input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/" + era ;
-    input_dir ="/nfs/dust/cms/user/rasp/HiggsCP/etau/" + era ;
-    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_May26";
+    //input_dir ="/nfs/dust/cms/user/rasp/HiggsCP/etau/" + era ;
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_June3";
   }  
   else if(era == "2016"){
     xsec_map    = &xsec_map_2016;
@@ -140,8 +145,8 @@ int main(int argc, char * argv[]) {
     embedded_trigger_weight  = 1.03;
     embedded_tracking_weight = 0.98;
     //input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2016/";
-    input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/" + era ;
-    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_May26";
+    //input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/" + era ;
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_June3";
   }
   fs::path path(output_dir.Data());
   if (!(fs::exists(path))) {
@@ -326,8 +331,30 @@ int main(int argc, char * argv[]) {
 	float idisoweight_1;
 	float idisoweight_2;
 	float topptweight;
+	float etaufakeweight;
+	float mutaufakeweight;
 	double zptweight;
 	double trkeffweight;
+	float prefiringweight;
+	float prefiringweightUp;
+	float prefiringweightDown;
+	float weight_CMS_PreFire_13TeVUp;
+	float weight_CMS_PreFire_13TeVDown;
+	
+	float weight_mufake_corr;
+
+	float weight_CMS_mufake_mt_MVADM0_13TeVUp; 
+	float weight_CMS_mufake_mt_MVADM1_13TeVUp; 
+	float weight_CMS_mufake_mt_MVADM2_13TeVUp; 
+	float weight_CMS_mufake_mt_MVADM10_13TeVUp;
+	float weight_CMS_mufake_mt_MVADM11_13TeVUp;
+	float weight_CMS_mufake_mt_MVADM0_13TeVDown; 
+	float weight_CMS_mufake_mt_MVADM1_13TeVDown; 
+	float weight_CMS_mufake_mt_MVADM2_13TeVDown; 
+	float weight_CMS_mufake_mt_MVADM10_13TeVDown;
+	float weight_CMS_mufake_mt_MVADM11_13TeVDown;
+
+
 	float weight;	  
 	// Merijn: vars below used for stxs. 
 	// prefiring_weight is set for different stxs bins.. 
@@ -980,6 +1007,10 @@ int main(int argc, char * argv[]) {
 
 	float weight_CMS_scale_gg_13TeVUp;
 	float weight_CMS_scale_gg_13TeVDown;
+	float weight_CMS_PS_ISR_ggH_13TeVUp;
+	float weight_CMS_PS_ISR_ggH_13TeVDown;
+	float weight_CMS_PS_FSR_ggH_13TeVUp;
+	float weight_CMS_PS_FSR_ggH_13TeVDown;
 
 
 
@@ -1032,6 +1063,9 @@ int main(int argc, char * argv[]) {
 	//	outTree->Branch("zptweight",&zptweight,"zptweight/D");
 	//	outTree->Branch("trkeffweight",&trkeffweight,"trkeffweight/D");
 	outTree->Branch("weight",&weight,"weight/F");
+	outTree->Branch("weight_CMS_PreFire_13TeVUp",&weight_CMS_PreFire_13TeVUp,"CMS_PreFire_13TeVUp/F");
+	outTree->Branch("weight_CMS_PreFire_13TeVDown",&weight_CMS_PreFire_13TeVDown,"CMS_PreFire_13TeVDown/F");
+
 	
 	outTree->Branch("njets",&njets,"njets/I");
 	outTree->Branch("mjj",&mjj,"mjj/F");
@@ -1667,10 +1701,24 @@ int main(int argc, char * argv[]) {
   	outTree->Branch("weight_CMS_eff_t_pThigh_MVADM10_13TeVDown", &weight_CMS_eff_t_pThigh_MVADM10_13TeVDown, "weight_CMS_eff_t_pThigh_MVADM10_13TeVDown/F");
   	outTree->Branch("weight_CMS_eff_t_pThigh_MVADM11_13TeVDown", &weight_CMS_eff_t_pThigh_MVADM11_13TeVDown, "weight_CMS_eff_t_pThigh_MVADM11_13TeVDown/F");
 
+  	outTree->Branch("weight_CMS_mufake_mt_MVADM0_13TeVUp", &weight_CMS_mufake_mt_MVADM0_13TeVUp, "weight_CMS_mufake_mt_MVADM0_13TeVUp/F"); 
+  	outTree->Branch("weight_CMS_mufake_mt_MVADM1_13TeVUp", &weight_CMS_mufake_mt_MVADM1_13TeVUp, "weight_CMS_mufake_mt_MVADM1_13TeVUp/F"); 
+  	outTree->Branch("weight_CMS_mufake_mt_MVADM2_13TeVUp", &weight_CMS_mufake_mt_MVADM2_13TeVUp, "weight_CMS_mufake_mt_MVADM2_13TeVUp/F"); 
+  	outTree->Branch("weight_CMS_mufake_mt_MVADM10_13TeVUp", &weight_CMS_mufake_mt_MVADM10_13TeVUp, "weight_CMS_mufake_mt_MVADM10_13TeVUp/F");
+  	outTree->Branch("weight_CMS_mufake_mt_MVADM11_13TeVUp", &weight_CMS_mufake_mt_MVADM11_13TeVUp, "weight_CMS_mufake_mt_MVADM11_13TeVUp/F");
+  	outTree->Branch("weight_CMS_mufake_mt_MVADM0_13TeVDown", &weight_CMS_mufake_mt_MVADM0_13TeVDown, "weight_CMS_mufake_mt_MVADM0_13TeVDown/F"); 
+  	outTree->Branch("weight_CMS_mufake_mt_MVADM1_13TeVDown", &weight_CMS_mufake_mt_MVADM1_13TeVDown, "weight_CMS_mufake_mt_MVADM1_13TeVDown/F"); 
+  	outTree->Branch("weight_CMS_mufake_mt_MVADM2_13TeVDown", &weight_CMS_mufake_mt_MVADM2_13TeVDown, "weight_CMS_mufake_mt_MVADM2_13TeVDown/F"); 
+  	outTree->Branch("weight_CMS_mufake_mt_MVADM10_13TeVDown", &weight_CMS_mufake_mt_MVADM10_13TeVDown, "weight_CMS_mufake_mt_MVADM10_13TeVDown/F");
+  	outTree->Branch("weight_CMS_mufake_mt_MVADM11_13TeVDown", &weight_CMS_mufake_mt_MVADM11_13TeVDown, "weight_CMS_mufake_mt_MVADM11_13TeVDown/F");
 
 
    	outTree->Branch("weight_CMS_scale_gg_13TeVUp", &weight_CMS_scale_gg_13TeVUp, "weight_CMS_scale_gg_13TeVUp/F");
    	outTree->Branch("weight_CMS_scale_gg_13TeVDown", &weight_CMS_scale_gg_13TeVDown, "weight_CMS_scale_gg_13TeVDown/F");
+   	outTree->Branch("weight_CMS_PS_ISR_ggH_13TeVUp", &weight_CMS_PS_ISR_ggH_13TeVUp, "weight_CMS_PS_ISR_ggH_13TeVUp/F");
+   	outTree->Branch("weight_CMS_PS_ISR_ggH_13TeVDown", &weight_CMS_PS_ISR_ggH_13TeVDown, "weight_CMS_PS_ISR_ggH_13TeVDown/F");
+   	outTree->Branch("weight_CMS_PS_FSR_ggH_13TeVUp", &weight_CMS_PS_FSR_ggH_13TeVUp, "weight_CMS_PS_FSR_ggH_13TeVUp/F");
+   	outTree->Branch("weight_CMS_PS_FSR_ggH_13TeVDown", &weight_CMS_PS_FSR_ggH_13TeVDown, "weight_CMS_PS_FSR_ggH_13TeVDown/F");
 
 
 	for(TString const& subsample: sample.second) {
@@ -1738,8 +1786,13 @@ int main(int argc, char * argv[]) {
 	  inTree->SetBranchAddress("puweight",&puweight);
 	  inTree->SetBranchAddress("topptweight",&topptweight);
 	  inTree->SetBranchAddress("zptweight",&zptweight);
+	  inTree->SetBranchAddress("etaufakeweight",&etaufakeweight);
+	  inTree->SetBranchAddress("mutaufakeweight",&mutaufakeweight);
 	  inTree->SetBranchAddress("trkeffweight",&trkeffweight);
 	  inTree->SetBranchAddress("weight",&weight);
+	  inTree->SetBranchAddress("prefiringweight",&prefiringweight);
+	  inTree->SetBranchAddress("prefiringweightUp",&prefiringweightUp);
+	  inTree->SetBranchAddress("prefiringweightDown",&prefiringweightDown);
 	  
 	  inTree->SetBranchAddress("njets",&njets);
 	  inTree->SetBranchAddress("mjj",&mjj);
@@ -1838,10 +1891,28 @@ int main(int argc, char * argv[]) {
   	inTree->SetBranchAddress("weight_CMS_eff_t_pThigh_MVADM10_13TeVDown", &weight_CMS_eff_t_pThigh_MVADM10_13TeVDown);
   	inTree->SetBranchAddress("weight_CMS_eff_t_pThigh_MVADM11_13TeVDown", &weight_CMS_eff_t_pThigh_MVADM11_13TeVDown);
 
+  	inTree->SetBranchAddress("weight_CMS_mufake_mt_MVADM0_13TeVUp", &weight_CMS_mufake_mt_MVADM0_13TeVUp); 
+  	inTree->SetBranchAddress("weight_CMS_mufake_mt_MVADM1_13TeVUp", &weight_CMS_mufake_mt_MVADM1_13TeVUp); 
+  	inTree->SetBranchAddress("weight_CMS_mufake_mt_MVADM2_13TeVUp", &weight_CMS_mufake_mt_MVADM2_13TeVUp); 
+  	inTree->SetBranchAddress("weight_CMS_mufake_mt_MVADM10_13TeVUp", &weight_CMS_mufake_mt_MVADM10_13TeVUp);
+  	inTree->SetBranchAddress("weight_CMS_mufake_mt_MVADM11_13TeVUp", &weight_CMS_mufake_mt_MVADM11_13TeVUp);
+  	inTree->SetBranchAddress("weight_CMS_mufake_mt_MVADM0_13TeVDown", &weight_CMS_mufake_mt_MVADM0_13TeVDown); 
+  	inTree->SetBranchAddress("weight_CMS_mufake_mt_MVADM1_13TeVDown", &weight_CMS_mufake_mt_MVADM1_13TeVDown); 
+  	inTree->SetBranchAddress("weight_CMS_mufake_mt_MVADM2_13TeVDown", &weight_CMS_mufake_mt_MVADM2_13TeVDown); 
+  	inTree->SetBranchAddress("weight_CMS_mufake_mt_MVADM10_13TeVDown", &weight_CMS_mufake_mt_MVADM10_13TeVDown);
+  	inTree->SetBranchAddress("weight_CMS_mufake_mt_MVADM11_13TeVDown", &weight_CMS_mufake_mt_MVADM11_13TeVDown);
+
+  	inTree->SetBranchAddress("weight_mufake_corr", &weight_mufake_corr);
 
 
    	inTree->SetBranchAddress("weight_CMS_scale_gg_13TeVUp", &weight_CMS_scale_gg_13TeVUp);
    	inTree->SetBranchAddress("weight_CMS_scale_gg_13TeVDown", &weight_CMS_scale_gg_13TeVDown);
+	  
+   	inTree->SetBranchAddress("weight_CMS_PS_ISR_ggH_13TeVUp", &weight_CMS_PS_ISR_ggH_13TeVUp);
+   	inTree->SetBranchAddress("weight_CMS_PS_ISR_ggH_13TeVDown", &weight_CMS_PS_ISR_ggH_13TeVDown);
+	  
+   	inTree->SetBranchAddress("weight_CMS_PS_FSR_ggH_13TeVUp", &weight_CMS_PS_FSR_ggH_13TeVUp);
+   	inTree->SetBranchAddress("weight_CMS_PS_FSR_ggH_13TeVDown", &weight_CMS_PS_FSR_ggH_13TeVDown);
 	  
 
 	  // lumi-xsec-weight added
@@ -3199,7 +3270,9 @@ int main(int argc, char * argv[]) {
 	      else if (isEmbedded) 
 		weight = mcweight*effweight*embweight*embedded_stitching_weight;
 	      else {
-		weight = xsec_lumi_weight*mcweight*effweight*puweight;
+		weight = xsec_lumi_weight*mcweight*effweight*puweight*prefiringweight;
+		weight_CMS_PreFire_13TeVUp = prefiringweightUp/prefiringweight;
+		weight_CMS_PreFire_13TeVDown = prefiringweightDown/prefiringweight;
 		if (isDY){
 		  weight *= zptweight;
 		  weight_CMS_htt_dyShape_13TeVDown = 1./zptweight;
@@ -3210,14 +3283,16 @@ int main(int argc, char * argv[]) {
 		  weight_CMS_htt_ttbarShape_13TeVUp = topptweight;
 		}
 		if(gen_match_2==2||gen_match_2==4){
-		  TFile muTauFRfile("/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/TauPOG/TauIDSFs/data/TauID_SF_eta_DeepTau2017v2p1VSmu_"+Period+".root"); 
-		  TH1F *SFhist = (TH1F*) muTauFRfile.Get(wpVsMu);
-		  weight *= SFhist->GetBinContent(SFhist->GetXaxis()->FindBin(eta_2));
+		  //TFile muTauFRfile("/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/TauPOG/TauIDSFs/data/TauID_SF_eta_DeepTau2017v2p1VSmu_"+Period+".root"); 
+		  //TH1F *SFhist = (TH1F*) muTauFRfile.Get(wpVsMu);
+		  //weight *= SFhist->GetBinContent(SFhist->GetXaxis()->FindBin(eta_2));
+		  weight *= mutaufakeweight;
+		  weight *= weight_mufake_corr;
 		}else if(gen_match_2==1||gen_match_2==3){
-		  TFile eTauFRfile("/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/TauPOG/TauIDSFs/data/TauID_SF_eta_DeepTau2017v2p1VSe_"+Period+".root"); 
-		  TH1F *SFhist = (TH1F*) eTauFRfile.Get(wpVsEle);
-		  weight *= SFhist->GetBinContent(SFhist->GetXaxis()->FindBin(eta_2));
-
+		  //TFile eTauFRfile("/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/TauPOG/TauIDSFs/data/TauID_SF_eta_DeepTau2017v2p1VSe_"+Period+".root"); 
+		  //TH1F *SFhist = (TH1F*) eTauFRfile.Get(wpVsEle);
+		  //weight *= SFhist->GetBinContent(SFhist->GetXaxis()->FindBin(eta_2));
+		  weight *= etaufakeweight;
 		}
 	      }
 
@@ -3284,6 +3359,8 @@ int main(int argc, char * argv[]) {
 	cout<< " entries in out tree : " << outTree->GetEntries() << endl;
 	if (outTree->GetEntries()>0) {
 	  outFile->cd("");
+	  if(TreeName.Contains("CMS_htt_ZLShape"))TreeName.ReplaceAll("ZLShape","ZLShape_"+channel);
+	  //cout << TreeName <<endl;
 	  outTree->Write(TreeName,TObject::kOverwrite);
 	}
 	cout << endl; 
