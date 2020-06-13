@@ -106,7 +106,7 @@ int main(int argc, char * argv[]) {
   if(channel=="mt")
     input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/mutau_June2/" + era ;
   else 
-    input_dir ="/nfs/dust/cms/user/rasp/HiggsCP/etau/" + era ;
+    input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/" + era ;
     
   TString output_dir="";
   if (era == "2018"){
@@ -121,7 +121,7 @@ int main(int argc, char * argv[]) {
     //     input_dir = "/nfs/dust/cms/user/rasp/Run/Run2018/CP/sys";
     //input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/" + era ;
     //input_dir ="/nfs/dust/cms/user/rasp/HiggsCP/etau/" + era ;
-    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_June3";
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_June10";
   }
   else if(era == "2017"){
     xsec_map    = &xsec_map_2017; 
@@ -134,7 +134,7 @@ int main(int argc, char * argv[]) {
     //input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2017/";
     //input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/" + era ;
     //input_dir ="/nfs/dust/cms/user/rasp/HiggsCP/etau/" + era ;
-    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_June3";
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_June10";
   }  
   else if(era == "2016"){
     xsec_map    = &xsec_map_2016;
@@ -146,7 +146,7 @@ int main(int argc, char * argv[]) {
     embedded_tracking_weight = 0.98;
     //input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2016/";
     //input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/" + era ;
-    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_June3";
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_June10";
   }
   fs::path path(output_dir.Data());
   if (!(fs::exists(path))) {
@@ -189,6 +189,15 @@ int main(int argc, char * argv[]) {
     neventsW3Jets  = getNEventsProcessed(input_dir,process_map->at("W3Jets"),era);
     neventsW4Jets  = getNEventsProcessed(input_dir,process_map->at("W4Jets"),era);
   }
+
+  double neventsVBF1 = 0;
+  double neventsVBF2 = 0;
+  if (Sample.Contains("VBFHToUncor")&&era!="2016"){
+    neventsVBF1=getNEventsProcessed(input_dir,process_map->at("VBFHToTauTauUncorrDecays_M125_1"),era);
+    neventsVBF2=getNEventsProcessed(input_dir,process_map->at("VBFHToTauTauUncorrDecays_M125_2"),era);
+
+  }
+
 
   double neventsDYIncl  = 0;
   double neventsDY1Jets = 0;
@@ -264,8 +273,9 @@ int main(int argc, char * argv[]) {
   bool isEmbedded = Sample.Contains("Embed");
   bool isTTbar = Sample.Contains("TTbar");
   bool isDY    = Sample.Contains("DYJets");
+  bool isEWKZ  = Sample.Contains("EWKZ");
   bool isW     = Sample.Contains("WJets");
-
+  bool isVBF   = Sample.Contains("VBFHToUncorr");
   ///////////////////////////
   ///  Loop over all samples  
   ///////////////////////////
@@ -1721,6 +1731,9 @@ int main(int argc, char * argv[]) {
    	outTree->Branch("weight_CMS_PS_FSR_ggH_13TeVDown", &weight_CMS_PS_FSR_ggH_13TeVDown, "weight_CMS_PS_FSR_ggH_13TeVDown/F");
 
 
+	int countSingleTrig=0;
+	int countXTrig=0;
+
 	for(TString const& subsample: sample.second) {
 	  cout << "  - " << subsample << " : " << endl;
           
@@ -1973,6 +1986,7 @@ int main(int argc, char * argv[]) {
 		if( dilepton_veto  > 0.5 )       continue;
 		if( puppimt_1>50 )               continue;
 		if( tau_decay_mode_2==0 && (dmMVA_2==1||dmMVA_2==2) ) continue;
+		if( dmMVA_2<0 || dmMVA_2>10 ) continue;
 		if( Sample.Contains("Uncorr") ){
 		  if ( isnan(gen_sm_htt125) ||
 		       isnan(gen_mm_htt125) ||
@@ -1983,6 +1997,9 @@ int main(int argc, char * argv[]) {
 		  }
 		}
 		if( isEmbedded && mcweight > 1000 ) continue;
+
+	      if(is_singleLepTrigger)countSingleTrig+=1;
+	      else if(is_crossTrigger)countXTrig+=1;
 	      }
 	      //End of preselection
 
@@ -3231,7 +3248,9 @@ int main(int argc, char * argv[]) {
 		  jeta_1= -10;
 		}
 	      }
-
+	      if (isVBF&&era!="2016") {
+		xsec_lumi_weight = luminosity * xsec / (neventsVBF1+neventsVBF2);
+	      }
 
 	      // Stitching only for wjets MC in n-jet binned samples in gen_noutgoing
 	      if( isW ){
@@ -3265,15 +3284,36 @@ int main(int argc, char * argv[]) {
 	      TString wpVsEle = "VVLoose";
 	      TString wpVsMu = "Tight";
 	      
+
+
+		weight_CMS_eff_Xtrigger_mt_MVADM0_13TeVUp    = ((trg_singlemuon<0.5&&dmMVA_2==0)*1.05  + !(trg_singlemuon<0.5&&dmMVA_2==0))  ;
+		weight_CMS_eff_Xtrigger_mt_MVADM1_13TeVUp    = ((trg_singlemuon<0.5&&dmMVA_2==1)*1.05  + !(trg_singlemuon<0.5&&dmMVA_2==1))  ;
+		weight_CMS_eff_Xtrigger_mt_MVADM2_13TeVUp    = ((trg_singlemuon<0.5&&dmMVA_2==2)*1.05  + !(trg_singlemuon<0.5&&dmMVA_2==2))  ;
+		weight_CMS_eff_Xtrigger_mt_MVADM10_13TeVUp   = ((trg_singlemuon<0.5&&dmMVA_2==10)*1.05 + !(trg_singlemuon<0.5&&dmMVA_2==10)) ;
+		weight_CMS_eff_Xtrigger_mt_MVADM11_13TeVUp   = ((trg_singlemuon<0.5&&dmMVA_2==11)*1.05 + !(trg_singlemuon<0.5&&dmMVA_2==11)) ;
+		weight_CMS_eff_Xtrigger_mt_MVADM0_13TeVDown  = ((trg_singlemuon<0.5&&dmMVA_2==0)*0.95  + !(trg_singlemuon<0.5&&dmMVA_2==0))  ;
+		weight_CMS_eff_Xtrigger_mt_MVADM1_13TeVDown  = ((trg_singlemuon<0.5&&dmMVA_2==1)*0.95  + !(trg_singlemuon<0.5&&dmMVA_2==1))  ;
+		weight_CMS_eff_Xtrigger_mt_MVADM2_13TeVDown  = ((trg_singlemuon<0.5&&dmMVA_2==2)*0.95  + !(trg_singlemuon<0.5&&dmMVA_2==2))  ;
+		weight_CMS_eff_Xtrigger_mt_MVADM10_13TeVDown = ((trg_singlemuon<0.5&&dmMVA_2==10)*0.95 + !(trg_singlemuon<0.5&&dmMVA_2==10)) ;
+		weight_CMS_eff_Xtrigger_mt_MVADM11_13TeVDown = ((trg_singlemuon<0.5&&dmMVA_2==11)*0.95 + !(trg_singlemuon<0.5&&dmMVA_2==11)) ;
+
 	      if (isData)
 		weight = 1;
 	      else if (isEmbedded) 
 		weight = mcweight*effweight*embweight*embedded_stitching_weight;
+
 	      else {
+
+		weight_CMS_PS_ISR_ggH_13TeVUp   = std::min(weight_CMS_PS_ISR_ggH_13TeVUp/mcweight,(float)10.);
+		weight_CMS_PS_ISR_ggH_13TeVDown = std::min(weight_CMS_PS_ISR_ggH_13TeVDown/mcweight,(float)10.);
+		weight_CMS_PS_FSR_ggH_13TeVUp   = std::min(weight_CMS_PS_FSR_ggH_13TeVUp/mcweight,(float)10.);
+		weight_CMS_PS_FSR_ggH_13TeVDown = std::min(weight_CMS_PS_FSR_ggH_13TeVDown/mcweight,(float)10.);
+
 		weight = xsec_lumi_weight*mcweight*effweight*puweight*prefiringweight;
 		weight_CMS_PreFire_13TeVUp = prefiringweightUp/prefiringweight;
 		weight_CMS_PreFire_13TeVDown = prefiringweightDown/prefiringweight;
-		if (isDY){
+		if (isDY||isEWKZ){
+		  if(isEWKZ) zptweight=1.;
 		  weight *= zptweight;
 		  weight_CMS_htt_dyShape_13TeVDown = 1./zptweight;
 		  weight_CMS_htt_dyShape_13TeVUp = zptweight;
@@ -3357,6 +3397,8 @@ int main(int argc, char * argv[]) {
         }
 	if (outTree==NULL) continue; 
 	cout<< " entries in out tree : " << outTree->GetEntries() << endl;
+	cout<< " events for single lep trigger : " << countSingleTrig <<endl;
+	cout<< "      events for cross trigger : " << countXTrig <<endl;
 	if (outTree->GetEntries()>0) {
 	  outFile->cd("");
 	  if(TreeName.Contains("CMS_htt_ZLShape"))TreeName.ReplaceAll("ZLShape","ZLShape_"+channel);

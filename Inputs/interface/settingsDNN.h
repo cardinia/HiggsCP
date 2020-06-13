@@ -326,8 +326,10 @@ const vector<TString> EWKZ_2018            = {"EWKZ2Jets_ZToLL_M-50",
 const vector<TString> GluGluHToTauTau_2018 = { "GluGluHToTauTau_M125" };
 const vector<TString> VBFHToTauTau_2018    = { "VBFHToTauTau_M125"}; 
 const vector<TString> GluGluHToUncorrTauTau_2018 = { "GluGluHToTauTauUncorrDecays_M125" };
-const vector<TString> VBFHToUncorrTauTau_2018 = { "VBFHToTauTauUncorrDecays_M125" };
-const vector<TString> VHToUncorrTauTau_2018      = { "WminusHToTauTauUncorrDecays_M125","WplusHToTauTauUncorrDecays_M125","ZHToTauTauUncorrDecays_M125" };
+const vector<TString> VBFHToUncorrTauTau_2018 = { "VBFHToTauTauUncorrDecays_M125_1","VBFHToTauTauUncorrDecays_M125_2" };
+const vector<TString> WHToUncorrTauTau_2018   = {"WplusHToTauTauUncorrDecays_M125","WminusHToTauTauUncorrDecays_M125"};
+const vector<TString> ZHToUncorrTauTau_2018       = {"ZHToTauTauUncorrDecays_M125" };
+
 const vector<TString> HToWW_2018         = { "GluGluHToWWTo2L2Nu_M125",
 					     "VBFHToWWTo2L2Nu_M125",
 					     "GluGluZH_HToWW_M125",
@@ -402,6 +404,9 @@ const vector<TString> VBFHToTauTau_2017    = { "VBFHToTauTau_M125"
 const vector<TString> GluGluHToUncorrTauTau_2017 = { "GluGluHToTauTauUncorrDecays_M125" };
 const vector<TString> VBFHToUncorrTauTau_2017 = { "VBFHToTauTauUncorrDecays_M125_1","VBFHToTauTauUncorrDecays_M125_2" };
 const vector<TString> VHToUncorrTauTau_2017      = { "WminusHToTauTauUncorrDecays_M125","WplusHToTauTauUncorrDecays_M125","ZHToTauTauUncorrDecays_M125" };
+
+const vector<TString> WHToUncorrTauTau_2017   = {"WplusHToTauTauUncorrDecays_M125","WminusHToTauTauUncorrDecays_M125"};
+const vector<TString> ZHToUncorrTauTau_2017       = {"ZHToTauTauUncorrDecays_M125" };
 const vector<TString> HToWW_2017         = { "GluGluHToWWTo2L2Nu_M125",
 					       "VBFHToWWTo2L2Nu_M125",
 					       "GluGluZH_HToWW_M125",
@@ -462,7 +467,9 @@ const vector<TString> WJets_2016           = { "W1JetsToLNu",
 					       "EWKWPlus2Jets_WToLNu_M-50",
 					       "EWKWMinus2Jets_WToLNu_M-50",
 					      };
-const vector<TString> TTbar_2016           = { "TT" };
+const vector<TString> TTbar_2016           = { "TTTo2L2Nu" ,
+                                               "TTToHadronic" ,
+                                               "TTToSemiLeptonic" };
 const vector<TString> SingleTop_2016       = { "ST_t-channel_antitop_4f", 
 					       "ST_t-channel_top_4f", 
 					       "ST_tW_antitop_5f", 
@@ -483,6 +490,9 @@ const vector<TString> EWKZ_2016            = {"EWKZ2Jets_ZToLL_M-50",
 const vector<TString> GluGluHToUncorrTauTau_2016 = { "GluGluHToTauTauUncorrDecays_M125" };
 const vector<TString> VBFHToUncorrTauTau_2016 = { "VBFHToTauTauUncorrDecays_M125" };
 const vector<TString> VHToUncorrTauTau_2016      = { "WminusHToTauTauUncorrDecays_M125","WplusHToTauTauUncorrDecays_M125","ZHToTauTauUncorrDecays_M125" };
+
+const vector<TString> WHToUncorrTauTau_2016   = {"WplusHToTauTauUncorrDecays_M125","WminusHToTauTauUncorrDecays_M125"};
+const vector<TString> ZHToUncorrTauTau_2016       = {"ZHToTauTauUncorrDecays_M125" };
 const vector<TString> HToWW_2016 = { "GluGluHToWWTo2L2Nu_M125",
 				     "VBFHToWWTo2L2Nu_M125",
 				     "GluGluZH_HToWW_M125",
@@ -549,9 +559,13 @@ const map<TString, vector<TString> > map_sample = {
   {"VBFHToUncorrTauTau_2017",VBFHToUncorrTauTau_2017},
   {"VBFHToUncorrTauTau_2016",VBFHToUncorrTauTau_2016},
 
-  {"VHToUncorrTauTau_2018",VHToUncorrTauTau_2018},
-  {"VHToUncorrTauTau_2017",VHToUncorrTauTau_2017},
-  {"VHToUncorrTauTau_2016",VHToUncorrTauTau_2016},
+  {"WHToUncorrTauTau_2018",WHToUncorrTauTau_2018},
+  {"WHToUncorrTauTau_2017",WHToUncorrTauTau_2017},
+  {"WHToUncorrTauTau_2016",WHToUncorrTauTau_2016},
+
+  {"ZHToUncorrTauTau_2018",ZHToUncorrTauTau_2018},
+  {"ZHToUncorrTauTau_2017",ZHToUncorrTauTau_2017},
+  {"ZHToUncorrTauTau_2016",ZHToUncorrTauTau_2016},
 
 };
 
@@ -588,6 +602,12 @@ const map<TString, double> xsec_map_2018 = {
     { "WZJToLLLNu"               , 4.708 },
     { "WZTo3LNu"                , 4.43 },
     { "ZZTo4L"                   , 1.212 },
+    { "EWKWPlus2Jets"            , 25.62 },
+  { "EWKWMinus2Jets_WToLNu_M-50" , 23.24 },
+  { "EWKWPlus2Jets_WToLNu_M-50" , 29.59 },
+  { "WGToLNuG"    , 464.4 },
+  { "EWKZ2Jets_ZToLL_M-50" , 4.321 },
+  { "EWKZ2Jets_ZToNuNu" , 10.66 },
     { "ZZTo2L2Q"                 , 3.22 },
    { "GluGluHToTauTau_M125" , 48.58*0.0627 },
    { "VBFHToTauTau_M125"    , 3.782*0.0627 },
@@ -599,9 +619,11 @@ const map<TString, double> xsec_map_2018 = {
    {"HZJ_HToWW_M125",              0.163},
    { "GluGluHToTauTauUncorrDecays_M125" , 48.58*0.0627*0.2446 },
    { "VBFHToTauTauUncorrDecays_M125"    , 3.782*0.0627*0.2695 },
-   { "WminusHToTauTauUncorrDecays_M125",  0.0527*0.2394},
-   { "WplusHToTauTauUncorrDecays_M125",   0.0334*0.2567},
-   { "ZHToTauTauUncorrDecays_M125",       0.0477*0.2514}
+  { "VBFHToTauTauUncorrDecays_M125_1"    , 3.782*0.0627*0.2697 },
+  { "VBFHToTauTauUncorrDecays_M125_2"    , 3.782*0.0627*0.2697 },
+   { "WplusHToTauTauUncorrDecays_M125",   0.0527*0.2397},
+   { "WminusHToTauTauUncorrDecays_M125",  0.0334*0.2563},
+   { "ZHToTauTauUncorrDecays_M125",       0.0477*0.2513}
 };
 // 2017 (checked ! - reference is https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2017 )
 
@@ -642,9 +664,9 @@ const map<TString, double> xsec_map_2017 = {
   { "VBFHToTauTauUncorrDecays_M125"    , 3.782*0.0627*0.2697 },
   { "VBFHToTauTauUncorrDecays_M125_1"    , 3.782*0.0627*0.2697 },
   { "VBFHToTauTauUncorrDecays_M125_2"    , 3.782*0.0627*0.2697 },
-   { "WminusHToTauTauUncorrDecays_M125",  0.0527*0.2394},
-   { "WplusHToTauTauUncorrDecays_M125",   0.0334*0.2567},
-  { "ZHToTauTauUncorrDecays_M125",       0.0477*0.2514},
+   { "WplusHToTauTauUncorrDecays_M125",   0.0527*0.2394},
+   { "WminusHToTauTauUncorrDecays_M125",  0.0334*0.2567},
+   { "ZHToTauTauUncorrDecays_M125",       0.0477*0.2514},
   { "EWKWMinus2Jets_WToLNu_M-50" , 23.24 },
   { "EWKWPlus2Jets_WToLNu_M-50" , 29.59 },
   { "WGToLNuG"    , 464.4 },
@@ -679,6 +701,9 @@ const map<TString, double> xsec_map_2016 = {
     { "W3JetsToLNu"              , 1.224*954.8 },
     { "W4JetsToLNu"              , 1.224*485.6 },
     { "TT"                    , 831.76 },
+   { "TTTo2L2Nu"        , 88.29 },
+   { "TTToHadronic"     , 377.96 },
+   { "TTToSemiLeptonic" , 365.35 },
     { "ST_t-channel_antitop_4f"     , 80.95 },
     { "ST_t-channel_top_4f"         , 136.02 },
     { "ST_tW_antitop_5f"            , 35.6 },
@@ -697,15 +722,21 @@ const map<TString, double> xsec_map_2016 = {
     {"WZ" , 27.6},
     { "GluGluHToTauTauUncorrDecays_M125" , 48.58*0.0627*0.2455 },
     { "VBFHToTauTauUncorrDecays_M125"    , 3.782*0.0627*0.2727 },
-   { "WminusHToTauTauUncorrDecays_M125",  0.0527*0.2394},
-   { "WplusHToTauTauUncorrDecays_M125",   0.0334*0.2567},
-    { "ZHToTauTauUncorrDecays_M125",       0.0477*0.2514},
+   { "WplusHToTauTauUncorrDecays_M125",   0.0527*0.2425},
+   { "WminusHToTauTauUncorrDecays_M125",  0.0334*0.2596},
+   { "ZHToTauTauUncorrDecays_M125",       0.0477*0.2546},
     { "WGToLNuG"                 , 178.4 }, // xsdb
     { "WGstarToLNuMuMu"          , 2.793 },
     { "WGstarToLNuEE"            , 3.526 },
     { "EWKWPlus2Jets"            , 25.62 },
     { "EWKWMinus2Jet"            , 20.20 },
     { "EWKZ2Jets"                , 3.987 },
+  { "EWKWMinus2Jets_WToLNu_M-50" , 23.24 },
+  { "EWKWPlus2Jets_WToLNu_M-50" , 29.59 },
+  { "WGToLNuG"    , 464.4 },
+  { "EWKZ2Jets_ZToLL_M-50" , 4.321 },
+  { "EWKZ2Jets_ZToNuNu" , 10.66 },
+    { "ZZTo2L2Q"                 , 3.22 },
     { "GluGluHToTauTau_M125"     , 48.58*0.0627 },
     { "VBFHToTauTau_M125"        , 3.782*0.0627 },
     { "ZHToTauTau_M125"          , 0.0594 },
@@ -735,6 +766,8 @@ const map<TString , TString> process_map_2018 = {
   { "DY2Jets" , "DY2JetsToLL_M-50"},
   { "DY3Jets" , "DY3JetsToLL_M-50"},
   { "DY4Jets" , "DY4JetsToLL_M-50"},
+  { "VBFHToTauTauUncorrDecays_M125_1" , "VBFHToTauTauUncorrDecays_M125_1"},
+  { "VBFHToTauTauUncorrDecays_M125_2" , "VBFHToTauTauUncorrDecays_M125_2"}
 };
 
 
@@ -749,6 +782,8 @@ const map<TString , TString> process_map_2017 = {
   { "DY2Jets" , "DY2JetsToLL_M-50"},
   { "DY3Jets" , "DY3JetsToLL_M-50"},
   { "DY4Jets" , "DY4JetsToLL_M-50"},
+  { "VBFHToTauTauUncorrDecays_M125_1" , "VBFHToTauTauUncorrDecays_M125_1"},
+  { "VBFHToTauTauUncorrDecays_M125_2" , "VBFHToTauTauUncorrDecays_M125_2"}
 };
 
 const map<TString , TString> process_map_2016 = {

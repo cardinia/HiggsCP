@@ -173,6 +173,14 @@ class DataCards {
     "CMS_htt_boson_reso_met_13TeVDown",
     "CMS_htt_boson_scale_met_13TeVUp",
     "CMS_htt_boson_scale_met_13TeVDown",
+    "CMS_htt_ZLShape_mt_1prong_13TeVUp",
+    "CMS_htt_ZLShape_mt_1prong_13TeVDown",
+    "CMS_htt_ZLShape_mt_1prong1pi_13TeVUp",
+    "CMS_htt_ZLShape_mt_1prong1pi_13TeVDown",
+    "CMS_htt_ZLShape_et_1prong_13TeVUp",
+    "CMS_htt_ZLShape_et_1prong_13TeVDown",
+    "CMS_htt_ZLShape_et_1prong1pi_13TeVUp",
+    "CMS_htt_ZLShape_et_1prong1pi_13TeVDown",
     "CMS_htt_ZLShape_1prong_13TeVUp",
     "CMS_htt_ZLShape_1prong_13TeVDown",
     "CMS_htt_ZLShape_1prong1pi_13TeVUp",
@@ -231,122 +239,239 @@ class DataCards {
         "",
 	"ff_mt_sub_systUp",
 	"ff_mt_sub_systDown",
-	"ff_mt_wjets_stat_njets0_mvadm0_sig_ltUp",
-	"ff_mt_qcd_stat_njets0_mvadm0_sig_ltUp",
+	//stat unc1
+	"ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_ltUp",
+	"ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_ltUp",
 	
-	"ff_mt_wjets_stat_njets1_mvadm0_sig_ltUp",
-	"ff_mt_qcd_stat_njets1_mvadm0_sig_ltUp",
+	"ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_ltUp",
+	"ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_ltUp",
 		
-	"ff_mt_wjets_stat_njets2_mvadm0_sig_ltUp",
-	"ff_mt_qcd_stat_njets2_mvadm0_sig_ltUp",
+	"ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_ltUp",
+	"ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_ltUp",
 	
 
-	"ff_mt_wjets_stat_njets0_mvadm0_sig_gtUp",
-	"ff_mt_qcd_stat_njets0_mvadm0_sig_gtUp",
+	"ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_gtUp",
+	"ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_gtUp",
 	
-	"ff_mt_wjets_stat_njets1_mvadm0_sig_gtUp",
-	"ff_mt_qcd_stat_njets1_mvadm0_sig_gtUp",
+	"ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_gtUp",
+	"ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_gtUp",
 	
-	"ff_mt_wjets_stat_njets2_mvadm0_sig_gtUp",
-	"ff_mt_qcd_stat_njets2_mvadm0_sig_gtUp",
+	"ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_gtUp",
+	"ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_gtUp",
 	
-	"ff_mt_wjets_stat_njets0_mvadm1Up",
-	"ff_mt_qcd_stat_njets0_mvadm1Up",
+	"ff_mt_wjets_stat_unc1_njets0_mvadm1Up",
+	"ff_mt_qcd_stat_unc1_njets0_mvadm1Up",
 	
-	"ff_mt_wjets_stat_njets1_mvadm1Up",
-	"ff_mt_qcd_stat_njets1_mvadm1Up",
+	"ff_mt_wjets_stat_unc1_njets1_mvadm1Up",
+	"ff_mt_qcd_stat_unc1_njets1_mvadm1Up",
 	
-	"ff_mt_wjets_stat_njets2_mvadm1Up",
-	"ff_mt_qcd_stat_njets2_mvadm1Up",
+	"ff_mt_wjets_stat_unc1_njets2_mvadm1Up",
+	"ff_mt_qcd_stat_unc1_njets2_mvadm1Up",
 	
 	
-	"ff_mt_wjets_stat_njets0_mvadm2Up",
-	"ff_mt_qcd_stat_njets0_mvadm2Up",
+	"ff_mt_wjets_stat_unc1_njets0_mvadm2Up",
+	"ff_mt_qcd_stat_unc1_njets0_mvadm2Up",
 	
-	"ff_mt_wjets_stat_njets1_mvadm2Up",
-	"ff_mt_qcd_stat_njets1_mvadm2Up",
+	"ff_mt_wjets_stat_unc1_njets1_mvadm2Up",
+	"ff_mt_qcd_stat_unc1_njets1_mvadm2Up",
 	
-	"ff_mt_wjets_stat_njets2_mvadm2Up",
-	"ff_mt_qcd_stat_njets2_mvadm2Up",
+	"ff_mt_wjets_stat_unc1_njets2_mvadm2Up",
+	"ff_mt_qcd_stat_unc1_njets2_mvadm2Up",
 
 
-	"ff_mt_wjets_stat_njets0_mvadm10Up",
-	"ff_mt_qcd_stat_njets0_mvadm10Up",
+	"ff_mt_wjets_stat_unc1_njets0_mvadm10Up",
+	"ff_mt_qcd_stat_unc1_njets0_mvadm10Up",
 	
-	"ff_mt_wjets_stat_njets1_mvadm10Up",
-	"ff_mt_qcd_stat_njets1_mvadm10Up",
+	"ff_mt_wjets_stat_unc1_njets1_mvadm10Up",
+	"ff_mt_qcd_stat_unc1_njets1_mvadm10Up",
 	
-	"ff_mt_wjets_stat_njets2_mvadm10Up",
-	"ff_mt_qcd_stat_njets2_mvadm10Up",
+	"ff_mt_wjets_stat_unc1_njets2_mvadm10Up",
+	"ff_mt_qcd_stat_unc1_njets2_mvadm10Up",
 
 
-	"ff_mt_wjets_stat_njets0_mvadm11Up",
-	"ff_mt_qcd_stat_njets0_mvadm11Up",
+	"ff_mt_wjets_stat_unc1_njets0_mvadm11Up",
+	"ff_mt_qcd_stat_unc1_njets0_mvadm11Up",
 	
-	"ff_mt_wjets_stat_njets1_mvadm11Up",
-	"ff_mt_qcd_stat_njets1_mvadm11Up",
+	"ff_mt_wjets_stat_unc1_njets1_mvadm11Up",
+	"ff_mt_qcd_stat_unc1_njets1_mvadm11Up",
 	
-	"ff_mt_wjets_stat_njets2_mvadm11Up",
-	"ff_mt_qcd_stat_njets2_mvadm11Up",
+	"ff_mt_wjets_stat_unc1_njets2_mvadm11Up",
+	"ff_mt_qcd_stat_unc1_njets2_mvadm11Up",
 
-	"ff_mt_wjets_stat_njets0_mvadm0_sig_ltDown",
-	"ff_mt_qcd_stat_njets0_mvadm0_sig_ltDown",
+	"ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_ltDown",
+	"ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_ltDown",
 	
-	"ff_mt_wjets_stat_njets1_mvadm0_sig_ltDown",
-	"ff_mt_qcd_stat_njets1_mvadm0_sig_ltDown",
+	"ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_ltDown",
+	"ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_ltDown",
 		
-	"ff_mt_wjets_stat_njets2_mvadm0_sig_ltDown",
-	"ff_mt_qcd_stat_njets2_mvadm0_sig_ltDown",
+	"ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_ltDown",
+	"ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_ltDown",
 	
 
-	"ff_mt_wjets_stat_njets0_mvadm0_sig_gtDown",
-	"ff_mt_qcd_stat_njets0_mvadm0_sig_gtDown",
+	"ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_gtDown",
+	"ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_gtDown",
 	
-	"ff_mt_wjets_stat_njets1_mvadm0_sig_gtDown",
-	"ff_mt_qcd_stat_njets1_mvadm0_sig_gtDown",
+	"ff_mt_wjets_stat_unc1_njets1_mvadm0_sig_gtDown",
+	"ff_mt_qcd_stat_unc1_njets1_mvadm0_sig_gtDown",
 	
-	"ff_mt_wjets_stat_njets2_mvadm0_sig_gtDown",
-	"ff_mt_qcd_stat_njets2_mvadm0_sig_gtDown",
+	"ff_mt_wjets_stat_unc1_njets2_mvadm0_sig_gtDown",
+	"ff_mt_qcd_stat_unc1_njets2_mvadm0_sig_gtDown",
 	
-	"ff_mt_wjets_stat_njets0_mvadm1Down",
-	"ff_mt_qcd_stat_njets0_mvadm1Down",
+	"ff_mt_wjets_stat_unc1_njets0_mvadm1Down",
+	"ff_mt_qcd_stat_unc1_njets0_mvadm1Down",
 	
-	"ff_mt_wjets_stat_njets1_mvadm1Down",
-	"ff_mt_qcd_stat_njets1_mvadm1Down",
+	"ff_mt_wjets_stat_unc1_njets1_mvadm1Down",
+	"ff_mt_qcd_stat_unc1_njets1_mvadm1Down",
 	
-	"ff_mt_wjets_stat_njets2_mvadm1Down",
-	"ff_mt_qcd_stat_njets2_mvadm1Down",
+	"ff_mt_wjets_stat_unc1_njets2_mvadm1Down",
+	"ff_mt_qcd_stat_unc1_njets2_mvadm1Down",
 	
 	
-	"ff_mt_wjets_stat_njets0_mvadm2Down",
-	"ff_mt_qcd_stat_njets0_mvadm2Down",
+	"ff_mt_wjets_stat_unc1_njets0_mvadm2Down",
+	"ff_mt_qcd_stat_unc1_njets0_mvadm2Down",
 	
-	"ff_mt_wjets_stat_njets1_mvadm2Down",
-	"ff_mt_qcd_stat_njets1_mvadm2Down",
+	"ff_mt_wjets_stat_unc1_njets1_mvadm2Down",
+	"ff_mt_qcd_stat_unc1_njets1_mvadm2Down",
 	
-	"ff_mt_wjets_stat_njets2_mvadm2Down",
-	"ff_mt_qcd_stat_njets2_mvadm2Down",
+	"ff_mt_wjets_stat_unc1_njets2_mvadm2Down",
+	"ff_mt_qcd_stat_unc1_njets2_mvadm2Down",
 
 
-	"ff_mt_wjets_stat_njets0_mvadm10Down",
-	"ff_mt_qcd_stat_njets0_mvadm10Down",
+	"ff_mt_wjets_stat_unc1_njets0_mvadm10Down",
+	"ff_mt_qcd_stat_unc1_njets0_mvadm10Down",
 	
-	"ff_mt_wjets_stat_njets1_mvadm10Down",
-	"ff_mt_qcd_stat_njets1_mvadm10Down",
+	"ff_mt_wjets_stat_unc1_njets1_mvadm10Down",
+	"ff_mt_qcd_stat_unc1_njets1_mvadm10Down",
 	
-	"ff_mt_wjets_stat_njets2_mvadm10Down",
-	"ff_mt_qcd_stat_njets2_mvadm10Down",
+	"ff_mt_wjets_stat_unc1_njets2_mvadm10Down",
+	"ff_mt_qcd_stat_unc1_njets2_mvadm10Down",
 
 
-	"ff_mt_wjets_stat_njets0_mvadm11Down",
-	"ff_mt_qcd_stat_njets0_mvadm11Down",
+	"ff_mt_wjets_stat_unc1_njets0_mvadm11Down",
+	"ff_mt_qcd_stat_unc1_njets0_mvadm11Down",
 	
-	"ff_mt_wjets_stat_njets1_mvadm11Down",
-	"ff_mt_qcd_stat_njets1_mvadm11Down",
+	"ff_mt_wjets_stat_unc1_njets1_mvadm11Down",
+	"ff_mt_qcd_stat_unc1_njets1_mvadm11Down",
 	
-	"ff_mt_wjets_stat_njets2_mvadm11Down",
-	"ff_mt_qcd_stat_njets2_mvadm11Down",
+	"ff_mt_wjets_stat_unc1_njets2_mvadm11Down",
+	"ff_mt_qcd_stat_unc1_njets2_mvadm11Down",
 
+	//stat unc2
+	"ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_ltUp",
+	"ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_ltUp",
+	
+	"ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_ltUp",
+	"ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_ltUp",
+		
+	"ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_ltUp",
+	"ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_ltUp",
+	
+
+	"ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_gtUp",
+	"ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_gtUp",
+	
+	"ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_gtUp",
+	"ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_gtUp",
+	
+	"ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_gtUp",
+	"ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_gtUp",
+	
+	"ff_mt_wjets_stat_unc2_njets0_mvadm1Up",
+	"ff_mt_qcd_stat_unc2_njets0_mvadm1Up",
+	
+	"ff_mt_wjets_stat_unc2_njets1_mvadm1Up",
+	"ff_mt_qcd_stat_unc2_njets1_mvadm1Up",
+	
+	"ff_mt_wjets_stat_unc2_njets2_mvadm1Up",
+	"ff_mt_qcd_stat_unc2_njets2_mvadm1Up",
+	
+	
+	"ff_mt_wjets_stat_unc2_njets0_mvadm2Up",
+	"ff_mt_qcd_stat_unc2_njets0_mvadm2Up",
+	
+	"ff_mt_wjets_stat_unc2_njets1_mvadm2Up",
+	"ff_mt_qcd_stat_unc2_njets1_mvadm2Up",
+	
+	"ff_mt_wjets_stat_unc2_njets2_mvadm2Up",
+	"ff_mt_qcd_stat_unc2_njets2_mvadm2Up",
+
+
+	"ff_mt_wjets_stat_unc2_njets0_mvadm10Up",
+	"ff_mt_qcd_stat_unc2_njets0_mvadm10Up",
+	
+	"ff_mt_wjets_stat_unc2_njets1_mvadm10Up",
+	"ff_mt_qcd_stat_unc2_njets1_mvadm10Up",
+	
+	"ff_mt_wjets_stat_unc2_njets2_mvadm10Up",
+	"ff_mt_qcd_stat_unc2_njets2_mvadm10Up",
+
+
+	"ff_mt_wjets_stat_unc2_njets0_mvadm11Up",
+	"ff_mt_qcd_stat_unc2_njets0_mvadm11Up",
+	
+	"ff_mt_wjets_stat_unc2_njets1_mvadm11Up",
+	"ff_mt_qcd_stat_unc2_njets1_mvadm11Up",
+	
+	"ff_mt_wjets_stat_unc2_njets2_mvadm11Up",
+	"ff_mt_qcd_stat_unc2_njets2_mvadm11Up",
+
+	"ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_ltDown",
+	"ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_ltDown",
+	
+	"ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_ltDown",
+	"ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_ltDown",
+		
+	"ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_ltDown",
+	"ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_ltDown",
+	
+
+	"ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_gtDown",
+	"ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_gtDown",
+	
+	"ff_mt_wjets_stat_unc2_njets1_mvadm0_sig_gtDown",
+	"ff_mt_qcd_stat_unc2_njets1_mvadm0_sig_gtDown",
+	
+	"ff_mt_wjets_stat_unc2_njets2_mvadm0_sig_gtDown",
+	"ff_mt_qcd_stat_unc2_njets2_mvadm0_sig_gtDown",
+	
+	"ff_mt_wjets_stat_unc2_njets0_mvadm1Down",
+	"ff_mt_qcd_stat_unc2_njets0_mvadm1Down",
+	
+	"ff_mt_wjets_stat_unc2_njets1_mvadm1Down",
+	"ff_mt_qcd_stat_unc2_njets1_mvadm1Down",
+	
+	"ff_mt_wjets_stat_unc2_njets2_mvadm1Down",
+	"ff_mt_qcd_stat_unc2_njets2_mvadm1Down",
+	
+	
+	"ff_mt_wjets_stat_unc2_njets0_mvadm2Down",
+	"ff_mt_qcd_stat_unc2_njets0_mvadm2Down",
+	
+	"ff_mt_wjets_stat_unc2_njets1_mvadm2Down",
+	"ff_mt_qcd_stat_unc2_njets1_mvadm2Down",
+	
+	"ff_mt_wjets_stat_unc2_njets2_mvadm2Down",
+	"ff_mt_qcd_stat_unc2_njets2_mvadm2Down",
+
+
+	"ff_mt_wjets_stat_unc2_njets0_mvadm10Down",
+	"ff_mt_qcd_stat_unc2_njets0_mvadm10Down",
+	
+	"ff_mt_wjets_stat_unc2_njets1_mvadm10Down",
+	"ff_mt_qcd_stat_unc2_njets1_mvadm10Down",
+	
+	"ff_mt_wjets_stat_unc2_njets2_mvadm10Down",
+	"ff_mt_qcd_stat_unc2_njets2_mvadm10Down",
+
+
+	"ff_mt_wjets_stat_unc2_njets0_mvadm11Down",
+	"ff_mt_qcd_stat_unc2_njets0_mvadm11Down",
+	
+	"ff_mt_wjets_stat_unc2_njets1_mvadm11Down",
+	"ff_mt_qcd_stat_unc2_njets1_mvadm11Down",
+	
+	"ff_mt_wjets_stat_unc2_njets2_mvadm11Down",
+	"ff_mt_qcd_stat_unc2_njets2_mvadm11Down",
 
 	//met_var_qcd and met_var_w non-closure corrections
 
@@ -385,6 +510,16 @@ class DataCards {
     "CMS_eff_Xtrigger_mt_MVADM2_13TeVDown",
     "CMS_eff_Xtrigger_mt_MVADM10_13TeVDown",
     "CMS_eff_Xtrigger_mt_MVADM11_13TeVDown",
+    "CMS_mufake_mt_MVADM0_13TeVUp",
+    "CMS_mufake_mt_MVADM1_13TeVUp",
+    "CMS_mufake_mt_MVADM2_13TeVUp",
+    "CMS_mufake_mt_MVADM10_13TeVUp",
+    "CMS_mufake_mt_MVADM11_13TeVUp",
+    "CMS_mufake_mt_MVADM0_13TeVDown",
+    "CMS_mufake_mt_MVADM1_13TeVDown",
+    "CMS_mufake_mt_MVADM2_13TeVDown",
+    "CMS_mufake_mt_MVADM10_13TeVDown",
+    "CMS_mufake_mt_MVADM11_13TeVDown",
     "CMS_eff_t_pTlow_MVADM0_13TeVUp", 
     "CMS_eff_t_pTlow_MVADM1_13TeVUp", 
     "CMS_eff_t_pTlow_MVADM2_13TeVUp", 
@@ -405,6 +540,8 @@ class DataCards {
     "CMS_eff_t_pThigh_MVADM2_13TeVDown", 
     "CMS_eff_t_pThigh_MVADM10_13TeVDown",
     "CMS_eff_t_pThigh_MVADM11_13TeVDown",
+    "CMS_PreFire_13TeVUp",
+    "CMS_PreFire_13TeVDown",
   };
 
 
@@ -419,6 +556,15 @@ class DataCards {
     "QCD",
     "jetFakes",
     "W",
+    "HToWW",
+    "ZH_sm_htt125",
+    "ZH_ps_htt125",
+    "ZH_mm_htt125",
+    "ZH_flat_htt125",
+    "WH_sm_htt125",
+    "WH_ps_htt125",
+    "WH_mm_htt125",
+    "WH_flat_htt125",
     "qqH_sm_htt125",
     "qqH_ps_htt125",
     "qqH_mm_htt125",
@@ -436,19 +582,23 @@ class DataCards {
     //"ST",
     "VVT",
     "TTT",
-    "W"
+    "W",
+    "HToWW"
   };
 
   vector<TString> fileNames = {
     "data",
     "EMB",
     "DY",
+    "HToWW",
     "VV",
     "W",
     //"ST",
     "TT",
     "ggH125",
-    "qqH125"
+    "qqH125",
+    "ZH125",
+    "WH125"
   }; 
 
   vector<TFile*> filePointer;
@@ -458,12 +608,14 @@ class DataCards {
     {"EmbedZTT","EMB"},
     {"ZL","DY"},
     {"ZTT","DY"},
+    {"EWKZ","EWKZ"},
     //{"ST","ST"},
     {"TTT","TT"},
     {"VVT","VV"},
     {"W","W"},
     {"QCD","data"},
     {"jetFakes","data"},
+    {"HToWW","HToWW"},
     {"ggH_sm_htt125","ggH125"},
     {"ggH_ps_htt125","ggH125"},
     {"ggH_mm_htt125","ggH125"},
@@ -471,7 +623,15 @@ class DataCards {
     {"qqH_sm_htt125","qqH125"},
     {"qqH_ps_htt125","qqH125"},
     {"qqH_mm_htt125","qqH125"},
-    {"qqH_flat_htt125","qqH125"}
+    {"qqH_flat_htt125","qqH125"},
+    {"ZH_sm_htt125","ZH125"},
+    {"ZH_ps_htt125","ZH125"},
+    {"ZH_mm_htt125","ZH125"},
+    {"ZH_flat_htt125","ZH125"},
+    {"WH_sm_htt125","WH125"},
+    {"WH_ps_htt125","WH125"},
+    {"WH_mm_htt125","WH125"},
+    {"WH_flat_htt125","WH125"},
   };
 
   map<TString, TFile*> mapSampleFile;
