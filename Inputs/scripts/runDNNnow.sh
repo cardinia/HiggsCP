@@ -1,13 +1,25 @@
 #!/bin/bash
 
 YEAR=$1
+CHANNEL=$2
 
-./NohupParser.sh SingleMuon $YEAR 
-./NohupParser.sh EmbeddedMuTau $YEAR 
-./NohupParser.sh DYJets $YEAR 
-./NohupParser.sh WJets $YEAR 
-./NohupParser.sh TTbar $YEAR 
-./NohupParser.sh Diboson $YEAR 
-./NohupParser.sh GluGluHToUncorrTauTau $YEAR 
-./NohupParser.sh VBFHToUncorrTauTau $YEAR 
+if [ "$CHANNEL" == "mt" ]; then
+    echo "mutau channel"
+    #./NohupParser.sh SingleMuon $YEAR $CHANNEL 
+    #./NohupParser.sh EmbeddedMuTau $YEAR $CHANNEL 
+else
+    echo "etau channel"
+    #./NohupParser.sh SingleElectron $YEAR $CHANNEL 
+    #./NohupParser.sh EmbeddedElTau $YEAR $CHANNEL 
+fi
+#./NohupParser.sh DYJets $YEAR $CHANNEL 
+#./NohupParser.sh WJets $YEAR $CHANNEL 
+#./NohupParser.sh TTbar $YEAR $CHANNEL 
+#./NohupParser.sh Diboson $YEAR $CHANNEL 
+#./NohupParser.sh EWKZ $YEAR $CHANNEL 
+#./NohupParser.sh HToWW $YEAR $CHANNEL 
+#./NohupParser.sh GluGluHToUncorrTauTau $YEAR $CHANNEL 
+./NohupParser.sh VBFHToUncorrTauTau $YEAR $CHANNEL 
+#./NohupParser.sh WHToUncorrTauTau $YEAR $CHANNEL 
+#./NohupParser.sh ZHToUncorrTauTau $YEAR $CHANNEL 
 
