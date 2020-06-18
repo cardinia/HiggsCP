@@ -287,10 +287,10 @@ const vector<TString> EmbeddedMuTau_2018        = {
   "EmbeddedMuTau_Run2018C",
   "EmbeddedMuTau_Run2018D"
 };
-const vector<TString> EmbeddedElTau_2018        = { "EmbeddingElTau_Run2018A",
-						    "EmbeddingElTau_Run2018B",
-						    "EmbeddingElTau_Run2018C",
-						    "EmbeddingElTau_Run2018D"};
+const vector<TString> EmbeddedElTau_2018        = { "EmbeddedElTau_Run2018A",
+						    "EmbeddedElTau_Run2018B",
+						    "EmbeddedElTau_Run2018C",
+						    "EmbeddedElTau_Run2018D"};
 const vector<TString> DYJets_2018          = { "DY1JetsToLL_M-50" ,
 					       "DY2JetsToLL_M-50" ,
                                                "DY3JetsToLL_M-50" ,

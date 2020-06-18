@@ -1998,7 +1998,7 @@ int main(int argc, char * argv[]) {
 		  if( byTightDeepTau2017v2p1VSe_2   < 0.5 ) continue;
       if (era == "2016") {
         is_SingleLepTrigger = (trg_singleelectron>0.5&&pt_1>26&&abs(eta_1)<2.1);
-        is_CrossTrigger = true;
+        is_CrossTrigger = false;
       }
       if (era == "2017") {
         is_SingleLepTrigger = (trg_singleelectron>0.5&&pt_1>33&&abs(eta_1)<2.1);
