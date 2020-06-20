@@ -134,6 +134,7 @@ class DataCards {
 
   const TString prefix_ = "-NOMINAL_ntuple_";
 
+  TString EmbedCut_ = "gen_match_2==5";
   TString input_dir_;
   TString output_dir_;
   TString output_filename_;

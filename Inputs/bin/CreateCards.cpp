@@ -93,6 +93,10 @@ int main(int argc, char * argv[]) {
     cout << "When bkg are not splitted by decay channel, the code cannot run for separate decay channels" << endl << "Please run the code for Signal category as" <<endl << "CreateCards config classIndex decay-channel" << endl << "and Bkg categories as" << endl << "CreateCards config classIndex" <<endl;
     exit(EXIT_FAILURE);
   }
+  if(ditauchannel!="mt"&&ditauchannel!="et"){
+    cout << "ERROR: the code runs only for etau and mutau channel, please fix the Channel entry in the config file, the allowed values are {et,mt}" <<endl;
+    exit(EXIT_FAILURE);
+  }
 
   DataCards * cards = new DataCards(ditauchannel,
 				    Era,

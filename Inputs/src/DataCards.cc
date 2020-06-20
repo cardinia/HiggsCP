@@ -43,7 +43,8 @@ DataCards::DataCards(TString ditauchannel,
   applyIPcutOnBkg_ = applyIPcutOnBkg;
   runSystematics_ = runSystematic;
   variableCP_ = variableCP;
-
+  if(ditauchannel_=="mt")EmbedCut_=EmbedCut_+"&&gen_match_1==4";
+  else if(ditauchannel_=="et")EmbedCut_=EmbedCut_+"&&gen_match_1==3";
 }
 
 DataCards::~DataCards() {
@@ -398,11 +399,11 @@ TH1D* DataCards::CreateCardsFakesOrQCD(TString FakeOrQCD, params parameters, TSt
     params parametersSample = parameters;
 
     if (sample=="ZTT")
-      cutsSample += "&&gen_match_1==4&&gen_match_2==5";
+      cutsSample = cutsSample +"&&"+EmbedCut_;
     else if (sample=="ZL")
-      cutsSample += "&&!(gen_match_1==4&&gen_match_2==5)";
+      cutsSample = cutsSample +"&&!("+EmbedCut_+")";
     else if (embedded_&&sample!="EmbedZTT")
-      cutsSample += "&&!(gen_match_1==4&&gen_match_2==5)";
+      cutsSample = cutsSample +"&&!("+EmbedCut_+")";
 
     if (sample=="EmbedZTT" && era_=="2016") cutsSample += "&&(weight<1000)";
 
@@ -452,14 +453,14 @@ vector<TH1D*> DataCards::CreateCardsFakes(TString FakeOrQCD, params parameters, 
       if (sample=="EmbedZTT"&&!embedded_) continue;
       
       if (sample=="ZTT" || sample=="EmbedZTT") 
-        cutsSample += "&&gen_match_1==4&&gen_match_2==5&&gen_match_2!=6";
+        cutsSample = cutsSample+"&&"+EmbedCut_+"&&gen_match_2!=6";
       else if (sample=="ZL"){
-        cutsSample += "&&!(gen_match_1==4&&gen_match_2==5)";
+        cutsSample = cutsSample+"&&!("+EmbedCut_+")";
 	if(fakeFactor_) cutsSample += "&&gen_match_2!=6";
       }
       else if (sample=="TTT"||sample=="ST"||sample=="W"||sample=="VVT"){
 	if (fakeFactor_) cutsSample += "&&gen_match_2!=6";
-        if (embedded_) cutsSample += "&&!(gen_match_1==4&&gen_match_2==5)";
+        if (embedded_) cutsSample = cutsSample+"&&!("+EmbedCut_+")";
       } 
       
       if (sample=="EmbedZTT" && era_=="2016")
@@ -513,12 +514,12 @@ void DataCards::RunOnCategory(TString category) {
     cuts += IPCut;
     
     if (sampleName=="ZTT" || sampleName=="EmbedZTT") 
-      cuts += "&&gen_match_1==4&&gen_match_2==5&&gen_match_2!=6";
+      cuts = cuts+"&&"+EmbedCut_+"&&gen_match_2!=6";
     else if (sampleName=="ZL")
-      cuts += "&&!(gen_match_1==4&&gen_match_2==5)&&gen_match_2!=6";
+      cuts = cuts+"&&!("+EmbedCut_+")&&gen_match_2!=6";
     else if (sampleName=="TTT"||sampleName=="ST"||sampleName=="W"||sampleName=="VVT"){
       if(fakeFactor_) cuts += "&&gen_match_2!=6";
-      if (embedded_) cuts += "&&!(gen_match_1==4&&gen_match_2==5)";
+      if (embedded_) cuts = cuts+ "&&!("+EmbedCut_+")";
     } 
     
     if (sampleName=="EmbedZTT" && era_=="2016")
