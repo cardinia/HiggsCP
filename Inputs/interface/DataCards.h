@@ -45,7 +45,8 @@ class DataCards {
 
  public:
 
-  DataCards(TString era,
+  DataCards(TString ditauchannel,
+	    TString era,
 	    bool embedded, 
 	    bool FFmethod, 
 	    TString variableCP,
@@ -118,6 +119,7 @@ class DataCards {
   bool applyIPcutOnBkg_;
   bool runSystematics_;
   TString era_;
+  TString ditauchannel_;
   TString variableCP_;
   int nbins_;
   double xmin_;
@@ -130,7 +132,7 @@ class DataCards {
   TString CutIP_muon_;
   TString CutIP_pion_;
 
-  const TString prefix_ = "mt-NOMINAL_ntuple_";
+  const TString prefix_ = "-NOMINAL_ntuple_";
 
   TString input_dir_;
   TString output_dir_;
@@ -477,9 +479,19 @@ class DataCards {
 
 	"ff_mt_qcd_met_closure_systUp",
 	"ff_mt_wjets_met_closure_systUp",
-	"ff_mt_ttbar_met_closure_systUp",
 	"ff_mt_qcd_met_closure_systDown",
 	"ff_mt_wjets_met_closure_systDown",
+	"ff_mt_qcd_met_closure_syst_njets0Up",
+	"ff_mt_wjets_met_closure_syst_njets0Up",
+	"ff_mt_qcd_met_closure_syst_njets0Down",
+	"ff_mt_wjets_met_closure_syst_njets0Down",
+	"ff_mt_qcd_met_closure_syst_njets1Up",
+	"ff_mt_wjets_met_closure_syst_njets1Up",
+	"ff_mt_qcd_met_closure_syst_njets1Down",
+	"ff_mt_wjets_met_closure_syst_njets1Down",
+	"ff_mt_wjets_met_closure_syst_njets2Up",
+	"ff_mt_wjets_met_closure_syst_njets2Down",
+	"ff_mt_ttbar_met_closure_systUp",
 	"ff_mt_ttbar_met_closure_systDown",
 
 	//m_pt non-closure corrections
@@ -488,12 +500,32 @@ class DataCards {
 	"ff_mt_qcd_l_pt_closure_systDown",
 	"ff_mt_wjets_l_pt_closure_systUp",
 	"ff_mt_wjets_l_pt_closure_systDown",
+	"ff_mt_qcd_l_pt_closure_syst_njets0Up",
+	"ff_mt_qcd_l_pt_closure_syst_njets0Down",
+	"ff_mt_wjets_l_pt_closure_syst_njets0Up",
+	"ff_mt_wjets_l_pt_closure_syst_njets0Down",
+	"ff_mt_qcd_l_pt_closure_syst_njets1Up",
+	"ff_mt_qcd_l_pt_closure_syst_njets1Down",
+	"ff_mt_wjets_l_pt_closure_syst_njets1Up",
+	"ff_mt_wjets_l_pt_closure_syst_njets1Down",
+	"ff_mt_wjets_l_pt_closure_syst_njets2Up",
+	"ff_mt_wjets_l_pt_closure_syst_njets2Down",
 
 	//extrapolations from DR to SR
 	"ff_mt_qcd_systUp",
 	"ff_mt_qcd_systDown",
+	"ff_mt_qcd_syst_njets0Up",
+	"ff_mt_qcd_syst_njets0Down",
+	"ff_mt_qcd_syst_njets1Up",
+	"ff_mt_qcd_syst_njets1Down",
 	"ff_mt_wjets_systUp",
 	"ff_mt_wjets_systDown",
+	"ff_mt_wjets_syst_njets0Up",
+	"ff_mt_wjets_syst_njets0Down",
+	"ff_mt_wjets_syst_njets1Up",
+	"ff_mt_wjets_syst_njets1Down",
+	"ff_mt_wjets_syst_njets2Up",
+	"ff_mt_wjets_syst_njets2Down",
 	"ff_mt_ttbar_systUp",
 	"ff_mt_ttbar_systDown"
 

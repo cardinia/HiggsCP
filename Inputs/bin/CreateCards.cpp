@@ -23,6 +23,7 @@ int main(int argc, char * argv[]) {
 
   const string era = cfg.get<string>("Era");
   TString Era(era);
+  const string ditauchannel = cfg.get<string>("Channel");
   const bool embedded = cfg.get<bool>("IsEmbedded");
   const bool fakeFactor = cfg.get<bool>("FFmethod");
 
@@ -93,7 +94,8 @@ int main(int argc, char * argv[]) {
     exit(EXIT_FAILURE);
   }
 
-  DataCards * cards = new DataCards(Era,
+  DataCards * cards = new DataCards(ditauchannel,
+				    Era,
 				    embedded,
 				    fakeFactor,
 				    VariableCP,

@@ -4,7 +4,8 @@
 
 using namespace std;
 
-DataCards::DataCards(TString era,
+DataCards::DataCards(TString ditauchannel,
+		     TString era,
 		     bool embedded,
 		     bool FFmethod,
 		     TString variableCP,
@@ -23,6 +24,7 @@ DataCards::DataCards(TString era,
 		     bool applyIPcutOnBkg,
 		     bool runSystematic) {
 
+  ditauchannel_ = ditauchannel;
   era_ = era;
   embedded_ = embedded;
   fakeFactor_ = FFmethod;
@@ -68,7 +70,7 @@ bool DataCards::loadFiles() {
 
   bool allFilesPresent = true;
   for (auto fileName : fileNames) {
-    TString fullName = input_dir_+"/"+prefix_+fileName+".root";
+    TString fullName = input_dir_+"/"+ditauchannel_+prefix_+fileName+".root";
     TFile * file = new TFile(fullName);
     filePointer.push_back(file);
     if (file->IsZombie()) {
@@ -105,7 +107,7 @@ void DataCards::closeOutputFile() {
 
 void DataCards::createCategoryList(int classIndex=-1, TString channel="") {
 
-  TString catNamePrefix = "mt";
+  TString catNamePrefix = ditauchannel_;
   vector<int> classIndices;
   vector<TString> channels;
   if (channel==""&&((splitBkg_&&classIndex!=0)||classIndex<0||(classIndex==0&&!useTH1forHiggs_))) channels = channelNames;
@@ -303,10 +305,30 @@ vector<TH1D*> DataCards::CreateCardsSample(TString sampleName, params param, TSt
     if (systematicName!="") {
       HistName = sampleName + "_" + systematicName;
       if(find(SystematicsNames.begin(),SystematicsNames.end(),systematicName)==SystematicsNames.end()){
-	if(!systematicName.Contains("ff_mt_sub_syst"))parameterSystematic.weights = param.weights + "weight_" +systematicName+"*";
-	else if(sampleName=="jetFakes")parameterSystematic.weights = param.weights; // small exception: for jetFakes_ff_mt_sub_syst we want the fake bkg to not be scaled, but just the contribution coming from genuine taus
-	else if(systematicName=="ff_mt_sub_systUp")parameterSystematic.weights = param.weights + "1.1*";
-	else if(systematicName=="ff_mt_sub_systDown")parameterSystematic.weights = param.weights + "0.9*";
+	if(!systematicName.Contains("ff_mt_sub_syst")&&!systematicName.Contains("syst_njets"))
+	  parameterSystematic.weights = param.weights + "weight_" +systematicName+"*";
+	else if(systematicName.Contains("syst_njets")){
+	  TString storedweight = systematicName;
+	  if(storedweight.Contains("njets0")){
+	    storedweight.ReplaceAll("_njets0","");
+	    parameterSystematic.weights = param.weights + "((weight_" +storedweight+"*(njets==0))+(njets!=0)*ff_mva)*";
+	  }else if(storedweight.Contains("njets1")){
+	    storedweight.ReplaceAll("_njets1","");
+	    if(storedweight.Contains("qcd"))
+	      parameterSystematic.weights = param.weights + "((weight_" +storedweight+"*(njets>=1))+(njets<1)*ff_mva)*";
+	    else
+	      parameterSystematic.weights = param.weights + "((weight_" +storedweight+"*(njets==1))+(njets!=1)*ff_mva)*";
+	  }else if(storedweight.Contains("njets2")){
+	    storedweight.ReplaceAll("_njets2","");
+	    parameterSystematic.weights = param.weights + "((weight_" +storedweight+"*(njets>=2))+(njets<2)*ff_mva)*";
+	  }
+	}
+	else if(sampleName=="jetFakes")
+	  parameterSystematic.weights = param.weights; // small exception: for jetFakes_ff_mt_sub_syst we want the fake bkg to not be scaled, but just the contribution coming from genuine taus
+	else if(systematicName=="ff_mt_sub_systUp")
+	  parameterSystematic.weights = param.weights + "1.1*";
+	else if(systematicName=="ff_mt_sub_systDown")
+	  parameterSystematic.weights = param.weights + "0.9*";
       }else TreeName = "TauCheck_" + systematicName; 
 
     }
@@ -414,6 +436,7 @@ vector<TH1D*> DataCards::CreateCardsFakes(TString FakeOrQCD, params parameters, 
     if (systematicName==""||systematicName.Contains("ff_mt_sub_syst")) weightsSyst = weights+weightFForQCD;
     if (!runSystematics && systematicName!="") continue;
     if (systematicName!="") cout << "     Running on systematics " << systematicName << std::endl;
+    //if(!systematicName.Contains("syst")&&systematicName!="") continue;
 
     parametersSyst.weights = weightsSyst;
 
