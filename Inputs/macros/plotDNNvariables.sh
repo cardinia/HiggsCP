@@ -1,12 +1,13 @@
 ERA=$1
-FAKES_METHOD=$2
-ZTT_METHOD=$3
+CHANNEL=$2
+FAKES_METHOD=$3
+ZTT_METHOD=$4
 
-PATH_TO_TUPLES="/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/In_Tuples_${ERA}/et/14June/"
-PATH_FOR_OUTPUT="./figures_14June/${ERA}/${FAKES_METHOD}_${ZTT_METHOD}/"
+PATH_TO_TUPLES="/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/In_Tuples_${ERA}/${CHANNEL}/17June/"
+PATH_FOR_OUTPUT="./figures_17June/${ERA}/${FAKES_METHOD}_${ZTT_METHOD}/"
 
-WEIGHT="weight*"
-CUTS="(iso_1<0.15&&pt_1>25&&pt_2>30&&abs(eta_1)<2.1&&abs(eta_2)<2.3)*" #&&byMediumDeepTau2017v2p1VSjet_2>0.5
+WEIGHT="weight*" # trigweight_1/trigweight*
+CUTS="(iso_1<0.15&&pt_1>25&&pt_2>30&&abs(eta_1)<2.1&&abs(eta_2)<2.3)*(is_SingleLepTrigger)*" #&&byMediumDeepTau2017v2p1VSjet_2>0.5
 CUTSIPMU="${CUTS}"
 CUTSIPTAU="${CUTS}(dmMVA_2==0)*"
 CUTS_ACOTAUTAU_00="${CUTS}(dmMVA_2==0)*"
@@ -15,6 +16,21 @@ CUTS_ACOTAUTAU_01="${CUTS}((dmMVA_2==1)||(dmMVA_2==2)||(dmMVA_2==10))*"
 SHOW_SIGNAL="true"
 COMPARE_CP="true"
 
+if [[ $CHANNEL == "et" ]]; then
+  CHANNEL_LABEL="e"
+else 
+  if [[ $CHANNEL == "mt" ]]; then
+    CHANNEL_LABEL="#mu"
+  else 
+    echo
+    echo "To produce some plots this script is to be run with the command:"
+    echo
+    echo "  ./plotDNNvariables.sh <era={2016,2017,2018}> <channel={et,mt}> <fakes_method={FF,QCD}> <ZTT_METHOD={emb, DY}>"
+    echo
+    echo "channel is not et or mt - exiting"
+    exit  
+  fi
+fi
 if [[ $FAKES_METHOD == "FF" ]]; then
   APPLY_FF="true"
 else 
@@ -24,7 +40,7 @@ else
     echo
     echo "To produce some plots this script is to be run with the command:"
     echo
-    echo "  ./plotDNNvariables.sh <fakes_method={FF,QCD}> <ZTT_METHOD={emb, DY}>"
+    echo "  ./plotDNNvariables.sh <era={2016,2017,2018}> <channel={et,mt}> <fakes_method={FF,QCD}> <ZTT_METHOD={emb, DY}>"
     echo
     echo "fakes_method is not FF or QCD - exiting"
     exit
@@ -40,7 +56,7 @@ else
     echo
     echo "To produce some plots this script is to be run with the command:"
     echo
-    echo "  ./plotDNNvariables.sh <fakes_method={FF,QCD}> <ZTT_METHOD={emb, DY}>"
+    echo "  ./plotDNNvariables.sh <era={2016,2017,2018}> <channel={et,mt}> <fakes_method={FF,QCD}> <ZTT_METHOD={emb, DY}>"
     echo
     echo "ztt_method is not emb or DY - exiting"
     exit
@@ -55,9 +71,9 @@ fi
 
 # general
 root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("m_vis","m_{vis}[GeV]",30,0.,300.,"%s","%s","Events",-1,"%s","%s",%s,%s,%s,false,false,%s,%s)' $WEIGHT $CUTS $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
-root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("pt_1","p_{T,#mu}[GeV]",30,20.,80.,"%s","%s","Events",-1,"%s","%s",%s,%s,%s,false,false,%s,%s)' $WEIGHT $CUTS $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
-root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("eta_1","#eta_{#mu}",30,-3.,3.,"%s","%s","Events",-1,"%s","%s",%s,%s,%s,false,false,%s,%s)' $WEIGHT $CUTS $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
-root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("phi_1","#phi_{#mu}[rad]",30,-TMath::Pi(),TMath::Pi(),"%s","%s","Events",-1,"%s","%s",%s,%s,%s,false,false,%s,%s)' $WEIGHT $CUTS $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
+root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("pt_1","p_{T,%s}[GeV]",30,20.,80.,"%s","%s","Events",-1,"%s","%s",%s,%s,%s,false,false,%s,%s)' $CHANNEL_LABEL $WEIGHT $CUTS $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
+root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("eta_1","#eta_{%s}",30,-3.,3.,"%s","%s","Events",-1,"%s","%s",%s,%s,%s,false,false,%s,%s)' $CHANNEL_LABEL $WEIGHT $CUTS $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
+root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("phi_1","#phi_{%s}[rad]",30,-TMath::Pi(),TMath::Pi(),"%s","%s","Events",-1,"%s","%s",%s,%s,%s,false,false,%s,%s)' $CHANNEL_LABEL $WEIGHT $CUTS $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
 root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("pt_2","p_{T,#tau}[GeV]",30,25.,85.,"%s","%s","Events",-1,"%s","%s",%s,%s,%s,false,false,%s,%s)' $WEIGHT $CUTS $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
 root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("eta_2","#eta_{#tau}",30,-3.,3.,"%s","%s","Events",-1,"%s","%s",%s,%s,%s,false,false,%s,%s)' $WEIGHT $CUTS $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
 root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("phi_2","#phi_{#tau}[rad]",30,-TMath::Pi(),TMath::Pi(),"%s","%s","Events",-1,"%s","%s",%s,%s,%s,false,false,%s,%s)' $WEIGHT $CUTS $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP`
