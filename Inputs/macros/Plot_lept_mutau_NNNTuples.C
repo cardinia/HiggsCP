@@ -65,13 +65,13 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
       xmax+=5*(xmax-xmin);
       Variable=xVar+"*("+yVar+"<0.45)+(("+range+"+"+xVar+")*("+yVar+">=0.45&&"+yVar+"<0.6))+((2*"+range+"+"+xVar+")*("+yVar+">=0.6&&"+yVar+"<0.7))+((3*"+range+"+"+xVar+")*("+yVar+">=0.7&&"+yVar+"<0.8))+((4*"+range+"+"+xVar+")*("+yVar+">=0.8&&"+yVar+"<0.9))+((5*"+range+"+"+xVar+")*("+yVar+">=0.9))";
     }else if (categoryIndex==1){
-      nBins=nBins*7;
-      xmax+=6*(xmax-xmin);
-      Variable=xVar+"*("+yVar+"<0.45)+(("+range+"+"+xVar+")*("+yVar+">=0.45&&"+yVar+"<0.55))+((2*"+range+"+"+xVar+")*("+yVar+">=0.55&&"+yVar+"<0.6))+((3*"+range+"+"+xVar+")*("+yVar+">=0.6&&"+yVar+"<0.65))+((4*"+range+"+"+xVar+")*("+yVar+">=0.65&&"+yVar+"<0.7))+((5*"+range+"+"+xVar+")*("+yVar+">=0.7&&"+yVar+"<0.75))+((6*"+range+"+"+xVar+")*("+yVar+">=0.75))";
+      nBins=nBins*4;
+      xmax+=3*(xmax-xmin);
+      Variable=xVar+"*("+yVar+"<0.5)+(("+range+"+"+xVar+")*("+yVar+">=0.5&&"+yVar+"<0.6))+((2*"+range+"+"+xVar+")*("+yVar+">=0.6&&"+yVar+"<0.7))+((3*"+range+"+"+xVar+")*("+yVar+">=0.7))";
     }else{
-      nBins=nBins*11;
-      xmax+=10*(xmax-xmin);
-      Variable=xVar+"*("+yVar+"<0.45)+(("+range+"+"+xVar+")*("+yVar+">=0.45&&"+yVar+"<0.55))+((2*"+range+"+"+xVar+")*("+yVar+">=0.55&&"+yVar+"<0.6))+((3*"+range+"+"+xVar+")*("+yVar+">=0.6&&"+yVar+"<0.65))+((4*"+range+"+"+xVar+")*("+yVar+">=0.65&&"+yVar+"<0.7))+((5*"+range+"+"+xVar+")*("+yVar+">=0.7&&"+yVar+"<0.75))+((6*"+range+"+"+xVar+")*("+yVar+">=0.75&&"+yVar+"<0.8))+((7*"+range+"+"+xVar+")*("+yVar+">=0.8&&"+yVar+"<0.85))+((8*"+range+"+"+xVar+")*("+yVar+">=0.85&&"+yVar+"<0.9))+((9*"+range+"+"+xVar+")*("+yVar+">=0.9&&"+yVar+"<0.95))+((10*"+range+"+"+xVar+")*("+yVar+">=0.95))";
+      nBins=nBins*5;
+      xmax+=4*(xmax-xmin);
+      Variable=xVar+"*("+yVar+"<0.6)+(("+range+"+"+xVar+")*("+yVar+">=0.6&&"+yVar+"<0.7))+((2*"+range+"+"+xVar+")*("+yVar+">=0.7&&"+yVar+"<0.8))+((3*"+range+"+"+xVar+")*("+yVar+">=0.8&&"+yVar+"<0.9))+((4*"+range+"+"+xVar+")*("+yVar+">=0.9))";
     }
     VariableName="Unrolled_"+xVar;
     var2D=true;
