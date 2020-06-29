@@ -190,13 +190,13 @@ int main(int argc, char * argv[]) {
     neventsW4Jets  = getNEventsProcessed(input_dir,process_map->at("W4Jets"),era);
   }
 
-  double neventsVBF1 = 0;
-  double neventsVBF2 = 0;
-  if (Sample.Contains("VBFHToUncor")&&era!="2016"){
-    neventsVBF1=getNEventsProcessed(input_dir,process_map->at("VBFHToTauTauUncorrDecays_M125_1"),era);
-    neventsVBF2=getNEventsProcessed(input_dir,process_map->at("VBFHToTauTauUncorrDecays_M125_2"),era);
-
-  }
+  // double neventsVBF1 = 0;
+  // double neventsVBF2 = 0;
+  // if (Sample.Contains("VBFHToUncor")&&era!="2016"){
+  //   neventsVBF1=getNEventsProcessed(input_dir,process_map->at("VBFHToTauTauUncorrDecays_M125_1"),era);
+  //   neventsVBF2=getNEventsProcessed(input_dir,process_map->at("VBFHToTauTauUncorrDecays_M125_2"),era);
+  // 
+  // }
 
 
   double neventsDYIncl  = 0;
@@ -330,11 +330,18 @@ int main(int argc, char * argv[]) {
  	
 	bool trg_singlemuon;
 	bool trg_mutaucross;
+	bool trg_singleelectron;
+	bool trg_etaucross;
+	bool is_SingleLepTrigger;
+	bool is_CrossTrigger;
+	bool is_Trigger;
 	
 	int gen_noutgoing;
 
 	float embweight;
 	float trigweight;
+	float trigweight_1;
+	float trigweight_2;
 	float mcweight;
 	float effweight;
 	float puweight;
@@ -1061,16 +1068,23 @@ int main(int argc, char * argv[]) {
 	
 	outTree->Branch("trg_singlemuon",&trg_singlemuon,"trg_singlemuon/O");
 	outTree->Branch("trg_mutaucross",&trg_mutaucross,"trg_mutaucross/O");
+	outTree->Branch("trg_singleelectron",&trg_singleelectron,"trg_singleelectron/O");
+	outTree->Branch("trg_etaucross",&trg_etaucross,"trg_etaucross/O");
+	outTree->Branch("is_SingleLepTrigger",&is_SingleLepTrigger,"is_SingleLepTrigger/O");
+	outTree->Branch("is_CrossTrigger",&is_CrossTrigger,"is_CrossTrigger/O");
+	outTree->Branch("is_Trigger",&is_Trigger,"is_Trigger/O");
 
 	//	outTree->Branch("gen_noutgoing",&gen_noutgoing,"gen_noutgoing/I");
 	
-	//	outTree->Branch("embweight",&embweight,"embweight/F");
-	//	outTree->Branch("trigweight",&trigweight,"trigweight/F");
-	//	outTree->Branch("mcweight",&mcweight,"mcweight/F");
-	//	outTree->Branch("effweight",&effweight,"effweight/F");
-	//	outTree->Branch("puweight",&puweight,"puweight/F");
-	//	outTree->Branch("topptweight",&topptweight,"topptweight/F");
-	//	outTree->Branch("zptweight",&zptweight,"zptweight/D");
+		outTree->Branch("embweight",&embweight,"embweight/F");
+		outTree->Branch("trigweight",&trigweight,"trigweight/F");
+		outTree->Branch("trigweight_1",&trigweight_1,"trigweight_1/F");
+		outTree->Branch("trigweight_2",&trigweight_2,"trigweight_2/F");
+		outTree->Branch("mcweight",&mcweight,"mcweight/F");
+		outTree->Branch("effweight",&effweight,"effweight/F");
+		outTree->Branch("puweight",&puweight,"puweight/F");
+		outTree->Branch("topptweight",&topptweight,"topptweight/F");
+		outTree->Branch("zptweight",&zptweight,"zptweight/D");
 	//	outTree->Branch("trkeffweight",&trkeffweight,"trkeffweight/D");
 	outTree->Branch("weight",&weight,"weight/F");
 	outTree->Branch("weight_CMS_PreFire_13TeVUp",&weight_CMS_PreFire_13TeVUp,"CMS_PreFire_13TeVUp/F");
@@ -1788,12 +1802,16 @@ int main(int argc, char * argv[]) {
 	  
 	  inTree->SetBranchAddress("trg_singlemuon",&trg_singlemuon);
 	  inTree->SetBranchAddress("trg_mutaucross",&trg_mutaucross);
+	  inTree->SetBranchAddress("trg_singleelectron",&trg_singleelectron);
+	  inTree->SetBranchAddress("trg_etaucross",&trg_etaucross);
 	  
 	  //branches for stichting
 	  inTree->SetBranchAddress("gen_noutgoing",&gen_noutgoing);
 	  
 	  inTree->SetBranchAddress("embweight",&embweight);
 	  inTree->SetBranchAddress("trigweight",&trigweight);
+	  inTree->SetBranchAddress("trigweight_1",&trigweight_1);
+	  inTree->SetBranchAddress("trigweight_2",&trigweight_2);
 	  inTree->SetBranchAddress("mcweight",&mcweight);
 	  inTree->SetBranchAddress("effweight",&effweight);
 	  inTree->SetBranchAddress("puweight",&puweight);
@@ -1948,9 +1966,9 @@ int main(int argc, char * argv[]) {
 	      }
 	      //Preselection
 	      if(applyPreselection){
-		bool is_trigger = false;
-		bool is_singleLepTrigger = false;
-		bool is_crossTrigger = false;
+		is_Trigger = false;
+		is_SingleLepTrigger = false;
+		is_CrossTrigger = false;
 		if(channel=="mt"){
 		  if( iso_1 > 0.15 )              continue;
 		  if( pt_1 < 20)                  continue; 
@@ -1958,26 +1976,40 @@ int main(int argc, char * argv[]) {
 		  if (abs(eta_1)>2.1)             continue;
 		  if (abs(eta_2)>2.3)             continue;
 		  if (era=="2016") {
-		    is_singleLepTrigger = (trg_singlemuon>0.5&&pt_1>23&&abs(eta_1)<2.1);
-		    is_crossTrigger = (trg_mutaucross>0.5&&pt_1>20&&abs(eta_1)<2.1&&pt_2>25);
-		    is_trigger = is_singleLepTrigger || is_crossTrigger;
+		    is_SingleLepTrigger = (trg_singlemuon>0.5&&pt_1>23&&abs(eta_1)<2.1);
+		    is_CrossTrigger = (trg_mutaucross>0.5&&pt_1>20&&abs(eta_1)<2.1&&pt_2>25);
+		    is_Trigger = is_SingleLepTrigger || is_CrossTrigger;
 		  }
 		  if (era=="2017"||era=="2018") {
-		    is_singleLepTrigger = (trg_singlemuon>0.5&&pt_1>25);
-                    is_crossTrigger = (trg_mutaucross>0.5&&pt_1>21&&abs(eta_1)<2.1&&pt_2>32&&abs(eta_2)<2.1);
-                    is_trigger = is_singleLepTrigger || is_crossTrigger;
+		    is_SingleLepTrigger = (trg_singlemuon>0.5&&pt_1>25);
+                    is_CrossTrigger = (trg_mutaucross>0.5&&pt_1>21&&abs(eta_1)<2.1&&pt_2>32&&abs(eta_2)<2.1);
+                    is_Trigger = is_SingleLepTrigger || is_CrossTrigger;
 		  }
-		  if( is_trigger < 0.5 ) continue;
+		  if( is_Trigger < 0.5 ) continue;
 		  if( byTightDeepTau2017v2p1VSmu_2  < 0.5 ) continue;
 		  if( byVVLooseDeepTau2017v2p1VSe_2 < 0.5 ) continue;
 		}else{
-		  if( iso_1 > 0.10 )              continue;
+		  if( iso_1 > 0.15 )              continue;
 		  if( pt_1 < 20 )                 continue; 
 		  if( pt_2 < 20 )                 continue; 
 		  if (abs(eta_1)>2.1)             continue;
 		  if (abs(eta_2)>2.3)             continue;
 		  if( byVLooseDeepTau2017v2p1VSmu_2 < 0.5 ) continue;
 		  if( byTightDeepTau2017v2p1VSe_2   < 0.5 ) continue;
+      if (era == "2016") {
+        is_SingleLepTrigger = (trg_singleelectron>0.5&&pt_1>26&&abs(eta_1)<2.1);
+        is_CrossTrigger = false;
+      }
+      if (era == "2017") {
+        is_SingleLepTrigger = (trg_singleelectron>0.5&&pt_1>28&&abs(eta_1)<2.1);
+        is_CrossTrigger = (trg_etaucross>0.5&&pt_1>25&&pt_1<28&&abs(eta_1)<2.1&&pt_2>35&&abs(eta_2)<2.1);
+      }
+      if (era == "2018") {
+        is_SingleLepTrigger = (trg_singleelectron>0.5&&pt_1>33&&abs(eta_1)<2.1);
+        is_CrossTrigger = (trg_etaucross>0.5&&pt_1>25&&pt_1<33&&abs(eta_1)<2.1&&pt_2>35&&abs(eta_2)<2.1);
+      }
+      is_Trigger = is_SingleLepTrigger || is_CrossTrigger;
+      // if( is_Trigger < 0.5 ) continue;
 		}
 		if( byVVVLooseDeepTau2017v2p1VSjet_2 < 0.5 ) continue;
 		if( extraelec_veto > 0.5 )       continue;
@@ -1998,8 +2030,8 @@ int main(int argc, char * argv[]) {
 		}
 		if( isEmbedded && mcweight > 1000 ) continue;
 
-	      if(is_singleLepTrigger)countSingleTrig+=1;
-	      else if(is_crossTrigger)countXTrig+=1;
+	      if(is_SingleLepTrigger)countSingleTrig+=1;
+	      else if(is_CrossTrigger)countXTrig+=1;
 	      }
 	      //End of preselection
 
@@ -2040,12 +2072,15 @@ int main(int argc, char * argv[]) {
 
 		TLorentzVector MET(0.,0.,0.,0.);
 		MET.SetPtEtaPhiM(puppimet,0.,puppimetphi,0);
-		TLorentzVector MU(0.,0.,0.,0.);
-		MU.SetPtEtaPhiM(pt_1,eta_1,phi_1,0);
-		TLorentzVector FakeMET=MU+MET;
+		TLorentzVector LEP(0.,0.,0.,0.);
+		LEP.SetPtEtaPhiM(pt_1,eta_1,phi_1,0);
+		TLorentzVector FakeMET=LEP+MET;
 		float met_var_qcd, met_var_w;
 		met_var_qcd=puppimet*TMath::Cos(DeltaPhi(puppimetphi,phi_2))/pt_2;
 		met_var_w=FakeMET.Pt()*TMath::Cos(DeltaPhi(FakeMET.Phi(),phi_2))/pt_2;
+    bool ff_singlelep_trig = trg_singlemuon;
+    if (channel == "et") ff_singlelep_trig = trg_singleelectron;
+
 		auto args = std::vector<double>{pt_2,
 						static_cast<double>(tau_decay_mode_2),
 						static_cast<double>(njets),
@@ -2053,7 +2088,7 @@ int main(int argc, char * argv[]) {
 						static_cast<double>(os),
 						puppimt_1,
 						iso_1,
-						static_cast<double>(trg_singlemuon),
+						static_cast<double>(ff_singlelep_trig),
 						m_vis};
 
 		ff_nom = fns_[("ff_"+channel+"_medium_dmbins").Data()]->eval(args.data());
@@ -2065,7 +2100,7 @@ int main(int argc, char * argv[]) {
 						    pt_1,
 						    static_cast<double>(os),
 						    iso_1,
-						    static_cast<double>(trg_singlemuon),
+						    static_cast<double>(ff_singlelep_trig),
 						    met_var_qcd,
 						    met_var_w,
 						    FakeMET.Pt(),
@@ -3248,9 +3283,9 @@ int main(int argc, char * argv[]) {
 		  jeta_1= -10;
 		}
 	      }
-	      if (isVBF&&era!="2016") {
-		xsec_lumi_weight = luminosity * xsec / (neventsVBF1+neventsVBF2);
-	      }
+	  //     if (isVBF&&era!="2016") {
+		// xsec_lumi_weight = luminosity * xsec / (neventsVBF1+neventsVBF2);
+	  //     }
 
 	      // Stitching only for wjets MC in n-jet binned samples in gen_noutgoing
 	      if( isW ){
@@ -3360,20 +3395,20 @@ int main(int argc, char * argv[]) {
           	else if(( (jpt_1>0&&jpt_1<200&&njets<2) || (jpt_1>0&&jpt_1<200&&njets>=2&&mjj>400&&jdeta<2.8) || (jpt_1>0&&jpt_1<200&&njets>=2&&mjj>0&&mjj<60) || (jpt_1>0&&jpt_1<200&&njets>=2&&mjj>120&&mjj<400))) htxs_reco_flag_qqh = 204;
           	else if(jpt_1>200) htxs_reco_flag_qqh = 205;*/
 	      
-	      // prefiring weights (from AN-18-255)
-	      prefiring_weight=1;
-	      if( sample.first.Contains("TTBar") && era == "2016")      prefiring_weight = 0.989;
-	      else if( sample.first.Contains("TTBar") && era == "2017") prefiring_weight = 0.984;
-	      else if( sample.first.Contains("VBFH") && htxs_reco_flag_qqh == 201 && era == "2016") prefiring_weight = 0.972;
-	      else if( sample.first.Contains("VBFH") && htxs_reco_flag_qqh == 201 && era == "2017") prefiring_weight = 0.950;
-	      else if( sample.first.Contains("VBFH") && htxs_reco_flag_qqh == 202 && era == "2016") prefiring_weight = 0.972;
-	      else if( sample.first.Contains("VBFH") && htxs_reco_flag_qqh == 202 && era == "2017") prefiring_weight = 0.950;
-	      else if( sample.first.Contains("VBFH") && htxs_reco_flag_qqh == 203 && era == "2016") prefiring_weight = 0.972;
-	      else if( sample.first.Contains("VBFH") && htxs_reco_flag_qqh == 203 && era == "2017") prefiring_weight = 0.950;
-	      else if( sample.first.Contains("VBFH") && htxs_reco_flag_qqh == 204 && era == "2016") prefiring_weight = 0.983;
-	      else if( sample.first.Contains("VBFH") && htxs_reco_flag_qqh == 204 && era == "2017") prefiring_weight = 0.970;
-	      else if( sample.first.Contains("VBFH") && htxs_reco_flag_qqh == 205 && era == "2016") prefiring_weight = 0.920;
-	      else if( sample.first.Contains("VBFH") && htxs_reco_flag_qqh == 205 && era == "2017") prefiring_weight = 0.850;
+	      // // prefiring weights (from AN-18-255)
+	      // prefiring_weight=1;
+	      // if( sample.first.Contains("TTBar") && era == "2016")      prefiring_weight = 0.989;
+	      // else if( sample.first.Contains("TTBar") && era == "2017") prefiring_weight = 0.984;
+	      // else if( sample.first.Contains("VBFH") && htxs_reco_flag_qqh == 201 && era == "2016") prefiring_weight = 0.972;
+	      // else if( sample.first.Contains("VBFH") && htxs_reco_flag_qqh == 201 && era == "2017") prefiring_weight = 0.950;
+	      // else if( sample.first.Contains("VBFH") && htxs_reco_flag_qqh == 202 && era == "2016") prefiring_weight = 0.972;
+	      // else if( sample.first.Contains("VBFH") && htxs_reco_flag_qqh == 202 && era == "2017") prefiring_weight = 0.950;
+	      // else if( sample.first.Contains("VBFH") && htxs_reco_flag_qqh == 203 && era == "2016") prefiring_weight = 0.972;
+	      // else if( sample.first.Contains("VBFH") && htxs_reco_flag_qqh == 203 && era == "2017") prefiring_weight = 0.950;
+	      // else if( sample.first.Contains("VBFH") && htxs_reco_flag_qqh == 204 && era == "2016") prefiring_weight = 0.983;
+	      // else if( sample.first.Contains("VBFH") && htxs_reco_flag_qqh == 204 && era == "2017") prefiring_weight = 0.970;
+	      // else if( sample.first.Contains("VBFH") && htxs_reco_flag_qqh == 205 && era == "2016") prefiring_weight = 0.920;
+	      // else if( sample.first.Contains("VBFH") && htxs_reco_flag_qqh == 205 && era == "2017") prefiring_weight = 0.850;
 	      
 	      //stxs categorization currently not used, kept commented
 	      /*

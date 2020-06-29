@@ -34,6 +34,7 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
 			       TString directory = "/nfs/dust/cms/user/rasp/storage/cardinia/2018/OutputDNN/March7/predictions_2018/",
 			       TString outputDir = "./figures_March10/",
 			       int era=2018,
+						 TString channel="mt",
 			       bool FFmethod = true,
 			       bool useEmbedded = true,
 			       bool LargeScale = false,  
@@ -65,13 +66,13 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
       xmax+=5*(xmax-xmin);
       Variable=xVar+"*("+yVar+"<0.45)+(("+range+"+"+xVar+")*("+yVar+">=0.45&&"+yVar+"<0.6))+((2*"+range+"+"+xVar+")*("+yVar+">=0.6&&"+yVar+"<0.7))+((3*"+range+"+"+xVar+")*("+yVar+">=0.7&&"+yVar+"<0.8))+((4*"+range+"+"+xVar+")*("+yVar+">=0.8&&"+yVar+"<0.9))+((5*"+range+"+"+xVar+")*("+yVar+">=0.9))";
     }else if (categoryIndex==1){
-      nBins=nBins*7;
-      xmax+=6*(xmax-xmin);
-      Variable=xVar+"*("+yVar+"<0.45)+(("+range+"+"+xVar+")*("+yVar+">=0.45&&"+yVar+"<0.55))+((2*"+range+"+"+xVar+")*("+yVar+">=0.55&&"+yVar+"<0.6))+((3*"+range+"+"+xVar+")*("+yVar+">=0.6&&"+yVar+"<0.65))+((4*"+range+"+"+xVar+")*("+yVar+">=0.65&&"+yVar+"<0.7))+((5*"+range+"+"+xVar+")*("+yVar+">=0.7&&"+yVar+"<0.75))+((6*"+range+"+"+xVar+")*("+yVar+">=0.75))";
+      nBins=nBins*4;
+      xmax+=3*(xmax-xmin);
+      Variable=xVar+"*("+yVar+"<0.5)+(("+range+"+"+xVar+")*("+yVar+">=0.5&&"+yVar+"<0.6))+((2*"+range+"+"+xVar+")*("+yVar+">=0.6&&"+yVar+"<0.7))+((3*"+range+"+"+xVar+")*("+yVar+">=0.7))";
     }else{
-      nBins=nBins*11;
-      xmax+=10*(xmax-xmin);
-      Variable=xVar+"*("+yVar+"<0.45)+(("+range+"+"+xVar+")*("+yVar+">=0.45&&"+yVar+"<0.55))+((2*"+range+"+"+xVar+")*("+yVar+">=0.55&&"+yVar+"<0.6))+((3*"+range+"+"+xVar+")*("+yVar+">=0.6&&"+yVar+"<0.65))+((4*"+range+"+"+xVar+")*("+yVar+">=0.65&&"+yVar+"<0.7))+((5*"+range+"+"+xVar+")*("+yVar+">=0.7&&"+yVar+"<0.75))+((6*"+range+"+"+xVar+")*("+yVar+">=0.75&&"+yVar+"<0.8))+((7*"+range+"+"+xVar+")*("+yVar+">=0.8&&"+yVar+"<0.85))+((8*"+range+"+"+xVar+")*("+yVar+">=0.85&&"+yVar+"<0.9))+((9*"+range+"+"+xVar+")*("+yVar+">=0.9&&"+yVar+"<0.95))+((10*"+range+"+"+xVar+")*("+yVar+">=0.95))";
+      nBins=nBins*5;
+      xmax+=4*(xmax-xmin);
+      Variable=xVar+"*("+yVar+"<0.6)+(("+range+"+"+xVar+")*("+yVar+">=0.6&&"+yVar+"<0.7))+((2*"+range+"+"+xVar+")*("+yVar+">=0.7&&"+yVar+"<0.8))+((3*"+range+"+"+xVar+")*("+yVar+">=0.8&&"+yVar+"<0.9))+((4*"+range+"+"+xVar+")*("+yVar+">=0.9))";
     }
     VariableName="Unrolled_"+xVar;
     var2D=true;
@@ -96,45 +97,57 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
 
   // weights
   TString topweight("1.0*");
-  TString qcdweight("1.06*");
+  TString qcdweight("1.0*");
+  if(era == 2016) qcdweight("1.3*");
   TString zptmassweight="1.0*";                  //TO DO: CHANGE WEIGHTs
 	TString Wjets_weight("1.0*");
-	if (!FFmethod)
-		Wjets_weight = "0.96*";
+	// if (!FFmethod)
+	// 	Wjets_weight = "0.96*";
 
  
   vector<TString> sampleNames;
+	TString data_sample_label;
+	TString emb_sample_label;
+	if (channel == "mt"){
+		data_sample_label = "SingleMuon";
+		emb_sample_label = "EmbeddedMuTau";
+	}
+	else if (channel == "et"){
+		data_sample_label = "SingleElectron";
+		emb_sample_label = "EmbeddedElTau";
+  }
+	
   if(directory.Contains("Out")){
     sampleNames = {
-      "mt-NOMINAL_ntuple_data", // data (0)
-      "mt-NOMINAL_ntuple_DY",// (1)Drell-Yan Z->TT  or Embedded
-      "mt-NOMINAL_ntuple_DY", // (2)Drell-Yan Z->LL
-      "mt-NOMINAL_ntuple_W",// (3)WJets
-      "mt-NOMINAL_ntuple_TT",//(4)TTbar leptonic, hadronic, + semileptonic
-      //"mt-NOMINAL_ntuple_ST", // (5) SingleTop tW tbar, SingleTop tW t, SingleTop t antitop, SingleTop t top
-      "mt-NOMINAL_ntuple_VV",// (5) WW, WZ, ZZ, SingleTop tW tbar, SingleTop tW t, SingleTop t antitop, SingleTop t top
-      "mt-NOMINAL_ntuple_ggH125", // (6) Scalar ggH
-      "mt-NOMINAL_ntuple_qqH125", // (7) Scalar VBF H
-      "mt-NOMINAL_ntuple_ggH125", // (8) Pseudoscalar ggH
-      "mt-NOMINAL_ntuple_qqH125" // (9) Pseudoscalar VBF
+      channel + "-NOMINAL_ntuple_data", // data (0)
+      channel + "-NOMINAL_ntuple_DY",// (1)Drell-Yan Z->TT  or Embedded
+      channel + "-NOMINAL_ntuple_DY", // (2)Drell-Yan Z->LL
+      channel + "-NOMINAL_ntuple_W",// (3)WJets
+      channel + "-NOMINAL_ntuple_TT",//(4)TTbar leptonic, hadronic, + semileptonic
+      //channel + "-NOMINAL_ntuple_ST", // (5) SingleTop tW tbar, SingleTop tW t, SingleTop t antitop, SingleTop t top
+      channel + "-NOMINAL_ntuple_VV",// (5) WW, WZ, ZZ, SingleTop tW tbar, SingleTop tW t, SingleTop t antitop, SingleTop t top
+      channel + "-NOMINAL_ntuple_ggH125", // (6) Scalar ggH
+      channel + "-NOMINAL_ntuple_qqH125", // (7) Scalar VBF H
+      channel + "-NOMINAL_ntuple_ggH125", // (8) Pseudoscalar ggH
+      channel + "-NOMINAL_ntuple_qqH125" // (9) Pseudoscalar VBF
     };
   }else{
     sampleNames = {
-      "mt-NOMINAL_ntuple_SingleMuon", // data (0)
-      "mt-NOMINAL_ntuple_DYJets",// (1)Drell-Yan Z->TT
-      "mt-NOMINAL_ntuple_DYJets", // (2)Drell-Yan Z->LL
-      "mt-NOMINAL_ntuple_WJets",// (3)WJets
-      "mt-NOMINAL_ntuple_TTbar",//(4)TTbar leptonic, hadronic, + semileptonic
-      //"mt-NOMINAL_ntuple_SingleTop", // (5) SingleTop tW tbar, SingleTop tW t, SingleTop t antitop, SingleTop t top
-      "mt-NOMINAL_ntuple_Diboson",// (5) WW, WZ, ZZ, ST (VV+ST implemented in CreateDNN as of 18 March 2020)
-      "mt-NOMINAL_ntuple_GluGluHToUncorrTauTau", // (6) Scalar ggH
-      "mt-NOMINAL_ntuple_VBFHToUncorrTauTau", // (7) Scalar VBF H
-      "mt-NOMINAL_ntuple_GluGluHToUncorrTauTau", // (8) Pseudoscalar 
-      "mt-NOMINAL_ntuple_VBFHToUncorrTauTau" // (9) Scalar VBF H
+      channel + "-NOMINAL_ntuple_" + data_sample_label, // data (0)
+      channel + "-NOMINAL_ntuple_DYJets",// (1)Drell-Yan Z->TT
+      channel + "-NOMINAL_ntuple_DYJets", // (2)Drell-Yan Z->LL
+      channel + "-NOMINAL_ntuple_WJets",// (3)WJets
+      channel + "-NOMINAL_ntuple_TTbar",//(4)TTbar leptonic, hadronic, + semileptonic
+      //channel + "-NOMINAL_ntuple_SingleTop", // (5) SingleTop tW tbar, SingleTop tW t, SingleTop t antitop, SingleTop t top
+      channel + "-NOMINAL_ntuple_Diboson",// (5) WW, WZ, ZZ, ST (VV+ST implemented in CreateDNN as of 18 March 2020)
+      channel + "-NOMINAL_ntuple_GluGluHToUncorrTauTau", // (6) Scalar ggH
+      channel + "-NOMINAL_ntuple_VBFHToUncorrTauTau", // (7) Scalar VBF H
+      channel + "-NOMINAL_ntuple_GluGluHToUncorrTauTau", // (8) Pseudoscalar 
+      channel + "-NOMINAL_ntuple_VBFHToUncorrTauTau" // (9) Scalar VBF H
     }; 
   }
-  if(useEmbedded&&!directory.Contains("Out"))sampleNames[1]="mt-NOMINAL_ntuple_EmbeddedMuTau";
-  else if(useEmbedded&&directory.Contains("Out"))sampleNames[1]="mt-NOMINAL_ntuple_EMB";
+  if(useEmbedded&&!directory.Contains("Out"))sampleNames[1]=channel + "-NOMINAL_ntuple_" + emb_sample_label;
+  else if(useEmbedded&&directory.Contains("Out"))sampleNames[1]=channel + "-NOMINAL_ntuple_EMB";
   const unsigned int nSamples = sampleNames.size(); //DY is used twice, for Zll and Ztt
   if(!directory.Contains("Out")){ 
 		for (size_t i=0; i<nSamples; ++i) {
@@ -155,9 +168,11 @@ void Plot_lept_mutau_NNNTuples(TString Variable = "m_fast",
   TString cutsaIso[nSamples];
 
   // MC specific cuts to select certain type of particle
-  TString isGenMuTau="(gen_match_2==5&&gen_match_1==4)*";
-  TString isZLL="!(gen_match_2==5&&gen_match_1==4)*";
-  TString isNotGenMuTau="!(gen_match_2==5&&gen_match_1==4)*";
+	TString gen_match_lep = "gen_match_1==4";
+	if (channel == "et") gen_match_lep = "gen_match_1==3";
+  TString isGenMuTau="(gen_match_2==5&&" + gen_match_lep + ")*";
+  TString isZLL="!(gen_match_2==5&&" + gen_match_lep + ")*";
+  TString isNotGenMuTau="!(gen_match_2==5&&" + gen_match_lep + ")*";
   TString isNotGenJet="(gen_match_2!=6)*";
 	if (!useEmbedded) isNotGenMuTau = "*";
 	if (!FFmethod) isNotGenJet = "*";
