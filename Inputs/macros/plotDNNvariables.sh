@@ -7,8 +7,8 @@ PATH_TO_TUPLES="/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/In
 PATH_FOR_OUTPUT="./figures_17June/${CHANNEL}/${ERA}/${FAKES_METHOD}_${ZTT_METHOD}/"
 
 WEIGHT="weight*" # trigweight_1/trigweight*
-CUTS="(iso_1<0.15&&pt_1>25&&pt_2>30&&abs(eta_1)<2.1&&abs(eta_2)<2.3)*(is_SingleLepTrigger)*" #&&byMediumDeepTau2017v2p1VSjet_2>0.5
-CUTSIPMU="${CUTS}"
+CUTS="(m_vis>40&&iso_1<0.15&&pt_1>25&&pt_2>20&&abs(eta_1)<2.1&&abs(eta_2)<2.3)*(is_SingleLepTrigger)*" #&&byMediumDeepTau2017v2p1VSjet_2>0.5
+CUTSIPLEP="${CUTS}"
 CUTSIPTAU="${CUTS}(dmMVA_2==0)*"
 CUTS_ACOTAUTAU_00="${CUTS}(dmMVA_2==0)*"
 CUTS_ACOTAUTAU_01="${CUTS}((dmMVA_2==1)||(dmMVA_2==2)||(dmMVA_2==10))*"
@@ -81,13 +81,13 @@ root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("tau_decay_mode_2","HPS-DM",1
 root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("dmMVA_2","MVA-DM",13,0.,13.,"%s","%s","Events",-1,"%s","%s",%s,"%s",%s,%s,false,false,%s,%s)' $WEIGHT $CUTS $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $CHANNEL $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
 
 # # IP
-root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("IP_signif_RefitV_with_BS_1","IPsig(%s)",20,0.,10.,"%s","%s","Events",-1,"%s","%s",%s,"%s",%s,%s,false,false,%s,%s)' $CHANNEL_LABEL $WEIGHT $CUTSIPMU $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $CHANNEL $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
+root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("IP_signif_RefitV_with_BS_1","IPsig(%s)",20,0.,10.,"%s","%s","Events",-1,"%s","%s",%s,"%s",%s,%s,false,false,%s,%s)' $CHANNEL_LABEL $WEIGHT $CUTSIPLEP $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $CHANNEL $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
 root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("IP_signif_RefitV_with_BS_2","IPsig(#tau)",20,0.,10.,"%s","%s","Events",-1,"%s","%s",%s,"%s",%s,%s,false,false,%s,%s)' $WEIGHT $CUTSIPTAU $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $CHANNEL $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
-root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("IP_signif_RefitV_with_BS_uncorr_1","IPsigUncorr(%s)",20,0.,10.,"%s","%s","Events",-1,"%s","%s",%s,"%s",%s,%s,false,false,%s,%s)' $CHANNEL_LABEL $WEIGHT $CUTSIPMU $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $CHANNEL $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
+root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("IP_signif_RefitV_with_BS_uncorr_1","IPsigUncorr(%s)",20,0.,10.,"%s","%s","Events",-1,"%s","%s",%s,"%s",%s,%s,false,false,%s,%s)' $CHANNEL_LABEL $WEIGHT $CUTSIPLEP $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $CHANNEL $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
 root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("IP_signif_RefitV_with_BS_uncorr_2","IPsigUncorr(#tau)",20,0.,10.,"%s","%s","Events",-1,"%s","%s",%s,"%s",%s,%s,false,false,%s,%s)' $WEIGHT $CUTSIPTAU $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $CHANNEL $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
-root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("IP_signif_PV_with_BS_1","IPsignif(%s)",20,0.,10.,"%s","%s","Events",-1,"%s","%s",%s,"%s",%s,%s,false,false,%s,%s)' $CHANNEL_LABEL $WEIGHT $CUTSIPMU $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $CHANNEL $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
+root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("IP_signif_PV_with_BS_1","IPsignif(%s)",20,0.,10.,"%s","%s","Events",-1,"%s","%s",%s,"%s",%s,%s,false,false,%s,%s)' $CHANNEL_LABEL $WEIGHT $CUTSIPLEP $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $CHANNEL $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
 root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("IP_signif_PV_with_BS_2","IPsignif(#tau)",20,0.,10.,"%s","%s","Events",-1,"%s","%s",%s,"%s",%s,%s,false,false,%s,%s)' $WEIGHT $CUTSIPTAU $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $CHANNEL $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
-root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("IP_signif_PV_with_BS_uncorr_1","IPsignif(%s)",20,0.,10.,"%s","%s","Events",-1,"%s","%s",%s,"%s",%s,%s,false,false,%s,%s)' $CHANNEL_LABEL $WEIGHT $CUTSIPMU $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $CHANNEL $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
+root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("IP_signif_PV_with_BS_uncorr_1","IPsignif(%s)",20,0.,10.,"%s","%s","Events",-1,"%s","%s",%s,"%s",%s,%s,false,false,%s,%s)' $CHANNEL_LABEL $WEIGHT $CUTSIPLEP $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $CHANNEL $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
 root -l -b -q `printf 'Plot_lept_mutau_NNNTuples.C("IP_signif_PV_with_BS_uncorr_2","IPsignif(#tau)",20,0.,10.,"%s","%s","Events",-1,"%s","%s",%s,"%s",%s,%s,false,false,%s,%s)' $WEIGHT $CUTSIPTAU $PATH_TO_TUPLES $PATH_FOR_OUTPUT $ERA $CHANNEL $APPLY_FF $USE_EMBEDDED $SHOW_SIGNAL $COMPARE_CP` 
 
 # CP observables
