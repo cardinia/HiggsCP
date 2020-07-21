@@ -82,7 +82,8 @@ int main(int argc, char * argv[]) {
 
 
   TString FFlocation = "/nfs/dust/cms/user/cardinia/public/FF_from_IC_1p5cut_v3/";
-  if(channel=="et") FFlocation = "/nfs/dust/cms/user/cardinia/public/FF_from_IC_et_1p5cut_v2/";
+  // if(channel=="et") FFlocation = "/nfs/dust/cms/user/cardinia/public/FF_from_IC_et_1p5cut_v2/";
+  if(channel=="et") FFlocation = "/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/HiggsCP/Inputs/data/fake_factors_cpdecay_ipsig1p5_etau_v3/";
   string channel_string = channel.Data();
 
   bool applyPreselection = true;
