@@ -3425,8 +3425,28 @@ int main(int argc, char * argv[]) {
           else if (tau_decay_mode_2 == 1) etaufakeweight_dm = 1.055;
           else etaufakeweight_dm = 1.0;
         }
-        weight *= etaufakeweight_dm;
-      } else weight *= etaufakeweight;
+      } else if (era == "2017") {
+        if (abs(eta_2) < 1.5) {
+            if (tau_decay_mode_2 == 0) etaufakeweight_dm = 1.245;
+            else if (tau_decay_mode_2 == 1) etaufakeweight_dm = 1.398;
+            else etaufakeweight_dm = 1.0;
+        } else {
+          if (tau_decay_mode_2 == 0) etaufakeweight_dm = 1.024;
+          else if (tau_decay_mode_2 == 1) etaufakeweight_dm = 0.889;
+          else etaufakeweight_dm = 1.0;
+        }
+      } else if (era == "2018") {
+        if (abs(eta_2) < 1.5) {
+            if (tau_decay_mode_2 == 0) etaufakeweight_dm = 1.363;
+            else if (tau_decay_mode_2 == 1) etaufakeweight_dm = 1.44;
+            else etaufakeweight_dm = 1.0;
+        } else {
+          if (tau_decay_mode_2 == 0) etaufakeweight_dm = 0.729;
+          else if (tau_decay_mode_2 == 1) etaufakeweight_dm = 0.867;
+          else etaufakeweight_dm = 1.0;
+        }
+      }
+      weight *= etaufakeweight_dm;
 		}
 	      }
 
