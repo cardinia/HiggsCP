@@ -1001,6 +1001,17 @@ int main(int argc, char * argv[]) {
 	float weight_CMS_eff_Xtrigger_mt_MVADM2_13TeVDown;
 	float weight_CMS_eff_Xtrigger_mt_MVADM10_13TeVDown;
 	float weight_CMS_eff_Xtrigger_mt_MVADM11_13TeVDown;
+  
+	float weight_CMS_eff_Xtrigger_et_MVADM0_13TeVUp;
+	float weight_CMS_eff_Xtrigger_et_MVADM1_13TeVUp;
+	float weight_CMS_eff_Xtrigger_et_MVADM2_13TeVUp;
+	float weight_CMS_eff_Xtrigger_et_MVADM10_13TeVUp;
+	float weight_CMS_eff_Xtrigger_et_MVADM11_13TeVUp;
+	float weight_CMS_eff_Xtrigger_et_MVADM0_13TeVDown;
+	float weight_CMS_eff_Xtrigger_et_MVADM1_13TeVDown;
+	float weight_CMS_eff_Xtrigger_et_MVADM2_13TeVDown;
+	float weight_CMS_eff_Xtrigger_et_MVADM10_13TeVDown;
+	float weight_CMS_eff_Xtrigger_et_MVADM11_13TeVDown;
 
 	float weight_CMS_eff_t_pTlow_MVADM0_13TeVUp; 
 	float weight_CMS_eff_t_pTlow_MVADM1_13TeVUp; 
@@ -1705,6 +1716,17 @@ int main(int argc, char * argv[]) {
    	outTree->Branch("weight_CMS_eff_Xtrigger_mt_MVADM2_13TeVDown", &weight_CMS_eff_Xtrigger_mt_MVADM2_13TeVDown, "weight_CMS_eff_Xtrigger_mt_MVADM2_13TeVDown/F");
    	outTree->Branch("weight_CMS_eff_Xtrigger_mt_MVADM10_13TeVDown", &weight_CMS_eff_Xtrigger_mt_MVADM10_13TeVDown, "weight_CMS_eff_Xtrigger_mt_MVADM10_13TeVDown/F");
    	outTree->Branch("weight_CMS_eff_Xtrigger_mt_MVADM11_13TeVDown", &weight_CMS_eff_Xtrigger_mt_MVADM11_13TeVDown, "weight_CMS_eff_Xtrigger_mt_MVADM11_13TeVDown/F");
+  
+   	outTree->Branch("weight_CMS_eff_Xtrigger_et_MVADM0_13TeVUp", &weight_CMS_eff_Xtrigger_et_MVADM0_13TeVUp, "weight_CMS_eff_Xtrigger_et_MVADM0_13TeVUp/F");
+   	outTree->Branch("weight_CMS_eff_Xtrigger_et_MVADM1_13TeVUp", &weight_CMS_eff_Xtrigger_et_MVADM1_13TeVUp, "weight_CMS_eff_Xtrigger_et_MVADM1_13TeVUp/F");
+   	outTree->Branch("weight_CMS_eff_Xtrigger_et_MVADM2_13TeVUp", &weight_CMS_eff_Xtrigger_et_MVADM2_13TeVUp, "weight_CMS_eff_Xtrigger_et_MVADM2_13TeVUp/F");
+   	outTree->Branch("weight_CMS_eff_Xtrigger_et_MVADM10_13TeVUp", &weight_CMS_eff_Xtrigger_et_MVADM10_13TeVUp, "weight_CMS_eff_Xtrigger_et_MVADM10_13TeVUp/F");
+   	outTree->Branch("weight_CMS_eff_Xtrigger_et_MVADM11_13TeVUp", &weight_CMS_eff_Xtrigger_et_MVADM11_13TeVUp, "weight_CMS_eff_Xtrigger_et_MVADM11_13TeVUp/F");
+   	outTree->Branch("weight_CMS_eff_Xtrigger_et_MVADM0_13TeVDown", &weight_CMS_eff_Xtrigger_et_MVADM0_13TeVDown, "weight_CMS_eff_Xtrigger_et_MVADM0_13TeVDown/F");
+   	outTree->Branch("weight_CMS_eff_Xtrigger_et_MVADM1_13TeVDown", &weight_CMS_eff_Xtrigger_et_MVADM1_13TeVDown, "weight_CMS_eff_Xtrigger_et_MVADM1_13TeVDown/F");
+   	outTree->Branch("weight_CMS_eff_Xtrigger_et_MVADM2_13TeVDown", &weight_CMS_eff_Xtrigger_et_MVADM2_13TeVDown, "weight_CMS_eff_Xtrigger_et_MVADM2_13TeVDown/F");
+   	outTree->Branch("weight_CMS_eff_Xtrigger_et_MVADM10_13TeVDown", &weight_CMS_eff_Xtrigger_et_MVADM10_13TeVDown, "weight_CMS_eff_Xtrigger_et_MVADM10_13TeVDown/F");
+   	outTree->Branch("weight_CMS_eff_Xtrigger_et_MVADM11_13TeVDown", &weight_CMS_eff_Xtrigger_et_MVADM11_13TeVDown, "weight_CMS_eff_Xtrigger_et_MVADM11_13TeVDown/F");
 
 
   	outTree->Branch("weight_CMS_eff_t_pTlow_MVADM0_13TeVUp", &weight_CMS_eff_t_pTlow_MVADM0_13TeVUp, "weight_CMS_eff_t_pTlow_MVADM0_13TeVUp/F"); 
@@ -1903,6 +1925,16 @@ int main(int argc, char * argv[]) {
    	inTree->SetBranchAddress("weight_CMS_eff_Xtrigger_mt_MVADM10_13TeVDown", &weight_CMS_eff_Xtrigger_mt_MVADM10_13TeVDown);
    	inTree->SetBranchAddress("weight_CMS_eff_Xtrigger_mt_MVADM11_13TeVDown", &weight_CMS_eff_Xtrigger_mt_MVADM11_13TeVDown);
 
+    inTree->SetBranchAddress("weight_CMS_eff_Xtrigger_et_MVADM0_13TeVUp", &weight_CMS_eff_Xtrigger_et_MVADM0_13TeVUp);
+    inTree->SetBranchAddress("weight_CMS_eff_Xtrigger_et_MVADM1_13TeVUp", &weight_CMS_eff_Xtrigger_et_MVADM1_13TeVUp);
+    inTree->SetBranchAddress("weight_CMS_eff_Xtrigger_et_MVADM2_13TeVUp", &weight_CMS_eff_Xtrigger_et_MVADM2_13TeVUp);
+    inTree->SetBranchAddress("weight_CMS_eff_Xtrigger_et_MVADM10_13TeVUp", &weight_CMS_eff_Xtrigger_et_MVADM10_13TeVUp);
+    inTree->SetBranchAddress("weight_CMS_eff_Xtrigger_et_MVADM11_13TeVUp", &weight_CMS_eff_Xtrigger_et_MVADM11_13TeVUp);
+    inTree->SetBranchAddress("weight_CMS_eff_Xtrigger_et_MVADM0_13TeVDown", &weight_CMS_eff_Xtrigger_et_MVADM0_13TeVDown);
+    inTree->SetBranchAddress("weight_CMS_eff_Xtrigger_et_MVADM1_13TeVDown", &weight_CMS_eff_Xtrigger_et_MVADM1_13TeVDown);
+    inTree->SetBranchAddress("weight_CMS_eff_Xtrigger_et_MVADM2_13TeVDown", &weight_CMS_eff_Xtrigger_et_MVADM2_13TeVDown);
+    inTree->SetBranchAddress("weight_CMS_eff_Xtrigger_et_MVADM10_13TeVDown", &weight_CMS_eff_Xtrigger_et_MVADM10_13TeVDown);
+    inTree->SetBranchAddress("weight_CMS_eff_Xtrigger_et_MVADM11_13TeVDown", &weight_CMS_eff_Xtrigger_et_MVADM11_13TeVDown);
 
   	inTree->SetBranchAddress("weight_CMS_eff_t_pTlow_MVADM0_13TeVUp", &weight_CMS_eff_t_pTlow_MVADM0_13TeVUp); 
   	inTree->SetBranchAddress("weight_CMS_eff_t_pTlow_MVADM1_13TeVUp", &weight_CMS_eff_t_pTlow_MVADM1_13TeVUp); 
@@ -2005,11 +2037,11 @@ int main(int argc, char * argv[]) {
       }
       if (era == "2017") {
         is_SingleLepTrigger = (trg_singleelectron>0.5&&pt_1>28&&abs(eta_1)<2.1);
-        is_CrossTrigger = (trg_etaucross>0.5&&pt_1>25&&pt_1<28&&abs(eta_1)<2.1&&pt_2>35&&abs(eta_2)<2.1);
+        is_CrossTrigger = (trg_etaucross>0.5&&pt_1>25&&abs(eta_1)<2.1&&pt_2>35&&abs(eta_2)<2.1);
       }
       if (era == "2018") {
         is_SingleLepTrigger = (trg_singleelectron>0.5&&pt_1>33&&abs(eta_1)<2.1);
-        is_CrossTrigger = (trg_etaucross>0.5&&pt_1>25&&pt_1<33&&abs(eta_1)<2.1&&pt_2>35&&abs(eta_2)<2.1);
+        is_CrossTrigger = (trg_etaucross>0.5&&pt_1>25&&abs(eta_1)<2.1&&pt_2>35&&abs(eta_2)<2.1);
       }
       is_Trigger = is_SingleLepTrigger || is_CrossTrigger;
       // if( is_Trigger < 0.5 ) continue;
@@ -3323,7 +3355,7 @@ int main(int argc, char * argv[]) {
 	      TString wpVsMu = "Tight";
 	      
 
-
+    // apply 5% if the event belongs to a dmMVA of interest and NOT pass SingleLep trigger (which is equivalent to passing XTrigger)
 		weight_CMS_eff_Xtrigger_mt_MVADM0_13TeVUp    = ((trg_singlemuon<0.5&&dmMVA_2==0)*1.05  + !(trg_singlemuon<0.5&&dmMVA_2==0))  ;
 		weight_CMS_eff_Xtrigger_mt_MVADM1_13TeVUp    = ((trg_singlemuon<0.5&&dmMVA_2==1)*1.05  + !(trg_singlemuon<0.5&&dmMVA_2==1))  ;
 		weight_CMS_eff_Xtrigger_mt_MVADM2_13TeVUp    = ((trg_singlemuon<0.5&&dmMVA_2==2)*1.05  + !(trg_singlemuon<0.5&&dmMVA_2==2))  ;
@@ -3335,6 +3367,18 @@ int main(int argc, char * argv[]) {
 		weight_CMS_eff_Xtrigger_mt_MVADM10_13TeVDown = ((trg_singlemuon<0.5&&dmMVA_2==10)*0.95 + !(trg_singlemuon<0.5&&dmMVA_2==10)) ;
 		weight_CMS_eff_Xtrigger_mt_MVADM11_13TeVDown = ((trg_singlemuon<0.5&&dmMVA_2==11)*0.95 + !(trg_singlemuon<0.5&&dmMVA_2==11)) ;
 
+    // propagate weight if the event belongs to a dmMVA of interest and NOT pass SingleLep trigger (which is equivalent to passing XTrigger)
+    weight_CMS_eff_Xtrigger_et_MVADM0_13TeVUp    = ((trg_singlemuon<0.5&&dmMVA_2==0)*weight_CMS_eff_Xtrigger_et_MVADM0_13TeVUp  + !(trg_singlemuon<0.5&&dmMVA_2==0))  ;
+    weight_CMS_eff_Xtrigger_et_MVADM1_13TeVUp    = ((trg_singlemuon<0.5&&dmMVA_2==1)*weight_CMS_eff_Xtrigger_et_MVADM1_13TeVUp  + !(trg_singlemuon<0.5&&dmMVA_2==1))  ;
+    weight_CMS_eff_Xtrigger_et_MVADM2_13TeVUp    = ((trg_singlemuon<0.5&&dmMVA_2==2)*weight_CMS_eff_Xtrigger_et_MVADM2_13TeVUp  + !(trg_singlemuon<0.5&&dmMVA_2==2))  ;
+    weight_CMS_eff_Xtrigger_et_MVADM10_13TeVUp   = ((trg_singlemuon<0.5&&dmMVA_2==10)*weight_CMS_eff_Xtrigger_et_MVADM10_13TeVUp + !(trg_singlemuon<0.5&&dmMVA_2==10)) ;
+    weight_CMS_eff_Xtrigger_et_MVADM11_13TeVUp   = ((trg_singlemuon<0.5&&dmMVA_2==11)*weight_CMS_eff_Xtrigger_et_MVADM11_13TeVUp + !(trg_singlemuon<0.5&&dmMVA_2==11)) ;
+    weight_CMS_eff_Xtrigger_et_MVADM0_13TeVDown  = ((trg_singlemuon<0.5&&dmMVA_2==0)*weight_CMS_eff_Xtrigger_et_MVADM0_13TeVDown  + !(trg_singlemuon<0.5&&dmMVA_2==0))  ;
+    weight_CMS_eff_Xtrigger_et_MVADM1_13TeVDown  = ((trg_singlemuon<0.5&&dmMVA_2==1)*weight_CMS_eff_Xtrigger_et_MVADM1_13TeVDown  + !(trg_singlemuon<0.5&&dmMVA_2==1))  ;
+    weight_CMS_eff_Xtrigger_et_MVADM2_13TeVDown  = ((trg_singlemuon<0.5&&dmMVA_2==2)*weight_CMS_eff_Xtrigger_et_MVADM2_13TeVDown  + !(trg_singlemuon<0.5&&dmMVA_2==2))  ;
+    weight_CMS_eff_Xtrigger_et_MVADM10_13TeVDown = ((trg_singlemuon<0.5&&dmMVA_2==10)*weight_CMS_eff_Xtrigger_et_MVADM10_13TeVDown + !(trg_singlemuon<0.5&&dmMVA_2==10)) ;
+    weight_CMS_eff_Xtrigger_et_MVADM11_13TeVDown = ((trg_singlemuon<0.5&&dmMVA_2==11)*weight_CMS_eff_Xtrigger_et_MVADM11_13TeVDown + !(trg_singlemuon<0.5&&dmMVA_2==11)) ;
+    
 	      if (isData)
 		weight = 1;
 	      else if (isEmbedded) 
