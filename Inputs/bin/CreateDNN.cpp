@@ -82,8 +82,7 @@ int main(int argc, char * argv[]) {
 
 
   TString FFlocation = "/nfs/dust/cms/user/cardinia/public/FF_from_IC_1p5cut_v3/";
-  // if(channel=="et") FFlocation = "/nfs/dust/cms/user/cardinia/public/FF_from_IC_et_1p5cut_v2/";
-  if(channel=="et") FFlocation = "/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/HiggsCP/Inputs/data/fake_factors_cpdecay_ipsig1p5_etau_v3/";
+  if(channel=="et") FFlocation = "/nfs/dust/cms/user/cardinia/public/FF_from_IC_et_1p5cut_v3/";
   string channel_string = channel.Data();
 
   bool applyPreselection = true;
@@ -105,7 +104,7 @@ int main(int argc, char * argv[]) {
   //TString output_dir = "";
   samples_map[channel + "-NOMINAL_ntuple_"+Sample     ] = map_sample.at(Sample);
   if(channel=="mt")
-    input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/mutau_June2/" + era ;
+    input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/mutau_June2-PAS/" + era ;
   else 
     input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/" + era ;
     
@@ -122,7 +121,7 @@ int main(int argc, char * argv[]) {
     //     input_dir = "/nfs/dust/cms/user/rasp/Run/Run2018/CP/sys";
     //input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/" + era ;
     //input_dir ="/nfs/dust/cms/user/rasp/HiggsCP/etau/" + era ;
-    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_June10";
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_July3";
   }
   else if(era == "2017"){
     xsec_map    = &xsec_map_2017; 
@@ -135,7 +134,7 @@ int main(int argc, char * argv[]) {
     //input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2017/";
     //input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/" + era ;
     //input_dir ="/nfs/dust/cms/user/rasp/HiggsCP/etau/" + era ;
-    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_June10";
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_July3";
   }  
   else if(era == "2016"){
     xsec_map    = &xsec_map_2016;
@@ -147,7 +146,7 @@ int main(int argc, char * argv[]) {
     embedded_tracking_weight = 0.98;
     //input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2016/";
     //input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/" + era ;
-    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_June10";
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_July3";
   }
   fs::path path(output_dir.Data());
   if (!(fs::exists(path))) {
@@ -190,6 +189,7 @@ int main(int argc, char * argv[]) {
     neventsW3Jets  = getNEventsProcessed(input_dir,process_map->at("W3Jets"),era);
     neventsW4Jets  = getNEventsProcessed(input_dir,process_map->at("W4Jets"),era);
   }
+
 
   // double neventsVBF1 = 0;
   // double neventsVBF2 = 0;
@@ -374,6 +374,17 @@ int main(int argc, char * argv[]) {
 	float weight_CMS_mufake_mt_MVADM11_13TeVDown;
 
 
+	float weight_CMS_efake_et_MVADM0_13TeVUp; 
+	float weight_CMS_efake_et_MVADM1_13TeVUp; 
+	float weight_CMS_efake_et_MVADM2_13TeVUp; 
+	float weight_CMS_efake_et_MVADM10_13TeVUp;
+	float weight_CMS_efake_et_MVADM11_13TeVUp;
+	float weight_CMS_efake_et_MVADM0_13TeVDown; 
+	float weight_CMS_efake_et_MVADM1_13TeVDown; 
+	float weight_CMS_efake_et_MVADM2_13TeVDown; 
+	float weight_CMS_efake_et_MVADM10_13TeVDown;
+	float weight_CMS_efake_et_MVADM11_13TeVDown;
+
 	float weight;	  
 	// Merijn: vars below used for stxs. 
 	// prefiring_weight is set for different stxs bins.. 
@@ -438,6 +449,16 @@ int main(int argc, char * argv[]) {
  	//float acotautau_uncorr_00;
  	//float acotautau_uncorr_01;
 
+	float alpha_IP_1;
+	float alpha_IP_uncorr_1;
+	float alpha_plane_1;
+
+	float alpha_IP_2;
+	float alpha_IP_uncorr_2;
+	float alpha_plane_2;
+
+	float alphaminus;
+	float alphaminus_uncorr;
 
 	// New branches
 	float xsec_lumi_weight;      
@@ -1160,7 +1181,16 @@ int main(int argc, char * argv[]) {
  	
  	//outTree->Branch("acotautau_uncorr_00",&acotautau_uncorr_00,"acotautau_uncorr_00/F");
  	//outTree->Branch("acotautau_uncorr_01",&acotautau_uncorr_01,"acotautau_uncorr_01/F");
-	
+
+	outTree->Branch("alpha_IP_1",&alpha_IP_1,"alpha_IP_1/F");
+	outTree->Branch("alpha_IP_uncorr_1",&alpha_IP_uncorr_1,"alpha_IP_uncorr_1/F");
+	outTree->Branch("alpha_plane_1",&alpha_plane_1,"alpha_plane_1/F");
+	outTree->Branch("alpha_IP_2",&alpha_IP_2,"alpha_IP_2/F");
+	outTree->Branch("alpha_IP_uncorr_2",&alpha_IP_uncorr_2,"alpha_IP_uncorr_2/F");
+	outTree->Branch("alpha_plane_2",&alpha_plane_2,"alpha_plane_2/F");
+	outTree->Branch("alphaminus",&alphaminus,"alphaminus/F");
+	outTree->Branch("alphaminus_uncorr",&alphaminus_uncorr,"alphaminus_uncorr/F");
+
 	outTree->Branch("xsec_lumi_weight", &xsec_lumi_weight, "xsec_lumi_weight/F");
 	//	outTree->Branch("qcd_correction", &qcd_correction, "qcd_correction/F");
 	//	outTree->Branch("trigger_filter_weight", &trigger_filter_weight, "trigger_filter_weight/F");
@@ -1763,6 +1793,18 @@ int main(int argc, char * argv[]) {
   	outTree->Branch("weight_CMS_mufake_mt_MVADM11_13TeVDown", &weight_CMS_mufake_mt_MVADM11_13TeVDown, "weight_CMS_mufake_mt_MVADM11_13TeVDown/F");
 
 
+  	outTree->Branch("weight_CMS_efake_et_MVADM0_13TeVUp", &weight_CMS_efake_et_MVADM0_13TeVUp, "weight_CMS_efake_et_MVADM0_13TeVUp/F"); 
+  	outTree->Branch("weight_CMS_efake_et_MVADM1_13TeVUp", &weight_CMS_efake_et_MVADM1_13TeVUp, "weight_CMS_efake_et_MVADM1_13TeVUp/F"); 
+  	outTree->Branch("weight_CMS_efake_et_MVADM2_13TeVUp", &weight_CMS_efake_et_MVADM2_13TeVUp, "weight_CMS_efake_et_MVADM2_13TeVUp/F"); 
+  	outTree->Branch("weight_CMS_efake_et_MVADM10_13TeVUp", &weight_CMS_efake_et_MVADM10_13TeVUp, "weight_CMS_efake_et_MVADM10_13TeVUp/F");
+  	outTree->Branch("weight_CMS_efake_et_MVADM11_13TeVUp", &weight_CMS_efake_et_MVADM11_13TeVUp, "weight_CMS_efake_et_MVADM11_13TeVUp/F");
+  	outTree->Branch("weight_CMS_efake_et_MVADM0_13TeVDown", &weight_CMS_efake_et_MVADM0_13TeVDown, "weight_CMS_efake_et_MVADM0_13TeVDown/F"); 
+  	outTree->Branch("weight_CMS_efake_et_MVADM1_13TeVDown", &weight_CMS_efake_et_MVADM1_13TeVDown, "weight_CMS_efake_et_MVADM1_13TeVDown/F"); 
+  	outTree->Branch("weight_CMS_efake_et_MVADM2_13TeVDown", &weight_CMS_efake_et_MVADM2_13TeVDown, "weight_CMS_efake_et_MVADM2_13TeVDown/F"); 
+  	outTree->Branch("weight_CMS_efake_et_MVADM10_13TeVDown", &weight_CMS_efake_et_MVADM10_13TeVDown, "weight_CMS_efake_et_MVADM10_13TeVDown/F");
+  	outTree->Branch("weight_CMS_efake_et_MVADM11_13TeVDown", &weight_CMS_efake_et_MVADM11_13TeVDown, "weight_CMS_efake_et_MVADM11_13TeVDown/F");
+
+
    	outTree->Branch("weight_CMS_scale_gg_13TeVUp", &weight_CMS_scale_gg_13TeVUp, "weight_CMS_scale_gg_13TeVUp/F");
    	outTree->Branch("weight_CMS_scale_gg_13TeVDown", &weight_CMS_scale_gg_13TeVDown, "weight_CMS_scale_gg_13TeVDown/F");
    	outTree->Branch("weight_CMS_PS_ISR_ggH_13TeVUp", &weight_CMS_PS_ISR_ggH_13TeVUp, "weight_CMS_PS_ISR_ggH_13TeVUp/F");
@@ -1906,6 +1948,14 @@ int main(int argc, char * argv[]) {
  	  
  	  //inTree->SetBranchAddress("acotautau_uncorr_00",&acotautau_bs_uncorr_00);
  	  //inTree->SetBranchAddress("acotautau_uncorr_01",&acotautau_bs_uncorr_01);
+	  inTree->SetBranchAddress("alpha_IP_1",&alpha_IP_1);
+	  inTree->SetBranchAddress("alpha_IP_uncorr_1",&alpha_IP_uncorr_1);
+	  inTree->SetBranchAddress("alpha_plane_1",&alpha_plane_1);
+	  inTree->SetBranchAddress("alpha_IP_2",&alpha_IP_2);
+	  inTree->SetBranchAddress("alpha_IP_uncorr_2",&alpha_IP_uncorr_2);
+	  inTree->SetBranchAddress("alpha_plane_2",&alpha_plane_2);
+	  inTree->SetBranchAddress("alphaminus",&alphaminus);
+	  inTree->SetBranchAddress("alphaminus_uncorr",&alphaminus_uncorr);
 
 	  inTree->SetBranchAddress("gen_sm_htt125", &gen_sm_htt125);
 	  inTree->SetBranchAddress("gen_ps_htt125", &gen_ps_htt125);
@@ -2032,20 +2082,20 @@ int main(int argc, char * argv[]) {
 		  if (abs(eta_2)>2.3)             continue;
 		  if( byVLooseDeepTau2017v2p1VSmu_2 < 0.5 ) continue;
 		  if( byTightDeepTau2017v2p1VSe_2   < 0.5 ) continue;
-      if (era == "2016") {
-        is_SingleLepTrigger = (trg_singleelectron>0.5&&pt_1>26&&abs(eta_1)<2.1);
-        is_CrossTrigger = false;
-      }
-      if (era == "2017") {
-        is_SingleLepTrigger = (trg_singleelectron>0.5&&pt_1>28&&abs(eta_1)<2.1);
-        is_CrossTrigger = (trg_etaucross>0.5&&pt_1>25&&abs(eta_1)<2.1&&pt_2>35&&abs(eta_2)<2.1);
-      }
-      if (era == "2018") {
-        is_SingleLepTrigger = (trg_singleelectron>0.5&&pt_1>33&&abs(eta_1)<2.1);
-        is_CrossTrigger = (trg_etaucross>0.5&&pt_1>25&&abs(eta_1)<2.1&&pt_2>35&&abs(eta_2)<2.1);
-      }
-      is_Trigger = is_SingleLepTrigger || is_CrossTrigger;
-      // if( is_Trigger < 0.5 ) continue;
+		  if (era == "2016") {
+		    is_SingleLepTrigger = (trg_singleelectron>0.5&&pt_1>26&&abs(eta_1)<2.1);
+		    is_CrossTrigger = false;
+		  }
+		  if (era == "2017") {
+		    is_SingleLepTrigger = (trg_singleelectron>0.5&&pt_1>28&&abs(eta_1)<2.1);
+		    is_CrossTrigger = (trg_etaucross>0.5&&pt_1>25&&abs(eta_1)<2.1&&pt_2>35&&abs(eta_2)<2.1);
+		  }
+		  if (era == "2018") {
+		    is_SingleLepTrigger = (trg_singleelectron>0.5&&pt_1>33&&abs(eta_1)<2.1);
+		    is_CrossTrigger = (trg_etaucross>0.5&&pt_1>25&&abs(eta_1)<2.1&&pt_2>35&&abs(eta_2)<2.1);
+		  }
+		  is_Trigger = is_SingleLepTrigger || is_CrossTrigger;
+		  if( is_Trigger < 0.5 ) continue;
 		}
 		if( byVVVLooseDeepTau2017v2p1VSjet_2 < 0.5 ) continue;
 		if( extraelec_veto > 0.5 )       continue;
@@ -2187,7 +2237,7 @@ int main(int argc, char * argv[]) {
 		  ff_ws_->Print();
 		}
 		*/
-		if(channel=="mt"){
+		if(channel=="mt"&&PropagateSystematics){
 		
 		  weight_ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_ltUp = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm0_sig_lt3_up"]->eval(args_mva.data()));
 		  
@@ -2465,7 +2515,7 @@ int main(int argc, char * argv[]) {
 		  weight_ff_mt_wjets_systDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_wjets_syst_down"]->eval(args_mva.data()));
 		  weight_ff_mt_ttbar_systUp   = ReturnFinite(fns_["ff_mt_medium_mvadmbins_ttbar_syst_up"]  ->eval(args_mva.data()));
 		  weight_ff_mt_ttbar_systDown = ReturnFinite(fns_["ff_mt_medium_mvadmbins_ttbar_syst_down"]->eval(args_mva.data()));
-		}else{
+		}else if(PropagateSystematics){
 		  
 		  weight_ff_et_wjets_stat_unc1_njets0_mvadm0_sig_ltUp = ReturnFinite(fns_["ff_et_medium_mvadmbins_wjets_stat_unc1_njet0_mvadm0_sig_lt3_up"]->eval(args_mva.data()));
 
@@ -3369,17 +3419,32 @@ int main(int argc, char * argv[]) {
 		weight_CMS_eff_Xtrigger_mt_MVADM11_13TeVDown = ((trg_singlemuon<0.5&&dmMVA_2==11)*0.95 + !(trg_singlemuon<0.5&&dmMVA_2==11)) ;
 
     // propagate weight if the event belongs to a dmMVA of interest and NOT pass SingleLep trigger (which is equivalent to passing XTrigger)
-    weight_CMS_eff_Xtrigger_et_MVADM0_13TeVUp    = ((trg_singlemuon<0.5&&dmMVA_2==0)*weight_CMS_eff_Xtrigger_et_MVADM0_13TeVUp  + !(trg_singlemuon<0.5&&dmMVA_2==0))  ;
-    weight_CMS_eff_Xtrigger_et_MVADM1_13TeVUp    = ((trg_singlemuon<0.5&&dmMVA_2==1)*weight_CMS_eff_Xtrigger_et_MVADM1_13TeVUp  + !(trg_singlemuon<0.5&&dmMVA_2==1))  ;
-    weight_CMS_eff_Xtrigger_et_MVADM2_13TeVUp    = ((trg_singlemuon<0.5&&dmMVA_2==2)*weight_CMS_eff_Xtrigger_et_MVADM2_13TeVUp  + !(trg_singlemuon<0.5&&dmMVA_2==2))  ;
-    weight_CMS_eff_Xtrigger_et_MVADM10_13TeVUp   = ((trg_singlemuon<0.5&&dmMVA_2==10)*weight_CMS_eff_Xtrigger_et_MVADM10_13TeVUp + !(trg_singlemuon<0.5&&dmMVA_2==10)) ;
-    weight_CMS_eff_Xtrigger_et_MVADM11_13TeVUp   = ((trg_singlemuon<0.5&&dmMVA_2==11)*weight_CMS_eff_Xtrigger_et_MVADM11_13TeVUp + !(trg_singlemuon<0.5&&dmMVA_2==11)) ;
-    weight_CMS_eff_Xtrigger_et_MVADM0_13TeVDown  = ((trg_singlemuon<0.5&&dmMVA_2==0)*weight_CMS_eff_Xtrigger_et_MVADM0_13TeVDown  + !(trg_singlemuon<0.5&&dmMVA_2==0))  ;
-    weight_CMS_eff_Xtrigger_et_MVADM1_13TeVDown  = ((trg_singlemuon<0.5&&dmMVA_2==1)*weight_CMS_eff_Xtrigger_et_MVADM1_13TeVDown  + !(trg_singlemuon<0.5&&dmMVA_2==1))  ;
-    weight_CMS_eff_Xtrigger_et_MVADM2_13TeVDown  = ((trg_singlemuon<0.5&&dmMVA_2==2)*weight_CMS_eff_Xtrigger_et_MVADM2_13TeVDown  + !(trg_singlemuon<0.5&&dmMVA_2==2))  ;
-    weight_CMS_eff_Xtrigger_et_MVADM10_13TeVDown = ((trg_singlemuon<0.5&&dmMVA_2==10)*weight_CMS_eff_Xtrigger_et_MVADM10_13TeVDown + !(trg_singlemuon<0.5&&dmMVA_2==10)) ;
-    weight_CMS_eff_Xtrigger_et_MVADM11_13TeVDown = ((trg_singlemuon<0.5&&dmMVA_2==11)*weight_CMS_eff_Xtrigger_et_MVADM11_13TeVDown + !(trg_singlemuon<0.5&&dmMVA_2==11)) ;
-    
+		weight_CMS_eff_Xtrigger_et_MVADM0_13TeVUp    = ((trg_singlemuon<0.5&&dmMVA_2==0)*weight_CMS_eff_Xtrigger_et_MVADM0_13TeVUp  + !(trg_singlemuon<0.5&&dmMVA_2==0))  ;
+		weight_CMS_eff_Xtrigger_et_MVADM1_13TeVUp    = ((trg_singlemuon<0.5&&dmMVA_2==1)*weight_CMS_eff_Xtrigger_et_MVADM1_13TeVUp  + !(trg_singlemuon<0.5&&dmMVA_2==1))  ;
+		weight_CMS_eff_Xtrigger_et_MVADM2_13TeVUp    = ((trg_singlemuon<0.5&&dmMVA_2==2)*weight_CMS_eff_Xtrigger_et_MVADM2_13TeVUp  + !(trg_singlemuon<0.5&&dmMVA_2==2))  ;
+		weight_CMS_eff_Xtrigger_et_MVADM10_13TeVUp   = ((trg_singlemuon<0.5&&dmMVA_2==10)*weight_CMS_eff_Xtrigger_et_MVADM10_13TeVUp + !(trg_singlemuon<0.5&&dmMVA_2==10)) ;
+		weight_CMS_eff_Xtrigger_et_MVADM11_13TeVUp   = ((trg_singlemuon<0.5&&dmMVA_2==11)*weight_CMS_eff_Xtrigger_et_MVADM11_13TeVUp + !(trg_singlemuon<0.5&&dmMVA_2==11)) ;
+		weight_CMS_eff_Xtrigger_et_MVADM0_13TeVDown  = ((trg_singlemuon<0.5&&dmMVA_2==0)*weight_CMS_eff_Xtrigger_et_MVADM0_13TeVDown  + !(trg_singlemuon<0.5&&dmMVA_2==0))  ;
+		weight_CMS_eff_Xtrigger_et_MVADM1_13TeVDown  = ((trg_singlemuon<0.5&&dmMVA_2==1)*weight_CMS_eff_Xtrigger_et_MVADM1_13TeVDown  + !(trg_singlemuon<0.5&&dmMVA_2==1))  ;
+		weight_CMS_eff_Xtrigger_et_MVADM2_13TeVDown  = ((trg_singlemuon<0.5&&dmMVA_2==2)*weight_CMS_eff_Xtrigger_et_MVADM2_13TeVDown  + !(trg_singlemuon<0.5&&dmMVA_2==2))  ;
+		weight_CMS_eff_Xtrigger_et_MVADM10_13TeVDown = ((trg_singlemuon<0.5&&dmMVA_2==10)*weight_CMS_eff_Xtrigger_et_MVADM10_13TeVDown + !(trg_singlemuon<0.5&&dmMVA_2==10)) ;
+		weight_CMS_eff_Xtrigger_et_MVADM11_13TeVDown = ((trg_singlemuon<0.5&&dmMVA_2==11)*weight_CMS_eff_Xtrigger_et_MVADM11_13TeVDown + !(trg_singlemuon<0.5&&dmMVA_2==11)) ;
+		
+		
+    // apply 10% uncertainty on etau FR SF
+		
+		weight_CMS_efake_et_MVADM0_13TeVUp = 1.0; 
+		weight_CMS_efake_et_MVADM1_13TeVUp = 1.0; 
+		weight_CMS_efake_et_MVADM2_13TeVUp = 1.0; 
+		weight_CMS_efake_et_MVADM10_13TeVUp = 1.0;
+		weight_CMS_efake_et_MVADM11_13TeVUp = 1.0;
+		weight_CMS_efake_et_MVADM0_13TeVDown = 1.0; 
+		weight_CMS_efake_et_MVADM1_13TeVDown = 1.0; 
+		weight_CMS_efake_et_MVADM2_13TeVDown = 1.0; 
+		weight_CMS_efake_et_MVADM10_13TeVDown = 1.0;
+		weight_CMS_efake_et_MVADM11_13TeVDown = 1.0;
+		
+
 	      if (isData)
 		weight = 1;
 	      else if (isEmbedded) 
@@ -3406,48 +3471,69 @@ int main(int argc, char * argv[]) {
 		  weight_CMS_htt_ttbarShape_13TeVUp = topptweight;
 		}
 		if(gen_match_2==2||gen_match_2==4){
-		  //TFile muTauFRfile("/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/TauPOG/TauIDSFs/data/TauID_SF_eta_DeepTau2017v2p1VSmu_"+Period+".root"); 
-		  //TH1F *SFhist = (TH1F*) muTauFRfile.Get(wpVsMu);
-		  //weight *= SFhist->GetBinContent(SFhist->GetXaxis()->FindBin(eta_2));
-		  weight *= mutaufakeweight;
+		  TFile muTauFRfile("/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/TauPOG/TauIDSFs/data/TauID_SF_eta_DeepTau2017v2p1VSmu_"+Period+".root"); 
+		  TH1F *SFhist = (TH1F*) muTauFRfile.Get(wpVsMu);
+		  weight *= SFhist->GetBinContent(SFhist->GetXaxis()->FindBin(abs(eta_2)));
+		  //weight *= mutaufakeweight;
 		  weight *= weight_mufake_corr;
 		}else if(gen_match_2==1||gen_match_2==3){
-		  //TFile eTauFRfile("/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/TauPOG/TauIDSFs/data/TauID_SF_eta_DeepTau2017v2p1VSe_"+Period+".root"); 
-		  //TH1F *SFhist = (TH1F*) eTauFRfile.Get(wpVsEle);
-		  //weight *= SFhist->GetBinContent(SFhist->GetXaxis()->FindBin(eta_2));
-      
-      if (era == "2016") {
-        if (abs(eta_2) < 1.5) {
-            if (tau_decay_mode_2 == 0) etaufakeweight_dm = 0.923;
-            else if (tau_decay_mode_2 == 1) etaufakeweight_dm = 1.334;
-            else etaufakeweight_dm = 1.0;
-        } else {
-          if (tau_decay_mode_2 == 0) etaufakeweight_dm = 0.994;
-          else if (tau_decay_mode_2 == 1) etaufakeweight_dm = 1.055;
-          else etaufakeweight_dm = 1.0;
-        }
-      } else if (era == "2017") {
-        if (abs(eta_2) < 1.5) {
-            if (tau_decay_mode_2 == 0) etaufakeweight_dm = 1.245;
-            else if (tau_decay_mode_2 == 1) etaufakeweight_dm = 1.398;
-            else etaufakeweight_dm = 1.0;
-        } else {
-          if (tau_decay_mode_2 == 0) etaufakeweight_dm = 1.024;
-          else if (tau_decay_mode_2 == 1) etaufakeweight_dm = 0.889;
-          else etaufakeweight_dm = 1.0;
-        }
-      } else if (era == "2018") {
-        if (abs(eta_2) < 1.5) {
-            if (tau_decay_mode_2 == 0) etaufakeweight_dm = 1.363;
-            else if (tau_decay_mode_2 == 1) etaufakeweight_dm = 1.44;
-            else etaufakeweight_dm = 1.0;
-        } else {
-          if (tau_decay_mode_2 == 0) etaufakeweight_dm = 0.729;
-          else if (tau_decay_mode_2 == 1) etaufakeweight_dm = 0.867;
-          else etaufakeweight_dm = 1.0;
-        }
-      }
-      weight *= etaufakeweight_dm;
+
+		  TFile eTauFRfile("/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/TauPOG/TauIDSFs/data/TauID_SF_eta_DeepTau2017v2p1VSe_"+Period+".root"); 
+		  TH1F *SFhist = (TH1F*) eTauFRfile.Get(wpVsEle);
+		  etaufakeweight = SFhist->GetBinContent(SFhist->GetXaxis()->FindBin(abs(eta_2)));
+		  //weight *= etaufakeweight;
+
+		  if (era == "2016") {
+		    if (abs(eta_2) < 1.5) {
+		      if (tau_decay_mode_2 == 0) etaufakeweight_dm = 0.923;
+		      else if (tau_decay_mode_2 == 1) etaufakeweight_dm = 1.334;
+		      else etaufakeweight_dm = 1.0;
+		    } else {
+		      if (tau_decay_mode_2 == 0) etaufakeweight_dm = 0.994;
+		      else if (tau_decay_mode_2 == 1) etaufakeweight_dm = 1.055;
+		      else etaufakeweight_dm = 1.0;
+		    }
+		  } else if (era == "2017") {
+		    if (abs(eta_2) < 1.5) {
+		      if (tau_decay_mode_2 == 0) etaufakeweight_dm = 1.245;
+		      else if (tau_decay_mode_2 == 1) etaufakeweight_dm = 1.398;
+		      else etaufakeweight_dm = 1.0;
+		    } else {
+		      if (tau_decay_mode_2 == 0) etaufakeweight_dm = 1.024;
+		      else if (tau_decay_mode_2 == 1) etaufakeweight_dm = 0.889;
+		      else etaufakeweight_dm = 1.0;
+		    }
+		  } else if (era == "2018") {
+		    if (abs(eta_2) < 1.5) {
+		      if (tau_decay_mode_2 == 0) etaufakeweight_dm = 1.363;
+		      else if (tau_decay_mode_2 == 1) etaufakeweight_dm = 1.44;
+		      else etaufakeweight_dm = 1.0;
+		    } else {
+		      if (tau_decay_mode_2 == 0) etaufakeweight_dm = 0.729;
+		      else if (tau_decay_mode_2 == 1) etaufakeweight_dm = 0.867;
+		      else etaufakeweight_dm = 1.0;
+		    }
+		  }
+		  weight *= etaufakeweight_dm;
+
+		  if (dmMVA_2==0){
+		    weight_CMS_efake_et_MVADM0_13TeVUp = 1.1*etaufakeweight_dm; 
+		    weight_CMS_efake_et_MVADM0_13TeVDown = 0.9*etaufakeweight_dm; 
+		  }else if (dmMVA_2==1){
+		    weight_CMS_efake_et_MVADM1_13TeVUp = 1.1*etaufakeweight_dm; 
+		    weight_CMS_efake_et_MVADM1_13TeVDown = 0.9*etaufakeweight_dm; 
+		  }else if (dmMVA_2==2){
+		    weight_CMS_efake_et_MVADM2_13TeVUp = 1.1*etaufakeweight_dm; 
+		    weight_CMS_efake_et_MVADM2_13TeVDown = 0.9*etaufakeweight_dm; 
+		  }else if (dmMVA_2==10){
+		    weight_CMS_efake_et_MVADM10_13TeVUp = 1.1*etaufakeweight_dm; 
+		    weight_CMS_efake_et_MVADM10_13TeVDown = 0.9*etaufakeweight_dm; 
+		  }else if (dmMVA_2==11){
+		    weight_CMS_efake_et_MVADM11_13TeVUp = 1.1*etaufakeweight_dm; 
+		    weight_CMS_efake_et_MVADM11_13TeVDown = 0.9*etaufakeweight_dm; 
+		  }
+
+
 		}
 	      }
 
