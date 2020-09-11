@@ -1,39 +1,56 @@
 #include "HttStylesNew.cc"
 #include "CMS_lumi.C"
 #include "settings.h"
-void Plot_etau( bool embedded = true,
-		TString era = "2018") {
+void Plot_etau( bool embedded = false,
+		bool ipCorrected = true,
+		TString era = "2017") {
 
   // ****************************************
   // ****** Variable to plot ****************
   // ****************************************
-  TString Variable = "jdeta";
-  TString xtitle = "#Delta#eta_{jj}";
-  TString ytitle = "Events / 0.5";
-  int nBins  =                 20;
-  float xmin =                  0;
-  float xmax =                 10;
+  TString Variable = "pt_1";
+  //  TString Variable = "dmMVA_2";
+  //  TString xtitle = "IP signif. (#mu) (pv+bs)";
+  TString xtitle = "p_{T}(e) [GeV]";
+  TString ytitle = "Events / 5.0 GeV";
+  int nBins  =                 16;
+  float xmin =                 20;
+  float xmax =                100;
   float yLower =                1;
   float scaleYUpper =          10;
+
+  float normEmb = 1.0;
+  float normTT  = 1.0;
+  if (embedded&&(!ipCorrected)&&era=="2017")
+    normEmb = 1.0;
 
   TString suffix = "";
   if (embedded) suffix = "_embedded";
 
   bool plotLegend = true;
-  bool logY = true;
+  bool logY = false;
   bool logX = false;
 
   // ******** end of settings *********
+  TString dirPostfix("etau");
+  TString outputGraphics("figures");
+  if (ipCorrected) { 
+    dirPostfix = "etau_IP";
+    outputGraphics = "figures_IP";
+  }
 
-  TString dir = "/nfs/dust/cms/user/rasp/HiggsCP/etau/2017";
-  if (era=="2018")
-    dir = "/nfs/dust/cms/user/rasp/HiggsCP/etau/2018";
-  if (era=="2016")
-    dir = "/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/2016";
+  //  TString dir = "/nfs/dust/cms/user/rasp/HiggsCP/"+dirPostfix+"/"+era;
+  //  TString dirData = "/nfs/dust/cms/user/rasp/HiggsCP/etau/"+era;
+
+  TString dir = "/nfs/dust/cms/user/rasp/storage/filatovo/SynchNTuples/et/21July/"+era;
+  TString dirData = "/nfs/dust/cms/user/rasp/storage/filatovo/SynchNTuples/et/21July/"+era;
+
+  std::cout << dir << std::endl;
+
+  //  return;
 
   double qcd_scale = 1.0;
-  if (era=="2016")
-    qcd_scale = 1.3;
+  double w_scale = 1.0;
 
   lumi_13TeV = "2018, 59.7 fb^{-1}";
   if (era=="2017")
@@ -51,27 +68,48 @@ void Plot_etau( bool embedded = true,
   TString WeightEmb("mcweight*embweight*effweight*");
 
   TString Cuts("((trg_singleelectron>0.5&&pt_1>33)||(trg_etaucross&&pt_1>25&&pt_2>35&&abs(eta_1)<2.1&&abs(eta_2)<2.1))&&iso_1<0.1&&pt_1>25&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.1&&abs(eta_2)<2.3");
+  TString Cuts1 = "";
+  TString Weight1 = "";
+  TString WeightEmb1 = "";
 
   if (era=="2017") {
-    //    Cuts = "((trg_singleelectron>0.5&&pt_1>28)||(trg_etaucross&&pt_1>25&&pt_2>35&&abs(eta_1)<2.1&&abs(eta_2)<2.1))&&iso_1<0.1&&pt_1>25&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.1&&abs(eta_2)<2.3";
-    Cuts = "(trg_singleelectron>0.5&&pt_1>28)&&iso_1<0.1&&pt_1>25&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.1&&abs(eta_2)<2.3&&mcweight<1e+3&&trigweight_1<4.5";
-    //    Cuts = "(trg_etaucross>0.5&&pt_1>25&&pt_2>35&&abs(eta_1)<2.1&&abs(eta_2)<2.1)&&iso_1<0.1&&pt_1>25&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.1&&abs(eta_2)<2.3";
+
+    // single-electron
+    Cuts = "(trg_singleelectron>0.5&&pt_1>28&&pt_2>20&&abs(eta_1))&&iso_1<0.15&&pt_1>25&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&abs(eta_1)<2.1&&abs(eta_2)<2.3";
+    Cuts1 = "(trg_etaucross>0.5&&pt_1>25&&pt_1<28&&pt_2>35&&abs(eta_1)<2.1&&abs(eta_2)<2.1)&&iso_1<0.15&&pt_1>25&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&abs(eta_1)<2.1&&abs(eta_2)<2.3";
     Weight    = "(puweight*mcweight*effweight*trigweight_1/trigweight)*";
     WeightEmb = "(mcweight*embweight*effweight*trigweight_1/trigweight)*";
+    Weight1    = "(puweight*mcweight*effweight*trigweight_2/trigweight)*";
+    WeightEmb1 = "(mcweight*embweight*effweight*trigweight_2/trigweight)*";
   }
   if (era=="2018") {
+
     Weight    = "(puweight*mcweight*effweight*trigweight_1/trigweight)*";
     WeightEmb = "(mcweight*embweight*effweight*trigweight_1/trigweight)*";
-    Cuts = "(trg_singleelectron>0.5&&pt_1>33)&&iso_1<0.1&&pt_1>25&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.1&&abs(eta_2)<2.3&&mcweight<1e+3&&trigweight_1<4.5";
+    Weight1    = "(puweight*mcweight*effweight*trigweight_2/trigweight)*";
+    WeightEmb1 = "(mcweight*embweight*effweight*trigweight_2/trigweight)*";
   }
 
-  if (era=="2016")
-    Cuts = "(trg_singleelectron>0.5&&pt_1>26)&&iso_1<0.1&&pt_1>26&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&nbtag==0&&abs(eta_1)<2.1&&abs(eta_2)<2.3&&mcweight<1e+3";
-  
+  if (era=="2016") {
+    Cuts = "(trg_singleelectron>0.5&&pt_1>26)&&iso_1<0.1&&pt_1>26&&pt_2>20&&byVLooseDeepTau2017v2p1VSmu_2>0.5&&byTightDeepTau2017v2p1VSe_2>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&dilepton_veto<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5&&puppimt_1<50&&abs(eta_1)<2.1&&abs(eta_2)<2.3&&mcweight<10.0";
+    Cuts1 = "";
+  }
+
+  Cuts  += "&&nbtag==0";
+  Cuts1 += "&&nbtag==0";
+
   if (Variable=="jpt_1"||Variable=="jeta_1")
     Cuts += "&&njets>=1";
   if (Variable=="jpt_2"||Variable=="jeta_2"||Variable=="mjj"||Variable=="jdeta"||Variable=="ppt_jj")
     Cuts += "&&njets>=2";
+
+  if (Variable=="acotautau_bs_00"||Variable=="acotautau_refitbs_00") {
+    Cuts += "&&dmMVA_2==0";
+  }
+
+  if (Variable=="acotautau_bs_01"||Variable=="acotautau_refitbs_01") {
+    Cuts += "&&dmMVA_2==1";
+  }
 
   TString CutsOS = Cuts + TString("&&os>0.5");
   TString CutsSS = Cuts + TString("&&os<0.5");
@@ -194,13 +232,20 @@ void Plot_etau( bool embedded = true,
 
   // filling histograms
   for (int i=0; i<nSamples; ++i) {
-    TFile * file = new TFile(dir+"/"+sampleNames[i]+".root");
+    TString dirFile = dir;
+    if (i==0)
+      dirFile = dirData;
+    //    std::cout << dirFile << std::endl;
+    TFile * file = new TFile(dirFile+"/"+sampleNames[i]+".root");
     TTree * tree = (TTree*)file->Get("TauCheck");
     TH1D * histWeightsH = (TH1D*)file->Get("nWeightedEvents");
     double norm = 1; 
     double nevents = 1;
-    if ((i==21&&embedded)||i==0) { 
+    if (i==0) { 
       norm = 1.0;
+    }
+    else if (i==21&&embedded) {
+      norm = normEmb;
     }
     else {
       double xsec = xsecs[sampleNames[i]];
@@ -278,6 +323,12 @@ void Plot_etau( bool embedded = true,
     }
   }
 
+  for (int iB=1; iB<=nBins; ++iB) {
+    hist[11]->SetBinContent(iB,w_scale*hist[11]->GetBinContent(iB));
+    hist[11]->SetBinError(iB,w_scale*hist[11]->GetBinError(iB));
+  }
+
+
   TH1D * histData = (TH1D*)hist[0]->Clone("data_obs");
   TH1D * W        = (TH1D*)hist[11]->Clone("W");
   TH1D * TT       = (TH1D*)hist[1]->Clone("TT");
@@ -292,6 +343,7 @@ void Plot_etau( bool embedded = true,
   std::cout << "QCD : " << QCD->GetSumOfWeights() << std::endl;
   std::cout << "ZLL : " << ZLL->GetSumOfWeights() << std::endl;
   std::cout << "ZTT : " << ZTT->GetSumOfWeights() << std::endl;
+
 
   //  adding normalization systematics
   double ZTT_norm = 0.04; //  normalization ZTT :  4% (EMBEDDED)
@@ -467,7 +519,7 @@ void Plot_etau( bool embedded = true,
   ratioH->SetMarkerStyle(20);
   ratioH->SetMarkerSize(1.2);
   ratioH->SetLineColor(1);
-  ratioH->GetYaxis()->SetRangeUser(0.401,1.599);
+  ratioH->GetYaxis()->SetRangeUser(0.601,1.399);
   ratioH->GetYaxis()->SetNdivisions(505);
   ratioH->GetXaxis()->SetLabelFont(42);
   ratioH->GetXaxis()->SetLabelOffset(0.04);
@@ -545,6 +597,6 @@ void Plot_etau( bool embedded = true,
   canv1->cd();
   canv1->SetSelected(canv1);
   canv1->Update();
-  canv1->Print("figures/plot_"+Variable+suffix+"_OS_SS_"+era+"_single-e.png");
+  canv1->Print(outputGraphics+"/plot_"+Variable+suffix+"_OS_SS_"+era+"_etau.png");
 
 }
