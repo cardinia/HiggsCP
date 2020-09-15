@@ -314,7 +314,7 @@ vector<TH1D*> DataCards::CreateCardsSample(TString sampleName, params param, boo
     //cout << "      plot : " << parameterSystematic.varToPlot << endl;
     //    cout << "       cut : " << parameterSystematic.cuts << endl;
     tree->Draw(parameterSystematic.varToPlot+">>hist",parameterSystematic.weights+"("+parameterSystematic.cuts+")");
-    //cout << parameterSystematic.weights << "(" << parameterSystematic.cuts << ")" << endl;
+    cout << parameterSystematic.weights << "(" << parameterSystematic.cuts << ")" << endl;
 
     if (parameterSystematic.hist2D) {
       TH1D * hist = Unfold(hist2D);
@@ -552,11 +552,11 @@ void DataCards::RunOnCategory(TString category) {
       acotautau = variableCP_+"_00";  
     bool runSystematics = runSystematics_;
 
-    cuts = mapCategoryCut[category] + "&&pt_1>21&&pt_2>30&&m_vis>40&&TMath::Abs(eta_1)<2.1&&puppimt_1<50&&(dmMVA_2>-1&&dmMVA_2<11)";    
+    cuts = mapCategoryCut[category] + "&&pt_1>21&&pt_2>20&&m_vis>40&&TMath::Abs(eta_1)<2.1&&puppimt_1<50&&(dmMVA_2>-1&&dmMVA_2<11)";    
     TString elepTcut = "25";
     if(era_=="2017")elepTcut = "28";
     if(era_=="2018")elepTcut = "33";
-    if(ditauchannel_=="et") cuts = mapCategoryCut[category] + "&&pt_1>25&&TMath::Abs(eta_1)<2.1&&pt_2>20&&TMath::Abs(eta_2)<2.3&&os>0.5&&puppimt_1<50&&((trg_singleelectron>0.5&&pt_1>"+elepTcut+")||(trg_etaucross>0.5&&pt_1>25&&pt_2>35&&TMath::Abs(eta_2)<2.1))&&(dmMVA_2>-1&&dmMVA_2<11)&&trg_singleelectron>0.5";
+    if(ditauchannel_=="et") cuts = mapCategoryCut[category] + "&&pt_1>25&&TMath::Abs(eta_1)<2.1&&pt_2>20&&TMath::Abs(eta_2)<2.3&&os>0.5&&puppimt_1<50&&(dmMVA_2>-1&&dmMVA_2<11)";
     if(checkPhiModulation_) cuts += "&&m_vis<85";
     //if(ditauchannel_=="et") cuts += "&&is_SingleLepTrigger>0.5";
     TString cut_FF_AR = "&&os>0.5&&byMediumDeepTau2017v2p1VSjet_2<0.5&&byVVVLooseDeepTau2017v2p1VSjet_2>0.5";
@@ -564,7 +564,8 @@ void DataCards::RunOnCategory(TString category) {
     TString cut_QCD_SS = "&&os<0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5";
 
     TString IPCut("");
-    if (applyIPcut_ && ((applyIPcutOnBkg_ && !category.Contains("sig")) || category.Contains("sig"))) IPCut = "&&"+CutIP_muon_+"&&((dmMVA_2==0&&"+CutIP_pion_+")||dmMVA_2!=0)";
+    if (applyIPcut_ && category.Contains("sig")) IPCut = "&&"+CutIP_muon_+"&&((dmMVA_2==0&&"+CutIP_pion_+")||dmMVA_2!=0)";
+    if (applyIPcutOnBkg_ && !category.Contains("sig")) IPCut = "&&((dmMVA_2==0&&"+CutIP_pion_+")||dmMVA_2!=0)";
     cuts += IPCut;
     
     if (sampleName=="ZTT" || sampleName=="EmbedZTT") 
