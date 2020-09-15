@@ -602,8 +602,8 @@ int main(int argc, char **argv) {
   else if (trigger=="lepTau") itrigger = 2;
   else if (trigger=="resolved") itrigger = 3;
 
-  TString dir = "/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/In_Tuples_"+era+"/et/21July";
-
+  //  TString dir = "/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/In_Tuples_"+era+"/et/21July";
+  TString dir = "/nfs/dust/cms/user/rasp/storage/cardinia/"+era+"/InputDNNet_Aug28";
   std::vector<TString> sampleNames;
   if (channel=="et") 
     sampleNames.push_back("SingleElectron");

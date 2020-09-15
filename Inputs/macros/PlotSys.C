@@ -17,22 +17,23 @@
 // CMS_scale_j_RelativeSample_2018_13TeV
 // CMS_scale_j_BBEC1_2018_13TeV
 // CMS_res_j_13TeV
+// CMS_eff_b_13TeV
 
 void PlotSys() {
 
-  TString dirName = "/nfs/dust/cms/user/rasp/Run/Run2018/CP/debug/";
-  TString fileName = "GluGluHToTauTauUncorrDecays_M125";
-  TString varName = "puppimet";
-  TString sysName  = "CMS_scale_mu_13TeV";
+  TString dirName = "/nfs/dust/cms/user/rasp/CMSSW/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2018";
+  TString fileName = "TTTo2L2Nu";
+  TString varName = "bpt_1";
+  TString sysName  = "CMS_eff_b_13TeV";
   TString header = sysName;
   TString cuts = "os>0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5";
 
   TString ytitle("Events");
-  TString xtitle("Puppi E_{T}^{mis} [GeV]");
+  TString xtitle("leading bjet jet p_{T} [GeV]");
 
-  int nBins =      20;
-  float xmin =      0;
-  float xmax =    200;
+  int nBins =       10;
+  float xmin =       0;
+  float xmax =     200;
 
   SetStyle();
   gStyle->SetErrorX(0);
@@ -104,7 +105,7 @@ void PlotSys() {
 
   histUp->GetYaxis()->SetTitleOffset(1.4);
 
-  TCanvas * canv1 = MakeCanvas("canv1", "", 700, 800);
+  TCanvas * canv1 = MakeCanvas("canv1", "", 600, 700);
   TPad *upper = new TPad("upper", "pad",0,0.31,1,1);
   upper->Draw();
   upper->cd();
@@ -137,7 +138,7 @@ void PlotSys() {
   leg->AddEntry(histNominal,"Central","l");
   leg->AddEntry(histUp,"Up","l");
   leg->AddEntry(histDown,"Down","l");
-  //  leg->Draw();
+  leg->Draw();
   upper->Draw("SAME");
   upper->RedrawAxis();
   upper->Modified();
