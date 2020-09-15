@@ -5,13 +5,13 @@
 #include "HiggsCP/Inputs/macros/Plot_lept_mutau_NNNTuples.C"
 
 
-void   Plot_lept_mutau_NNScore(TString directory = "/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/Out_Tuples_2018/et/17June_LGB/predictions_2018/",
-			       TString outputDir = "/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/HiggsCP/Inputs/macros/figures_17June/2018/LGB/",
-			       int year=2018,
-						 TString channel = "mt",
+
+void   Plot_lept_mutau_NNScore(TString directory = "/nfs/dust/cms/user/rasp/storage/cardinia/2017/OutputDNN/May16/predictions_2017/",
+			       TString outputDir = "./figures_June16/old/",
+			       int year=2017,
 			       bool FFmethod = true,  
 			       bool useEmbedded = true,
-			       bool LargeScale = true,  
+			       bool LargeScale = false,  
 			       bool logY = false,
 			       bool showSignal = true,
 			       bool compareCP = true,
@@ -133,24 +133,31 @@ void   Plot_lept_mutau_NNScore(TString directory = "/nfs/dust/cms/user/filatovo/
     if(categoryIndex<nSigCategories){
       blindData=true;
       _logY=true;
-      _largeScale=true;
     }
     else {
       _logY=logY;
-      _largeScale=LargeScale;
     }
-    // if (categoryIndex==0) cuts+= "(IP_signif_RefitV_with_BS_1>1.5)*";
+    int nbins = 7;
+    float xmin = 0.3;
+    float xmax = 1.;
+    if (categoryIndex==1){
+      nbins=5;
+      xmax=0.8;
+    }
+
+    TString cuts = "(pt_1>21&&puppimt_1<50&&byVVVLooseDeepTau2017v2p1VSjet_2>0.5&&abs(eta_1)<2.1&&m_vis>40)*";
+    if (categoryIndex==0) cuts+= "(IP_signif_RefitV_with_BS_1>1.5)*";
     Plot_lept_mutau_NNNTuples("predicted_prob",
 			      "NN Score",
-			      50,0.,1.,
-			      weights,
+			      nbins,xmin,xmax,
+			      "weight*",
 			      cuts,
 			      "Events",
 			      categoryIndex,
 			      directory,
 			      outputDir,
 			      year,
-						channel,
+			      channel,
 			      //false,
 			      FFmethod,
 			      //false,  
