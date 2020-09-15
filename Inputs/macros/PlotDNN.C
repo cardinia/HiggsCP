@@ -30,6 +30,8 @@ void PlotDNN( bool embedded = true,
   double fake_scale = 1.0;
   double zll_scale = 1.0;
   double ztt_scale = 1.0;
+void PlotDNN( bool embedded = true,
+	      TString era = "2017") {
 
   SetStyle();
 
@@ -52,6 +54,19 @@ void PlotDNN( bool embedded = true,
     nBins = 2;
     nonEquidistant = true;
   }
+  TString DataFile = "SingleMuon";
+  TString Variable = "m_vis";
+  TString xtitle = "m_{vis} [GeV]";
+  TString ytitle = "Events";
+  int nBins  =                  30;
+  float xmin =                   0;
+  float xmax =                 300;
+  float yLower =                 0;
+  float scaleYUpper =           10;
+  bool logY = false;
+  bool logX = false;
+
+
   TString Cuts("pt_1>21&&os>0.5&&puppimt_1<50");
 
   TString Cuts_Sig    = Cuts + TString("&&byMediumDeepTau2017v2p1VSjet_2>0.5");
@@ -132,6 +147,7 @@ void PlotDNN( bool embedded = true,
     hist_Sig[i]->Sumw2();
     hist_FF[i]->Sumw2();
     tree->Draw(Variable+">>"+histNameSig,cuts_Sig[i]);
+    cout << cuts_Sig[i] << endl;
     tree->Draw(Variable+">>"+histNameFF,cuts_FF[i]);
   }
   delete dummy;
