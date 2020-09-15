@@ -106,7 +106,7 @@ int main(int argc, char * argv[]) {
   if(channel=="mt")
     input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/mutau_June2-PAS/" + era ;
   else 
-    input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/" + era ;
+    input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_Aug27/" + era ;
     
   TString output_dir="";
   if (era == "2018"){
@@ -121,7 +121,7 @@ int main(int argc, char * argv[]) {
     //     input_dir = "/nfs/dust/cms/user/rasp/Run/Run2018/CP/sys";
     //input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/" + era ;
     //input_dir ="/nfs/dust/cms/user/rasp/HiggsCP/etau/" + era ;
-    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_July3";
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_Aug31";
   }
   else if(era == "2017"){
     xsec_map    = &xsec_map_2017; 
@@ -134,7 +134,7 @@ int main(int argc, char * argv[]) {
     //input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2017/";
     //input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/" + era ;
     //input_dir ="/nfs/dust/cms/user/rasp/HiggsCP/etau/" + era ;
-    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_July3";
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_Aug31";
   }  
   else if(era == "2016"){
     xsec_map    = &xsec_map_2016;
@@ -146,7 +146,7 @@ int main(int argc, char * argv[]) {
     embedded_tracking_weight = 0.98;
     //input_dir="/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/DesyTauAnalyses/NTupleMaker/test/mutau/2016/";
     //input_dir ="/nfs/dust/cms/user/rasp/storage/cardinia/SynchNTuples/etau_May20/" + era ;
-    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_July3";
+    output_dir="/nfs/dust/cms/user/rasp/storage/cardinia/" + era +"/InputDNN" +channel +"_Aug31";
   }
   fs::path path(output_dir.Data());
   if (!(fs::exists(path))) {

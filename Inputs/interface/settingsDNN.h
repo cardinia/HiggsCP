@@ -84,6 +84,8 @@ vector<TString> SystematicsNames = {"",
 				    "CMS_scale_j_BBEC1_2018_13TeVDown",
 				    "CMS_scale_mu_13TeVUp",
 				    "CMS_scale_mu_13TeVDown",
+				    "CMS_scale_e_13TeVUp",
+				    "CMS_scale_e_13TeVDown",
 				    "CMS_res_j_13TeVUp",
 				    "CMS_res_j_13TeVDown"
 };
