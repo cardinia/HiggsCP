@@ -27,6 +27,8 @@ int main(int argc, char * argv[]) {
   const bool embedded = cfg.get<bool>("IsEmbedded");
   const bool fakeFactor = cfg.get<bool>("FFmethod");
 
+  const bool checkPhiModulation = cfg.get<bool>("CheckPhiModulation");
+
   const int nbinsMuPi = cfg.get<int>("NbinsPhiCPmupi");
   const int nbinsMuRho = cfg.get<int>("NbinsPhiCPmurho");
   const int nbinsMuA1 = cfg.get<int>("NbinsPhiCPmua1");
@@ -116,7 +118,8 @@ int main(int argc, char * argv[]) {
 				    mvaDM,
 				    applyIPcut,
 				    applyIPcutOnBkg,
-				    runSystematics);
+				    runSystematics,
+				    checkPhiModulation);
 
   cards->SetCutIPmuon(CutIpMuon);
   cards->SetCutIPpion(CutIpPion);

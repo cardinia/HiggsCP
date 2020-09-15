@@ -13,10 +13,10 @@ using namespace std;
 
 
 template<class T1, class T2>
-vector<T1> extract_first(const vector<pair<T1, T2> >& v) {
+vector<T1> extract_first(const map<T1, T2>& v) {
     vector<T1> vFirst;
-    for (size_t i = 0; i < v.size(); i++) {
-        vFirst.push_back(v[i].first);
+    for (auto element : v) {
+        vFirst.push_back(element.first);
     }
     return vFirst;
 };
@@ -24,8 +24,8 @@ vector<T1> extract_first(const vector<pair<T1, T2> >& v) {
 template<class T1, class T2>
 vector<T2> extract_second(const vector<pair<T1, T2> >& v) {
     vector<T2> vSecond;
-    for (size_t i = 0; i < v.size(); i++) {
-        vSecond.push_back(v[i].second);
+    for (auto element : v) {
+        vSecond.push_back(element.second);
     }
     return vSecond;
 };
@@ -63,7 +63,8 @@ class DataCards {
 	    bool mvaDM,
 	    bool applyIPcut,
 	    bool applyIPcutOnBkg,
-	    bool runSystematic); 
+	    bool runSystematic,
+	    bool checkPhiModulation); 
 
   void SetInputDirectory(TString input_dir);
   void SetOutputDirectory(TString output_dir);
@@ -118,6 +119,7 @@ class DataCards {
   bool applyIPcut_;
   bool applyIPcutOnBkg_;
   bool runSystematics_;
+  bool checkPhiModulation_;
   TString era_;
   TString ditauchannel_;
   TString variableCP_;
@@ -128,6 +130,7 @@ class DataCards {
   vector<double> xDNNZtt_;  
   vector<double> xDNNFakes_;  
   map<TString,int> binsperchannel_;
+  vector<TString> FFSystematics_;
 
   TString CutIP_muon_;
   TString CutIP_pion_;
@@ -232,13 +235,16 @@ class DataCards {
     "CMS_scale_j_BBEC1_2018_13TeVDown",
     "CMS_scale_mu_13TeVUp",
     "CMS_scale_mu_13TeVDown",
+    "CMS_scale_e_13TeVUp",
+    "CMS_scale_e_13TeVDown",
     "CMS_res_j_13TeVUp",
     "CMS_res_j_13TeVDown",
     "CMS_eff_b_13TeVUp",
     "CMS_eff_b_13TeVDown",
   };
 
-  vector<TString> FFSystematics = {
+
+  vector<TString> FFSystematics_mt = {
         "",
 	"ff_mt_sub_systUp",
 	"ff_mt_sub_systDown",
@@ -292,14 +298,14 @@ class DataCards {
 	"ff_mt_qcd_stat_unc1_njets2_mvadm10Up",
 
 
-	"ff_mt_wjets_stat_unc1_njets0_mvadm11Up",
-	"ff_mt_qcd_stat_unc1_njets0_mvadm11Up",
+	//"ff_mt_wjets_stat_unc1_njets0_mvadm11Up",
+	//"ff_mt_qcd_stat_unc1_njets0_mvadm11Up",
 	
-	"ff_mt_wjets_stat_unc1_njets1_mvadm11Up",
-	"ff_mt_qcd_stat_unc1_njets1_mvadm11Up",
+	//"ff_mt_wjets_stat_unc1_njets1_mvadm11Up",
+	//"ff_mt_qcd_stat_unc1_njets1_mvadm11Up",
 	
-	"ff_mt_wjets_stat_unc1_njets2_mvadm11Up",
-	"ff_mt_qcd_stat_unc1_njets2_mvadm11Up",
+	//"ff_mt_wjets_stat_unc1_njets2_mvadm11Up",
+	//"ff_mt_qcd_stat_unc1_njets2_mvadm11Up",
 
 	"ff_mt_wjets_stat_unc1_njets0_mvadm0_sig_ltDown",
 	"ff_mt_qcd_stat_unc1_njets0_mvadm0_sig_ltDown",
@@ -350,14 +356,14 @@ class DataCards {
 	"ff_mt_qcd_stat_unc1_njets2_mvadm10Down",
 
 
-	"ff_mt_wjets_stat_unc1_njets0_mvadm11Down",
-	"ff_mt_qcd_stat_unc1_njets0_mvadm11Down",
+	//"ff_mt_wjets_stat_unc1_njets0_mvadm11Down",
+	//"ff_mt_qcd_stat_unc1_njets0_mvadm11Down",
 	
-	"ff_mt_wjets_stat_unc1_njets1_mvadm11Down",
-	"ff_mt_qcd_stat_unc1_njets1_mvadm11Down",
+	//"ff_mt_wjets_stat_unc1_njets1_mvadm11Down",
+	//"ff_mt_qcd_stat_unc1_njets1_mvadm11Down",
 	
-	"ff_mt_wjets_stat_unc1_njets2_mvadm11Down",
-	"ff_mt_qcd_stat_unc1_njets2_mvadm11Down",
+	//"ff_mt_wjets_stat_unc1_njets2_mvadm11Down",
+	//"ff_mt_qcd_stat_unc1_njets2_mvadm11Down",
 
 	//stat unc2
 	"ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_ltUp",
@@ -409,14 +415,14 @@ class DataCards {
 	"ff_mt_qcd_stat_unc2_njets2_mvadm10Up",
 
 
-	"ff_mt_wjets_stat_unc2_njets0_mvadm11Up",
-	"ff_mt_qcd_stat_unc2_njets0_mvadm11Up",
+	//"ff_mt_wjets_stat_unc2_njets0_mvadm11Up",
+	//"ff_mt_qcd_stat_unc2_njets0_mvadm11Up",
 	
-	"ff_mt_wjets_stat_unc2_njets1_mvadm11Up",
-	"ff_mt_qcd_stat_unc2_njets1_mvadm11Up",
+	//"ff_mt_wjets_stat_unc2_njets1_mvadm11Up",
+	//"ff_mt_qcd_stat_unc2_njets1_mvadm11Up",
 	
-	"ff_mt_wjets_stat_unc2_njets2_mvadm11Up",
-	"ff_mt_qcd_stat_unc2_njets2_mvadm11Up",
+	//"ff_mt_wjets_stat_unc2_njets2_mvadm11Up",
+	//"ff_mt_qcd_stat_unc2_njets2_mvadm11Up",
 
 	"ff_mt_wjets_stat_unc2_njets0_mvadm0_sig_ltDown",
 	"ff_mt_qcd_stat_unc2_njets0_mvadm0_sig_ltDown",
@@ -467,14 +473,14 @@ class DataCards {
 	"ff_mt_qcd_stat_unc2_njets2_mvadm10Down",
 
 
-	"ff_mt_wjets_stat_unc2_njets0_mvadm11Down",
-	"ff_mt_qcd_stat_unc2_njets0_mvadm11Down",
+	//"ff_mt_wjets_stat_unc2_njets0_mvadm11Down",
+	//"ff_mt_qcd_stat_unc2_njets0_mvadm11Down",
 	
-	"ff_mt_wjets_stat_unc2_njets1_mvadm11Down",
-	"ff_mt_qcd_stat_unc2_njets1_mvadm11Down",
+	//"ff_mt_wjets_stat_unc2_njets1_mvadm11Down",
+	//"ff_mt_qcd_stat_unc2_njets1_mvadm11Down",
 	
-	"ff_mt_wjets_stat_unc2_njets2_mvadm11Down",
-	"ff_mt_qcd_stat_unc2_njets2_mvadm11Down",
+	//"ff_mt_wjets_stat_unc2_njets2_mvadm11Down",
+	//"ff_mt_qcd_stat_unc2_njets2_mvadm11Down",
 
 	//met_var_qcd and met_var_w non-closure corrections
 
@@ -537,42 +543,62 @@ class DataCards {
     "CMS_eff_Xtrigger_mt_MVADM1_13TeVUp",
     "CMS_eff_Xtrigger_mt_MVADM2_13TeVUp",
     "CMS_eff_Xtrigger_mt_MVADM10_13TeVUp",
-    "CMS_eff_Xtrigger_mt_MVADM11_13TeVUp",
+    //"CMS_eff_Xtrigger_mt_MVADM11_13TeVUp",
     "CMS_eff_Xtrigger_mt_MVADM0_13TeVDown",
     "CMS_eff_Xtrigger_mt_MVADM1_13TeVDown",
     "CMS_eff_Xtrigger_mt_MVADM2_13TeVDown",
     "CMS_eff_Xtrigger_mt_MVADM10_13TeVDown",
-    "CMS_eff_Xtrigger_mt_MVADM11_13TeVDown",
+    //"CMS_eff_Xtrigger_mt_MVADM11_13TeVDown",
+    "CMS_eff_Xtrigger_et_MVADM0_13TeVUp",
+    "CMS_eff_Xtrigger_et_MVADM1_13TeVUp",
+    "CMS_eff_Xtrigger_et_MVADM2_13TeVUp",
+    "CMS_eff_Xtrigger_et_MVADM10_13TeVUp",
+    //"CMS_eff_Xtrigger_et_MVADM11_13TeVUp",
+    "CMS_eff_Xtrigger_et_MVADM0_13TeVDown",
+    "CMS_eff_Xtrigger_et_MVADM1_13TeVDown",
+    "CMS_eff_Xtrigger_et_MVADM2_13TeVDown",
+    "CMS_eff_Xtrigger_et_MVADM10_13TeVDown",
+    //"CMS_eff_Xtrigger_et_MVADM11_13TeVDown",
+    "CMS_efake_et_MVADM0_13TeVUp",
+    "CMS_efake_et_MVADM1_13TeVUp",
+    "CMS_efake_et_MVADM2_13TeVUp",
+    "CMS_efake_et_MVADM10_13TeVUp",
+    //"CMS_efake_et_MVADM11_13TeVUp",
+    "CMS_efake_et_MVADM0_13TeVDown",
+    "CMS_efake_et_MVADM1_13TeVDown",
+    "CMS_efake_et_MVADM2_13TeVDown",
+    "CMS_efake_et_MVADM10_13TeVDown",
+    //"CMS_efake_mt_MVADM11_13TeVDown",
     "CMS_mufake_mt_MVADM0_13TeVUp",
     "CMS_mufake_mt_MVADM1_13TeVUp",
     "CMS_mufake_mt_MVADM2_13TeVUp",
     "CMS_mufake_mt_MVADM10_13TeVUp",
-    "CMS_mufake_mt_MVADM11_13TeVUp",
+    //"CMS_mufake_mt_MVADM11_13TeVUp",
     "CMS_mufake_mt_MVADM0_13TeVDown",
     "CMS_mufake_mt_MVADM1_13TeVDown",
     "CMS_mufake_mt_MVADM2_13TeVDown",
     "CMS_mufake_mt_MVADM10_13TeVDown",
-    "CMS_mufake_mt_MVADM11_13TeVDown",
+    //"CMS_mufake_mt_MVADM11_13TeVDown",
     "CMS_eff_t_pTlow_MVADM0_13TeVUp", 
     "CMS_eff_t_pTlow_MVADM1_13TeVUp", 
     "CMS_eff_t_pTlow_MVADM2_13TeVUp", 
     "CMS_eff_t_pTlow_MVADM10_13TeVUp",
-    "CMS_eff_t_pTlow_MVADM11_13TeVUp",
+    //"CMS_eff_t_pTlow_MVADM11_13TeVUp",
     "CMS_eff_t_pThigh_MVADM0_13TeVUp",
     "CMS_eff_t_pThigh_MVADM1_13TeVUp",
     "CMS_eff_t_pThigh_MVADM2_13TeVUp",
     "CMS_eff_t_pThigh_MVADM10_13TeVUp", 
-    "CMS_eff_t_pThigh_MVADM11_13TeVUp", 
+    //"CMS_eff_t_pThigh_MVADM11_13TeVUp", 
     "CMS_eff_t_pTlow_MVADM0_13TeVDown", 
     "CMS_eff_t_pTlow_MVADM1_13TeVDown", 
     "CMS_eff_t_pTlow_MVADM2_13TeVDown", 
     "CMS_eff_t_pTlow_MVADM10_13TeVDown", 
-    "CMS_eff_t_pTlow_MVADM11_13TeVDown", 
+    //"CMS_eff_t_pTlow_MVADM11_13TeVDown", 
     "CMS_eff_t_pThigh_MVADM0_13TeVDown", 
     "CMS_eff_t_pThigh_MVADM1_13TeVDown", 
     "CMS_eff_t_pThigh_MVADM2_13TeVDown", 
     "CMS_eff_t_pThigh_MVADM10_13TeVDown",
-    "CMS_eff_t_pThigh_MVADM11_13TeVDown",
+    //"CMS_eff_t_pThigh_MVADM11_13TeVDown",
     "CMS_PreFire_13TeVUp",
     "CMS_PreFire_13TeVDown",
   };
@@ -616,10 +642,11 @@ class DataCards {
     "VVT",
     "TTT",
     "W",
-    "HToWW"
+//    "HToWW"
   };
 
-  vector<TString> fileNames = {
+  vector<TString> fileNames;
+  vector<TString> fileNamesOutputDNN = {
     "data",
     "EMB",
     "DY",
@@ -633,10 +660,25 @@ class DataCards {
     "ZH125",
     "WH125"
   }; 
+  vector<TString> fileNamesInputDNN = {
+    "SingleMuon",
+    "EmbeddedMuTau",
+    "DYJets",
+    "HToWW",
+    "Diboson",
+    "WJets",
+    "TTbar",
+    "GluGluHToUncorrTauTau",
+    "VBFHToUncorrTauTau",
+    "ZHToUncorrTauTau",
+    "WHToUncorrTauTau"
+  }; 
 
   vector<TFile*> filePointer;
 
-  map<TString, TString> mapSampleFileName ={
+  map<TString, TString> mapSampleFileName;
+
+  map<TString, TString> mapSampleFileNameOutputDNN ={
     {"data_obs","data"},
     {"EmbedZTT","EMB"},
     {"ZL","DY"},
@@ -666,6 +708,35 @@ class DataCards {
     {"WH_mm_htt125","WH125"},
     {"WH_flat_htt125","WH125"},
   };
+  map<TString, TString> mapSampleFileNameInputDNN ={
+    {"data_obs","SingleMuon"},
+    {"EmbedZTT","EmbeddedMuTau"},
+    {"ZL","DYJets"},
+    {"ZTT","DYJets"},
+    {"EWKZ","EWKZ"},
+    {"TTT","TTbar"},
+    {"VVT","Diboson"},
+    {"W","WJets"},
+    {"QCD","SingleMuon"},
+    {"jetFakes","SingleMuon"},
+    {"HToWW","HToWW"},
+    {"ggH_sm_htt125","GluGluHToUncorrTauTau"},
+    {"ggH_ps_htt125","GluGluHToUncorrTauTau"},
+    {"ggH_mm_htt125","GluGluHToUncorrTauTau"},
+    {"ggH_flat_htt125","GluGluHToUncorrTauTau"},
+    {"qqH_sm_htt125","VBFHToUncorrTauTau"},
+    {"qqH_ps_htt125","VBFHToUncorrTauTau"},
+    {"qqH_mm_htt125","VBFHToUncorrTauTau"},
+    {"qqH_flat_htt125","VBFHToUncorrTauTau"},
+    {"ZH_sm_htt125","ZHToUncorrTauTau"},
+    {"ZH_ps_htt125","ZHToUncorrTauTau"},
+    {"ZH_mm_htt125","ZHToUncorrTauTau"},
+    {"ZH_flat_htt125","ZHToUncorrTauTau"},
+    {"WH_sm_htt125","WHToUncorrTauTau"},
+    {"WH_ps_htt125","WHToUncorrTauTau"},
+    {"WH_mm_htt125","WHToUncorrTauTau"},
+    {"WH_flat_htt125","WHToUncorrTauTau"},
+  };
 
   map<TString, TFile*> mapSampleFile;
 
@@ -685,10 +756,16 @@ class DataCards {
     //    "mt_fakes"
     };*/
 
-  vector<pair<int,TString>> classNames = {
+
+  map<int,TString> classNames;
+  map<int,TString> standardClassNames = {
     {0,"sig"},
     {1,"ztt"},
     {2,"fakes"},
+  };
+  map<int,TString> extraClassNames = {
+    {-2,"alphaLtPiOver4"},
+    {-3,"alphaGtPiOver4"},
   };
   vector<TString> channelNames = {"mupi","murho","mua1","mu0a1"};
 
